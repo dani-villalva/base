@@ -10,11 +10,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <!-- OPTIMIZACIÓN: Cargar FontAwesome sin bloquear el renderizado -->
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></noscript>
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     
     <style>
         :root{
@@ -25,22 +25,46 @@
             --text-main: #FFFFFF;
             --text-sec: #8A8A9D;
             --border: rgba(255, 255, 255, 0.08);
+            --nav-height: 65px;
         }
         *{margin:0;padding:0;box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
-        body{ background-color: var(--bg-base); color: var(--text-main); margin: 0; font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; padding-bottom: 80px; }
+        body{ 
+            background-color: var(--bg-base); color: var(--text-main); margin: 0; 
+            font-family: 'Sora', 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; 
+            padding-bottom: 80px; 
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+        }
 
-        /* HEADER */
+        /* ── MENÚ SUPERIOR (HEADER) NUEVO ── */
+        .top-navbar {
+            position: sticky; top: 0; left: 0; width: 100%; height: var(--nav-height);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 4%; z-index: 9999;
+            background: rgba(6, 6, 10, 0.9); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        .nav-logo { font-size: 1.4rem; font-weight: 900; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+        .nav-logo i { color: var(--accent); }
+        .nav-logo span { color: var(--accent); }
+        
+        .nav-links { display: none; gap: 24px; align-items: center; }
+        .nav-links a { color: var(--text-sec); text-decoration: none; font-size: 0.9rem; font-weight: 700; transition: color 0.2s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; }
+        
+        .nav-icons { display: flex; gap: 18px; align-items: center; }
+        .nav-icons button { background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; transition: color 0.2s; }
+        .nav-icons button:hover { color: var(--accent); }
+
+        /* HEADER INTERNO (TITULO Y FAVORITOS) */
         .search-header-fixed {
-            background: rgba(6, 6, 10, 0.85);
-            position: sticky; top: 0; z-index: 1000;
+            background: rgba(6, 6, 10, 0.95);
+            position: sticky; top: var(--nav-height); z-index: 1000;
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
             padding-bottom: 10px;
         }
         .header-top-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px 10px; }
-        .back-btn { color: #fff; font-size: 18px; text-decoration: none; transition: 0.2s; }
-        .back-btn:hover { color: var(--accent); }
-        .page-title { font-size: 20px; font-weight: 800; margin: 0; letter-spacing: -0.5px; flex: 1; margin-left: 15px; }
+        .page-title { font-size: 20px; font-weight: 800; margin: 0; letter-spacing: -0.5px; flex: 1; }
 
         /* SEARCH BAR */
         .search-main-bar { padding: 0 20px 15px; }
@@ -53,7 +77,7 @@
         .search-input-group:focus-within { border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
         .search-hint-icon { color: var(--text-sec); font-size: 16px; margin-right: 10px; transition: 0.3s; }
         .search-input-group:focus-within .search-hint-icon { color: var(--accent); }
-        .search-input-group input { background: transparent; border: none; color: white; width: 100%; padding: 14px 0; outline: none; font-size: 15px; }
+        .search-input-group input { background: transparent; border: none; color: white; width: 100%; padding: 14px 0; outline: none; font-size: 15px; font-family: 'Inter', sans-serif;}
         .search-input-group input::placeholder { color: var(--text-sec); }
 
         .clear-btn { background: none; border: none; color: var(--text-sec); font-size: 18px; cursor: pointer; padding: 5px; transition: 0.2s; }
@@ -89,7 +113,7 @@
         .chip-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
         .chip-btn.active { color: #000; font-weight: 800; background: var(--accent); border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
 
-        /* OPTIMIZACIÓN: Efecto Skeleton para imágenes cargando */
+        /* SKELETON */
         .skeleton { background: var(--bg-surface) !important; overflow: hidden; position: relative; }
         .skeleton::after {
             content: ''; position: absolute; inset: 0;
@@ -160,6 +184,8 @@
         .btn-close-modal:active { transform: scale(0.98); }
 
         @media (min-width: 768px) {
+            .nav-links { display: flex; } 
+            .bottom-nav { display:none !important; }
             .series-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 20px 15px; }
             .search-input-group input { padding: 16px 0; }
         }
@@ -173,12 +199,32 @@
 </head>
 <body>
 
+<!-- MENÚ SUPERIOR (HEADER) -->
+<header class="top-navbar" id="mainHeader">
+    <a href="index.html" class="nav-logo">
+        <i class="fa fa-play-circle"></i> Minihi<span>TV</span>
+    </a>
+    
+    <!-- Enlaces para PC -->
+    <nav class="nav-links">
+        <a href="index.html">Inicio</a>
+        <a href="buscar.html" class="active">Buscar</a>
+        <a href="reels.html">Reels</a>
+        <a href="donacion.html">Donar</a>
+    </nav>
+    
+    <!-- Iconos a la derecha -->
+    <div class="nav-icons">
+        <a href="buscar.html" style="color: var(--accent); font-size: 1.2rem; text-decoration: none;"><i class="fa fa-search"></i></a>
+        <button><i class="fa fa-user-circle"></i></button>
+    </div>
+</header>
+
 <div class="search-page-wrapper">
-    <!-- CABECERA -->
+    <!-- CABECERA DE BÚSQUEDA -->
     <div class="search-header-fixed">
         <div class="container-fluid">
             <div class="header-top-row">
-                
                 <h1 class="page-title">Explorar Catálogo</h1>
                 <div class="header-actions">
                     <button class="fav-trigger-btn" onclick="showFavorites()">
@@ -207,7 +253,7 @@
                     <div class="filter-chips">
                         <button class="chip-btn active" onclick="filterBy('all', 'type', this)">Todos</button>
                         <button class="chip-btn" onclick="filterBy('series', 'type', this)">Series/Doramas</button>
-                        <button class="chip-btn" onclick="filterBy('pelicula', 'type', this)">Películas</button>
+                        <button class="chip-btn" onclick="filterBy('movie', 'type', this)">Películas</button>
                     </div>
                 </div>
 
@@ -238,7 +284,7 @@
 
     <!-- RESULTADOS -->
     <div class="results-header">
-        <span id="resultsStatus">Cargando catálogo...</span>
+        <span id="resultsStatus">Conectando a la base de datos...</span>
     </div>
 
     <div class="container-fluid">
@@ -260,181 +306,45 @@
     </div>
 </div>
 
+<!-- MENÚ INFERIOR MÓVIL -->
 <footer class="bottom-nav">
-  <a href="go:inicio"><i class="fa fa-home"></i> Inicio</a>
-  <a href="go:buscador"  class="active"><i class="fa fa-search"></i> Buscar</a>
-  <a href="go:reels"><i class="fa fa-play-circle"></i> Reels</a>
-  <a href="go:donacion"><i class="fa fa-heart"></i> Donar</a>
+  <a href="index.html"><i class="fa fa-home"></i> Inicio</a>
+  <a href="buscar.html" class="active"><i class="fa fa-search"></i> Buscar</a>
+  <a href="reels.html"><i class="fa fa-play-circle"></i> Reels</a>
+  <a href="donacion.html"><i class="fa fa-heart"></i> Donar</a>
 </footer>
 
 <script>
     /* =========================================================
-       DATOS DE EJEMPLO — REEMPLAZA ESTE ARRAY CON TU CATÁLOGO
+       CONEXIÓN CON DATA.JSON
     ========================================================= */
-    const rawData = [
-        
-      {
-    "title": "Propuesta Laboral",
-    "description": "Una mujer se hace pasar por su amiga en una cita a ciegas para alejar al pretendiente. Pero el plan se complica cuando él resulta ser su jefe y le hace una propuesta.",
-    "img": "https://image.tmdb.org/t/p/w500/3Z8nacEGgQMNGHNi0IQPHOycsXz.jpg",
-    "rate": "8.4",
-    "year": "2022",
-    "genre": "comedia",
-    "type": "series",
-    "category": "drama",
-    "tag": "LAT",
-    "url": "go:01",
-    "episodes": [],
-    "video": ""
-},
-      
-      {
-    "title": "Mi Primer Amor de Verdad",
-    "description": "Por el azar y las circunstancias, Yun Tae-o le abre las puertas de su casa a un grupo de amigos. Y las puertas de su corazón a los enredos del amor y la amistad.",
-    "img": "https://image.tmdb.org/t/p/w500/dHKjOEnAWiMzngxNzuC9NiXqMfB.jpg",
-    "rate": "8.2",
-    "year": "2019",
-    "genre": "drama",
-    "type": "series",
-    "category": "drama",
-    "tag": "LAT",
-    "url": "go:02",
-    "episodes": [],
-    "video": ""
-},
-      {
-    "title": "Un amor tan hermoso",
-    "description": "Para una adolescente perdidamente enamorada de su vecino y amigo de la infancia, el amor es dulce y difícil a la vez. ¿Podrá su relación evolucionar a medida que crecen?",
-    "img": "https://image.tmdb.org/t/p/w500/4EzrCBnBdeLAZENNQcYzYq933B.jpg",
-    "rate": "8.3",
-    "year": "2020",
-    "genre": "drama",
-    "type": "series",
-    "category": "drama",
-    "tag": "LAT",
-    "url": "go:03",
-    "episodes": [],
-    "video": ""
-},
-      
-     {
-    "title": "Woo, Una Abogada Extraordinaria",
-    "description": "Woo Young-woo, una brillante abogada con autismo, lidia con los retos que le plantean la vida cotidiana y los tribunales cuando se incorpora a un importante bufete.",
-    "img": "https://image.tmdb.org/t/p/w500/6Gd8OleJSPseygKWIAEia4AyM4G.jpg",
-    "rate": "8.5",
-    "year": "2022",
-    "genre": "drama",
-    "type": "series",
-    "category": "drama",
-    "tag": "LAT",
-    "url": "go:04",
-    "episodes": [],
-    "video": ""
-},
-      
-      {
-    "title": "Érase un amor rural",
-    "description": "En contra de su voluntad, un veterinario de la gran ciudad se traslada al campo, donde conoce a una policía, una persona de la ciudad que guarda un secreto amistoso.",
-    "img": "https://image.tmdb.org/t/p/w500/hVmycednQiwms1p1n6hlLIlLG7X.jpg",
-    "rate": "7.5",
-    "year": "2022",
-    "genre": "drama",
-    "type": "series",
-    "category": "drama",
-    "tag": "LAT",
-    "url": "go:05",
-    "episodes": [],
-    "video": ""
-},
-      
-      {
-    "title": "A todos los chicos que me amaron",
-    "description": "Una exitosa mujer de carrera renuncia al amor después de repetidos rompimientos amorosos, hasta que dos hombres entran en su vida.",
-    "img": "https://image.tmdb.org/t/p/w500/vjnOfD55GYxqWi1ERiPOgrucjvV.jpg",
-    "rate": "6.6",
-    "year": "2020",
-    "genre": "comedia",
-    "type": "series",
-    "category": "drama",
-    "tag": "LAT",
-    "url": "go:06",
-    "episodes": [],
-    "video": ""
-},
-      
-      {
-    "title": "Aquel año nuestro",
-    "description": "Años después de filmar un documental en la escuela que se volvió viral, dos examantes enemistados vuelven a estar frente a cámara... y frente a frente.",
-    "img": "https://image.tmdb.org/t/p/w500/utUJlVXFIQFT8tgcifZo0uDrFzt.jpg",
-    "rate": "8.4",
-    "year": "2021",
-    "genre": "comedia",
-    "type": "series",
-    "category": "drama",
-    "tag": "LAT",
-    "url": "go:07",
-    "episodes": [],
-    "video": ""
-},
-      
-      {
-    "title": "Big, Creciendo sin querer",
-    "description": "Después de un trágico accidente de auto, Kang Gyung Joon de 18 años  descubre que su espíritu ha sido transportado al cuerpo de Seo Yoon Jae  de 30 años . Yoon Jae es un exitoso doctor que esta comprometido con la  profesora de secundaria Gil Da Ran. pero da la casualidad que Da Ran es  la profesora de Gyung Joon. ¿Qué hace un muchacho cuando descubre que se  ha convertido en el prometido de su propia maestra por un capricho de  la naturaleza? ¿Será capaz de regresar a su vida normal o esta condenado  a vivir en el lugar del hombre mayor?",
-    "img": "https://image.tmdb.org/t/p/w500/l5y2IxdqNgCouoqBwWy4dOVhIOf.jpg",
-    "rate": "7.3",
-    "year": "2012",
-    "genre": "comedia",
-    "type": "series",
-    "category": "drama",
-    "tag": "LAT",
-    "url": "go:08",
-    "episodes": [],
-    "video": ""
-},
-      
-      {
-    "title": "¿Eres humano también?",
-    "description": "Nam Shin (Seo Kang Joon) es el hijo de una de las familias más ricas de Corea del Sur. Después de un inesperado accidente, él cae en coma. Su madre Oh Ro Ra (Kim Sung Ryung) es una de las autoridades en Ciencia cerebral e inteligencia artificial. Ella crea un androide llamado Nam Shin III que luce exactamente como su hijo Nam Shin. El androide pretende ser Nam Shin y allí conoce a So Bong (Gong Seung Yeon), la guardaespaldas de Nam Shin.",
-    "img": "https://image.tmdb.org/t/p/w500/kaabHcYHXEPrq3jstdZXWg80SV6.jpg",
-    "rate": "8.1",
-    "year": "2018",
-    "genre": "drama",
-    "type": "series",
-    "category": "drama",
-    "tag": "LAT",
-    "url": "go:09",
-    "episodes": [],
-    "video": ""
-},
-      
-      {
-    "title": "Cálido y Acogedor",
-    "description": "",
-    "img": "https://image.tmdb.org/t/p/w500/wxUg98MY245kt4mpmsm7nCrGrPv.jpg",
-    "rate": "6.2",
-    "year": "2015",
-    "genre": "comedia",
-    "type": "series",
-    "category": "drama",
-    "tag": "LAT",
-    "url": "go:10",
-    "episodes": [],
-    "video": ""
-}
-      
-      
-      
-      
-    ];
+    let database = [];
 
-    const database = Array.isArray(rawData) ? rawData : [];
+    async function cargarBaseDeDatos() {
+        try {
+            const respuesta = await fetch('data.json');
+            if (!respuesta.ok) throw new Error("Error de red");
+            
+            database = await respuesta.json();
+            applyAllFilters(); // Pinta los resultados por primera vez
+            
+        } catch (error) {
+            console.error("No se pudo cargar data.json:", error);
+            document.getElementById('resultsGrid').innerHTML = `
+                <div style="grid-column:1/-1; text-align:center; padding:60px 20px; color:var(--text-sec);">
+                    <i class="fa fa-exclamation-triangle" style="font-size: 45px; margin-bottom:15px; display:block; color:var(--accent);"></i>
+                    <h3 style="margin:0; color:#fff;">Error de conexión</h3>
+                    <p style="font-size:14px; margin-top:5px;">Asegúrate de haber subido el archivo data.json a GitHub.</p>
+                </div>`;
+            document.getElementById('resultsStatus').innerText = "Error";
+        }
+    }
 
     let currentGenre = 'all';
     let currentTag = 'all';
     let currentType = 'all';
     let searchTerm = '';
 
-    // OPTIMIZACIÓN: Compresión dinámica de imágenes según el caso
     function optimizeImg(url, size = 'w342') {
         if (!url) return '';
         return url.replace(/\/w600_and_h900_face\/|\/w500\/|\/original\//, `/${size}/`);
@@ -473,11 +383,8 @@
             const isFavorite = isFav(item.title);
             const favClass = isFavorite ? 'active' : '';
             const safeTitle = item.title.replace(/'/g, "\\'");
-            
-            // Reducimos peso de la imagen dinámicamente
             const optImg = optimizeImg(item.img, 'w342');
 
-            // Agregamos estructura de Skeleton y Lazy Load
             return `
             <div class="movie-card" onclick="window.location.href='${link}'">
                 <div class="img-wrap skeleton">
@@ -491,7 +398,7 @@
         }).join('');
 
         updateFavCount();
-        initLazy(); // Llamar al observador de imágenes después de inyectar el HTML
+        initLazy();
     }
 
     function applyAllFilters() {
@@ -521,13 +428,12 @@
                 const lowerType = d.type ? d.type.toLowerCase() : '';
                 const lowerCat = d.category ? d.category.toLowerCase() : '';
                 const isMovie = (lowerType === 'movie' || lowerCat === 'movie' || lowerType === 'pelicula' || lowerCat === 'pelicula');
-                if (currentType === 'pelicula') return isMovie;
+                if (currentType === 'movie') return isMovie;
                 if (currentType === 'series') return !isMovie;
                 return true;
             });
         }
 
-        // Ejecutar renderización en el siguiente frame para no congelar la pantalla
         requestAnimationFrame(() => renderResults(filtered));
     }
 
@@ -543,7 +449,7 @@
         applyAllFilters();
     }
 
-    /* --- DEBOUNCE PARA BUSCADOR (Evita congelamientos si escriben rápido) --- */
+    /* BUSCADOR CON DEBOUNCE */
     const searchInput = document.getElementById('searchInput');
     const clearBtn = document.getElementById('clearSearchBtn');
     let searchTimeout = null;
@@ -555,7 +461,7 @@
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
             applyAllFilters();
-        }, 150); // Espera 150ms después de dejar de escribir para filtrar
+        }, 150);
     });
 
     clearBtn.onclick = () => {
@@ -566,7 +472,7 @@
         applyAllFilters();
     };
 
-    /* --- LAZY LOADING OPTIMIZADO --- */
+    /* LAZY LOADING */
     let observer = null;
     function initLazy() {
         const imgs = document.querySelectorAll('.lazy:not(.loaded)');
@@ -580,15 +486,15 @@
                             img.classList.add('loaded');
                             img.closest('.skeleton')?.classList.remove('skeleton');
                         };
-                        obs.unobserve(img); // Dejar de observar una vez cargada
+                        obs.unobserve(img);
                     }
                 });
-            }, { rootMargin: '400px 0px' }); // Empieza a cargar imágenes 400px antes de hacer scroll
+            }, { rootMargin: '400px 0px' });
         }
         imgs.forEach(img => observer.observe(img));
     }
 
-    /* --- FAVORITOS --- */
+    /* FAVORITOS */
     function getFavs() {
         try { return JSON.parse(localStorage.getItem('myFavs')) || []; }
         catch (e) { return []; }
@@ -633,12 +539,11 @@
         if (favs.length === 0) {
             list.innerHTML = `
                 <div style="text-align:center; padding:50px 20px; color:var(--text-sec);">
-                    <i class="fa fa-bookmark-o" style="font-size:40px; margin-bottom:15px; display:block;"></i>
+                    <i class="fa fa-bookmark" style="font-size:40px; margin-bottom:15px; display:block; color:var(--border);"></i>
                     <p style="margin:0; font-size:14px;">Aún no tienes títulos en tu lista.</p>
                 </div>`;
         } else {
             list.innerHTML = favs.map(f => {
-                // Optimizar imagen miniatura en favoritos
                 const optImgMini = optimizeImg(f.img, 'w154');
                 return `
                 <div class="fav-item" onclick="window.location.href='/ver/${slugify(f.title)}/'">
@@ -657,9 +562,11 @@
         document.getElementById('favOverlay').style.display = 'none';
     }
 
-    // Inicializar app
-    updateFavCount();
-    renderResults(database);
+    // INICIAR: Cargar Base de datos
+    document.addEventListener('DOMContentLoaded', () => {
+        updateFavCount();
+        cargarBaseDeDatos();
+    });
 </script>
 </body>
 </html>
