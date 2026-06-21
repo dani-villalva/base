@@ -1,24 +1,64 @@
 [
 {
     "title": "Propuesta Laboral",
-    "description": "Una mujer se hace pasar por su amiga...",
+    "description": "Una mujer se hace pasar por su amiga en una cita a ciegas para alejar al pretendiente. Pero el plan se complica cuando él resulta ser su jefe y le hace una propuesta.",
     "img": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/3Z8nacEGgQMNGHNi0IQPHOycsXz.jpg",
-    "backdrop": "https://image.tmdb.org/t/p/original/lq0YqJuffMuZhoKTiC5xDqvtCSn.jpg", 
+    "backdrop": "https://image.tmdb.org/t/p/original/lq0YqJuffMuZhoKTiC5xDqvtCSn.jpg",
     "rate": "8.4",
     "year": "2022",
-    "genre": "comedia",
+    "genre": "romance",
     "type": "series",
     "category": "kdrama",
     "tag": "LAT",
     "episodes": [
         {
             "number": 1,
-            "video": "https://geo.dailymotion.com/player.html?video=x88i9on"
+            "video": "https://geo.dailymotion.com/player.html?video=x8dy3hs"
         },
         {
             "number": 2,
-            "video": "https://geo.dailymotion.com/player.html?video=x88id1c"
+            "video": "https://geo.dailymotion.com/player.html?video=x8dy2we"
+        },
+        {
+            "number": 3,
+            "video": "https://geo.dailymotion.com/player.html?video=x8dy2wg"
+        },
+        {
+            "number": 4,
+            "video": "https://geo.dailymotion.com/player.html?video=x8dxjo4"
+        },
+        {
+            "number": 5,
+            "video": "https://geo.dailymotion.com/player.html?video=x8dxjk2"
+        },
+        {
+            "number": 6,
+            "video": "https://geo.dailymotion.com/player.html?video=x8dxjdw"
+        },
+        {
+            "number": 7,
+            "video": "https://geo.dailymotion.com/player.html?video=x8dxj6y"
+        },
+        {
+            "number": 8,
+            "video": "https://geo.dailymotion.com/player.html?video=x8dxiyp"
+        },
+        {
+            "number": 9,
+            "video": "https://geo.dailymotion.com/player.html?video=x8dx9t7"
+        },
+        {
+            "number": 10,
+            "video": "https://geo.dailymotion.com/player.html?video=x8dx8t8"
+        },
+        {
+            "number": 11,
+            "video": "https://geo.dailymotion.com/player.html?video=x8dx86s"
+        },
+        {
+            "number": 12,
+            "video": "https://geo.dailymotion.com/player.html?video=x8dwnsy"
         }
     ]
-  }
+}
 ]
