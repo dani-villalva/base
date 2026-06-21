@@ -1,0 +1,12 @@
+[
+  {
+    "titulo": "Mi Dorama Favorito 1",
+    "imagen": "https://via.placeholder.com/150",
+    "enlace": "https://ok.ru/videoembed/123456789"
+  },
+  {
+    "titulo": "Dorama de Prueba 2",
+    "imagen": "https://via.placeholder.com/150",
+    "enlace": "https://ok.ru/videoembed/987654321"
+  }
+]
