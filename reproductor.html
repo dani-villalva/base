@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Cargando... | Minihi Tv</title>
+<title>Reproductor | Minihi Tv</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-/* CSS EXPORTADO - EXACTAMENTE EL TUYO */
+/* CSS UNIFICADO */
 :root {
   --bg-base: #0b0e14; --bg-card: #1a1f26; --accent: #00c853; --accent-dim: #0d251a;
   --text-main: #ffffff; --text-sec: #a0a0a0; --border: #2d343e; --btn-bg: #242a32;
@@ -85,7 +85,6 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
   </div>
 
   <div class="scroll-content">
-    
     <div class="main-info-padding">
       <p class="series-eyebrow" id="displayType">DRAMA</p>
       <h1 class="main-title" id="displayTitle">Cargando...</h1>
@@ -123,17 +122,16 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
       <div class="episode-grid" id="episodeGrid"></div>
     </section>
 
-    <!-- ZONA DE COMENTARIOS -->
     <section class="comments-section">
       <div class="comments-header"><h3>Comentarios</h3><span id="commentCountLabel">0 en total</span></div>
       <div class="comment-form">
         <div class="form-row">
           <div class="comment-avatar-preview" id="avatarPreview">?</div>
-          <input type="text" id="commentUser" placeholder="Tu nombre o alias" oninput="updateAvatar(this.value)">
+          <input type="text" id="commentUser" placeholder="Tu nombre" oninput="updateAvatar(this.value)">
         </div>
         <textarea id="commentText" placeholder="¿Qué te pareció?"></textarea>
         <div class="form-footer">
-          <label class="spoiler-label"><input type="checkbox" id="commentSpoiler"> <i class="fas fa-eye-slash"></i> Contiene spoiler</label>
+          <label class="spoiler-label"><input type="checkbox" id="commentSpoiler"> Spoiler</label>
           <button class="submit-btn" onclick="sendComment()">Publicar</button>
         </div>
       </div>
@@ -143,33 +141,31 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
 </div>
 
 <script>
+// VARIABLES GLOBALES
 let EPISODES = [];
 let SERIES_TITLE = "";
 let COMMENT_KEY = "";
 let currentIndex = 0;
 let currentPoster = "";
 
-// 1. UTILIDADES
-function esc(str){ if(!str) return ''; return String(str).replace(/[&<>'"]/g, t => ({'&':'&','<':'<','>':'>',"'":''','"':'"'}[t])); }
-function isDirectVideo(url){ return /\.(mp4|webm|ogg|m3u8)(\?.*)?$/i.test(url); }
-function slugify(t) { return String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w\s-]/g,'').replace(/[\s_-]+/g,'-').replace(/^-+|-+$/g,''); }
+// FUNCIONES DE UTILIDAD
+function slugify(t) { 
+    return String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w\s-]/g,'').replace(/[\s_-]+/g,'-').replace(/^-+|-+$/g,''); 
+}
 
-// 2. OBTENER DATOS DE LA URL Y JSON
+// CARGAR DATOS DESDE EL JSON
 async function cargarDorama() {
-    // Obtiene el ID (slug) de la URL (ej: reproductor.html?id=propuesta-laboral)
     const urlParams = new URLSearchParams(window.location.search);
     const dramaId = urlParams.get('id');
 
     if (!dramaId) {
-        document.getElementById('displayTitle').innerText = "Error: Serie no seleccionada";
+        document.getElementById('displayTitle').innerText = "Error: ID no encontrado";
         return;
     }
 
     try {
-        const respuesta = await fetch('data.json');
+        const respuesta = await fetch('data.json?v=' + Math.random());
         const data = await respuesta.json();
-        
-        // Busca en el JSON el dorama que coincida con la URL
         const dramaInfo = data.find(d => slugify(d.title) === dramaId);
 
         if (dramaInfo) {
@@ -182,126 +178,97 @@ async function cargarDorama() {
     }
 }
 
-// 3. LLENAR EL HTML CON LOS DATOS
 function llenarPantalla(drama) {
     SERIES_TITLE = drama.title;
-    COMMENT_KEY = 'comments_' + SERIES_TITLE.replace(/\s+/g, '_');
-    currentPoster = drama.backdrop || drama.img; // Imagen de fondo para el video
+    COMMENT_KEY = 'comments_' + slugify(drama.title);
+    currentPoster = drama.backdrop || drama.img;
 
-    document.title = `Ver ${drama.title} - Online | Minihi Tv`;
+    document.title = "Ver " + drama.title + " - Minihi Tv";
     document.getElementById('displayTitle').innerText = drama.title;
-    document.getElementById('displayType').innerText = drama.category || 'DRAMA';
-    document.getElementById('displayRate').innerText = drama.rate || '-.-';
-    document.getElementById('displayYear').innerText = `• ${drama.year || ''} •`;
-    document.getElementById('displayGenre').innerText = drama.genre || 'Género';
-    document.getElementById('displayDesc').innerText = drama.description || 'Sin sinopsis disponible.';
+    document.getElementById('displayType').innerText = drama.category ? drama.category.toUpperCase() : 'DRAMA';
+    document.getElementById('displayRate').innerText = drama.rate || '8.0';
+    document.getElementById('displayYear').innerText = "• " + (drama.year || "2024") + " •";
+    document.getElementById('displayGenre').innerText = drama.genre || "Drama";
+    document.getElementById('displayDesc').innerText = drama.description || "Sin descripción.";
     
-    // Configurar Episodios
     EPISODES = drama.episodes || [];
-    document.getElementById('displayEpCount').innerText = `${EPISODES.length} EP`;
+    document.getElementById('displayEpCount').innerText = EPISODES.length + " EP";
     
     if(EPISODES.length > 0) {
-        changeVideo(0); // Carga el primer episodio automáticamente
+        changeVideo(0);
     } else {
-        document.getElementById('mediaContainer').innerHTML = `<div style="color:white; text-align:center; padding-top:25%; font-family:sans-serif;">Aún no hay episodios subidos.</div>`;
-        document.getElementById('mediaContainer').style.backgroundImage = `url('${currentPoster}')`;
+        document.getElementById('mediaContainer').innerHTML = '<div style="color:white;text-align:center;padding-top:20%;">Próximamente episodios</div>';
     }
-
     loadComments();
 }
 
-// 4. FUNCIONES DEL REPRODUCTOR
 function renderMedia(url){
   const c = document.getElementById('mediaContainer');
-  c.innerHTML = '';
-  c.style.backgroundImage = `url('${currentPoster}')`; // Pone la foto del dorama de fondo
+  c.innerHTML = "";
+  if(!url) return;
 
-  if(!url) { c.innerHTML = '<div style="color:#555; text-align:center; padding-top:25%;">Video no disponible</div>'; return; }
-  
-  if(isDirectVideo(url)){
-    c.innerHTML = '<video src="'+url+'" poster="'+currentPoster+'" controls autoplay playsinline style="width:100%;height:100%;"></video>';
+  if(url.includes(".mp4") || url.includes(".m3u8")) {
+    c.innerHTML = '<video src="'+url+'" controls autoplay playsinline style="width:100%;height:100%;"></video>';
   } else {
-    c.innerHTML = '<iframe src="'+url+'" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>';
+    c.innerHTML = '<iframe src="'+url+'" allow="autoplay; fullscreen" allowfullscreen></iframe>';
   }
 }
 
 function renderGrid(){
   const grid = document.getElementById('episodeGrid');
-  grid.innerHTML = '';
-  EPISODES.forEach((ep,i)=>{
+  grid.innerHTML = "";
+  EPISODES.forEach((ep, i) => {
     const btn = document.createElement('button');
-    btn.className = 'ep-btn' + (i===currentIndex ? ' active' : '');
-    btn.innerHTML = ep.number || (i+1);
-    btn.onclick = ()=> changeVideo(i);
+    btn.className = 'ep-btn' + (i === currentIndex ? ' active' : '');
+    btn.innerText = ep.number || (i + 1);
+    btn.onclick = () => changeVideo(i);
     grid.appendChild(btn);
   });
 }
 
 function changeVideo(index){
-  if(index<0 || index>=EPISODES.length) return;
+  if(index < 0 || index >= EPISODES.length) return;
   currentIndex = index;
-  const ep = EPISODES[index];
-  
-  renderMedia(ep.video || ep.src || ep.url); // Soporta varias formas de llamar al link
+  renderMedia(EPISODES[index].video);
   renderGrid();
   window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
-function navigateEpisode(dir){
-  changeVideo(currentIndex+dir);
+function navigateEpisode(dir) {
+    changeVideo(currentIndex + dir);
 }
 
-// 5. EFECTOS Y COMENTARIOS
 function shareURL() {
     navigator.clipboard.writeText(window.location.href);
-    alert("¡Enlace copiado al portapapeles!");
+    alert("¡Enlace copiado!");
 }
 
 function updateAvatar(val){
   const av = document.getElementById('avatarPreview');
-  if(!av) return;
-  if(!val){ av.textContent='?'; return; }
-  const parts = val.trim().split(' ');
-  av.textContent = (parts[0][0]+(parts[1]?parts[1][0]:'')).toUpperCase();
+  av.innerText = val ? val.charAt(0).toUpperCase() : "?";
 }
 
 function loadComments() {
   const list = document.getElementById('commentsList');
   const comments = JSON.parse(localStorage.getItem(COMMENT_KEY)) || [];
-  document.getElementById('commentCountLabel').textContent = comments.length + ' en total';
-  
-  if(comments.length === 0) {
-    list.innerHTML = '<div style="text-align:center; color:#777; font-size:13px; padding:15px 0;">Sé el primero en comentar.</div>';
-    return;
-  }
-  
-  let htmlStr = '';
-  comments.slice().reverse().forEach(function(c) {
-    var init = c.user ? c.user.charAt(0).toUpperCase() : '?';
-    var txtHtml = c.spoiler ? '<span style="filter:blur(5px);cursor:pointer;" onclick="this.style.filter=\'none\'">' + esc(c.text) + '</span>' : esc(c.text);
-    
-    htmlStr += '<div style="background:var(--bg-base); border:1px solid var(--border); padding:12px; border-radius:8px; margin-top:10px;">' +
-               '<div style="display:flex; gap:10px; align-items:center; margin-bottom:8px;">' +
-               '<div style="width:30px; height:30px; border-radius:50%; background:var(--accent-dim); color:var(--accent); display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:12px;">'+init+'</div>' +
-               '<div><strong style="font-size:13px;">'+esc(c.user)+'</strong> <span style="font-size:10px; color:var(--text-sec); margin-left:8px;">'+c.date+'</span></div>' +
-               '</div><p style="font-size:13px; color:#ddd; line-height:1.4;">'+txtHtml+'</p></div>';
-  });
-  list.innerHTML = htmlStr;
+  document.getElementById('commentCountLabel').innerText = comments.length + " en total";
+  list.innerHTML = comments.reverse().map(c => `
+    <div style="background:var(--bg-card); padding:12px; border-radius:8px; margin-top:10px; border:1px solid var(--border);">
+        <strong style="font-size:13px; color:var(--accent);">${c.user}</strong>
+        <p style="font-size:13px; margin-top:5px;">${c.text}</p>
+    </div>
+  `).join('');
 }
 
 function sendComment() {
-  const text = document.getElementById('commentText').value.trim();
-  if(!text) return;
-  
-  const user = document.getElementById('commentUser').value.trim() || 'Anónimo';
-  const spoiler = document.getElementById('commentSpoiler').checked;
+  const txt = document.getElementById('commentText').value.trim();
+  const user = document.getElementById('commentUser').value.trim() || "Anónimo";
+  if(!txt) return;
+
   const comments = JSON.parse(localStorage.getItem(COMMENT_KEY)) || [];
-  
-  comments.push({ user: user, text: text, spoiler: spoiler, date: new Date().toLocaleDateString() });
+  comments.push({user, text: txt});
   localStorage.setItem(COMMENT_KEY, JSON.stringify(comments));
-  
-  document.getElementById('commentText').value = '';
-  document.getElementById('commentSpoiler').checked = false;
+  document.getElementById('commentText').value = "";
   loadComments();
 }
 
@@ -310,7 +277,6 @@ function animEmoji(btn){
   setTimeout(() => btn.style.transform = "scale(1)", 150);
 }
 
-// AL INICIAR
 window.addEventListener('load', cargarDorama);
 </script>
 </body>
