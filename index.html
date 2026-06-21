@@ -2,34 +2,669 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Mi Galería</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Minihi Tv - Doramas</title>
+    
+    <!-- OPTIMIZACIÓN: Pre-conectar a dominios clave para acelerar la carga -->
+    <link rel="preconnect" href="https://image.tmdb.org">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Fuentes y CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- OPTIMIZACIÓN: Cargar FontAwesome sin bloquear el renderizado de la página -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    
     <style>
-        body { font-family: sans-serif; background: #1a1a1a; color: white; display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; }
-        .card { width: 200px; border: 1px solid #444; padding: 10px; border-radius: 8px; text-align: center; }
-        .card img { width: 100%; border-radius: 5px; }
-        .btn { display: inline-block; margin-top: 10px; padding: 5px 10px; background: red; color: white; text-decoration: none; border-radius: 5px; }
+        /* =====================================================
+           MINIHI TV — ESTILOS UNIFICADOS
+           ===================================================== */
+        :root {
+            --bg-base:       #07070E;
+            --bg-surface:    #0F0F1A;
+            --bg-card:       #141420;
+            --accent:        #00DC5A;
+            --accent-glow:   rgba(0,220,90,0.35);
+            --accent-hover:  #00f065;
+            --pink:          #FF3366;
+            --text-main:     #FFFFFF;
+            --text-sec:      #7A7A95;
+            --text-muted:    #44445A;
+            --glass:         rgba(7,7,14,0.88);
+            --border:        rgba(255,255,255,0.07);
+            --radius-card:   10px;
+            --radius-lg:     14px;
+            --transition:    0.28s cubic-bezier(.4,0,.2,1);
+        }
+
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+        html { scroll-behavior:smooth; }
+        body {
+            background: var(--bg-base); color: var(--text-main);
+            font-family: 'Sora', 'Inter', system-ui, sans-serif; font-size: 16px;
+            padding-bottom: 90px; overflow-x: hidden;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+        }
+
+        .skeleton { background: var(--bg-card) !important; overflow: hidden; position: relative; }
+        .skeleton::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 50%, transparent 100%);
+            background-size: 200% 100%; animation: shimmer 1.6s infinite;
+        }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+        /* ── HERO SLIDER ── */
+        .hero-container { position:relative; height:87vh; min-height:520px; contain:layout; }
+        .hero-slider { display:flex; height:100%; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; }
+        .hero-slider::-webkit-scrollbar { display:none; }
+        .hero-slide { min-width:100%; height:100%; position:relative; scroll-snap-align:start; will-change:transform; }
+        .hero-bg { width:100%; height:100%; object-fit:cover; object-position:center 20%; display:block; }
+        .hero-vignette { position:absolute; inset:0; background:radial-gradient(ellipse at center, transparent 30%, rgba(7,7,14,0.85) 100%); z-index:1; }
+        .hero-gradient-bottom { position:absolute; bottom:0; width:100%; height:65%; background:linear-gradient(to top, var(--bg-base) 0%, rgba(7,7,14,0.6) 60%, transparent 100%); z-index:2; }
+        .hero-gradient-left { position:absolute; top:0; left:0; width:75%; height:100%; background:linear-gradient(to right, rgba(7,7,14,0.95) 0%, rgba(7,7,14,0.3) 55%, transparent 100%); z-index:2; }
+        
+        .hero-info { position:absolute; bottom:13%; left:4%; width:90%; max-width:580px; z-index:10; display:flex; flex-direction:column; gap:14px; }
+        .hero-tags { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+        .tag-vip { background: linear-gradient(135deg, var(--accent), #00a843); color:#000; font-size:0.62rem; font-weight:800; padding:4px 10px; border-radius:4px; box-shadow: 0 3px 12px var(--accent-glow); display:flex; align-items:center; gap:4px; }
+        .tag-genre { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); font-size:0.65rem; font-weight:600; padding:4px 12px; border-radius:20px; backdrop-filter:blur(8px); text-transform: capitalize;}
+        .tag-quality { color:#fff; font-weight:800; font-size:0.68rem; border:1.5px solid rgba(255,255,255,0.5); padding:2px 6px; border-radius:3px; }
+        
+        .hero-title { font-size: clamp(2rem, 5.5vw, 4.2rem); font-weight: 900; line-height: 1.08; text-transform: uppercase; text-shadow: 0 4px 30px rgba(0,0,0,0.9); }
+        .hero-synopsis { font-size: 0.9rem; color: rgba(255,255,255,0.75); line-height: 1.6; max-width: 460px; display: -webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+        .hero-buttons { display:flex; gap:12px; align-items:center; margin-top:4px; }
+        
+        .btn-primary { background: var(--accent); color: #000; border: none; padding: 13px 30px; border-radius:8px; font-weight: 800; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 6px 24px var(--accent-glow); transition: all var(--transition); }
+        .btn-primary:hover { background:var(--accent-hover); box-shadow:0 8px 30px rgba(0,220,90,0.5); transform:translateY(-2px); }
+        .btn-secondary { background: rgba(255,255,255,0.12); backdrop-filter:blur(12px); color: #fff; border: 1px solid rgba(255,255,255,0.2); width:46px; height:46px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; cursor:pointer; transition: all var(--transition); }
+        .btn-secondary:hover { background:rgba(255,255,255,0.2); border-color:var(--accent); color:var(--accent); transform:translateY(-2px); }
+
+        .hero-indicators { position:absolute; bottom:28px; right:4%; display:flex; gap:6px; z-index:10; }
+        .hero-indicators .dot { width:6px; height:6px; background:rgba(255,255,255,0.25); border-radius:50%; transition:all 0.35s; cursor:pointer; }
+        .hero-indicators .dot.active { background:var(--accent); width:22px; border-radius:10px; box-shadow:0 0 10px var(--accent-glow); }
+
+        /* ── FILTER BAR ── */
+        .filter-bar { 
+            position:sticky; 
+            top:0; 
+            z-index:90; 
+            background:var(--glass); 
+            backdrop-filter:blur(20px) saturate(150%); 
+            padding:15px 0; 
+            border-bottom:1px solid var(--border); 
+        }
+        .filter-track { display:flex; gap:8px; padding:0 4%; overflow-x:auto; scrollbar-width:none; }
+        .filter-track::-webkit-scrollbar { display:none; }
+        .filter-chip { background: var(--bg-surface); color:var(--text-sec); border:1px solid var(--border); padding:8px 20px; border-radius:20px; font-size:0.82rem; font-weight:700; cursor:pointer; white-space:nowrap; transition: all var(--transition); }
+        .filter-chip:hover { color:#fff; border-color:rgba(255,255,255,0.2); background:rgba(255,255,255,0.05); }
+        .filter-chip.active { background: linear-gradient(135deg, var(--accent), #00a843); color:#000; border-color:transparent; box-shadow: 0 4px 18px var(--accent-glow); }
+
+        /* ── SHELVES & CARDS ── */
+        .content-shelf { margin-top:32px; position:relative; }
+        .shelf-header { display:flex; justify-content:space-between; align-items:flex-end; padding:0 4% 12px; }
+        .shelf-title { font-size:1.15rem; font-weight:800; padding:0 4% 12px; margin:0; display:flex; align-items:center; gap:8px; }
+        
+        .scroller-wrapper { position:relative; display:flex; align-items:center; }
+        .scroller { display:flex; gap:14px; align-items:flex-start; overflow-x:auto; padding:4px 4% 20px; scroll-snap-type:x mandatory; scrollbar-width:none; width:100%; }
+        .scroller::-webkit-scrollbar { display:none; }
+
+        .scroll-btn { position:absolute; z-index:10; top:50%; transform:translateY(-50%); width:38px; min-height:140px; background: linear-gradient(to right, rgba(7,7,14,0.95), rgba(7,7,14,0.7)); border:none; color:rgba(255,255,255,0.7); font-size:1.2rem; cursor:pointer; opacity:0; transition:opacity var(--transition); display:none; align-items:center; justify-content:center; }
+        .scroller-wrapper:hover .scroll-btn { opacity:1; }
+        .scroll-btn.left { left:0; border-radius:0 8px 8px 0; background:linear-gradient(to right, rgba(7,7,14,0.97), transparent); }
+        .scroll-btn.right { right:0; border-radius:8px 0 0 8px; background:linear-gradient(to left, rgba(7,7,14,0.97), transparent); }
+
+        .dorama-card { flex:0 0 138px; width:138px; scroll-snap-align:start; cursor:pointer; display:flex; flex-direction:column; position:relative; transition: transform var(--transition); }
+        .dorama-card:hover { transform:translateY(-6px); }
+        .poster { width:100%; aspect-ratio:2/3; border-radius:var(--radius-card); overflow:hidden; position:relative; background:var(--bg-card); flex-shrink:0; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .dorama-card:hover .poster { box-shadow: 0 8px 30px rgba(0,0,0,0.7), 0 0 0 1px var(--accent-glow); }
+        .poster img { width:100%; height:100%; position:absolute; top:0; left:0; object-fit:cover; transition: transform 0.4s var(--transition), filter 0.4s; }
+        .dorama-card:hover .poster img { transform:scale(1.08); filter:brightness(0.55); }
+
+        .badge-lang { position:absolute; top:7px; right:7px; background:rgba(0,0,0,0.75); color:var(--accent); border:1px solid rgba(0,220,90,0.4); font-size:0.58rem; font-weight:800; padding:2px 6px; border-radius:4px; z-index:3; }
+        .poster-overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:2.2rem; color:#fff; opacity:0; transition:opacity var(--transition); z-index:4; background: radial-gradient(circle, rgba(0,220,90,0.2) 0%, transparent 70%); }
+        .dorama-card:hover .poster-overlay { opacity:1; }
+
+        .info { padding-top:9px; width:100%; }
+        .info h4 { font-size:0.82rem; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#fff; }
+        .info span { font-size:0.68rem; color:var(--text-sec); margin-top:2px; display:block; }
+
+        /* ── ACTORES ── */
+        .actor-card { flex:0 0 90px; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; scroll-snap-align:start; transition:transform var(--transition); }
+        .actor-card:hover { transform:translateY(-4px); }
+        .actor-img { width:80px; height:80px; border-radius:50%; object-fit:cover; border:2px solid transparent; transition:all var(--transition); background:var(--bg-card); }
+        .actor-card:hover .actor-img { border-color:var(--accent); box-shadow:0 0 0 3px rgba(0,220,90,0.2), 0 6px 20px rgba(0,0,0,0.6); }
+        .actor-name { font-size:0.72rem; font-weight:600; text-align:center; color:var(--text-sec); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; display:block; }
+
+        /* ── TOP 10 ── */
+        .top10-scroller { padding-left:24px; }
+        .top-card { flex:0 0 155px; height:200px; display:flex; align-items:flex-end; position:relative; scroll-snap-align:start; cursor:pointer; transition:transform var(--transition); }
+        .top-card:hover { transform:translateY(-6px); }
+        .top-number { font-size:118px; font-weight:900; color:var(--bg-base); -webkit-text-stroke:2.5px #2A2A3A; position:absolute; left:-18px; bottom:-22px; z-index:1; line-height:1; text-shadow:4px 4px 12px rgba(0,0,0,0.9); font-family:'Sora', sans-serif; }
+        .top-card:first-child .top-number { -webkit-text-stroke:2.5px var(--accent); text-shadow:0 0 25px var(--accent-glow); }
+        .top-card .poster { width:120px; height:180px; margin-left:auto; z-index:2; box-shadow:-6px 0 25px rgba(0,0,0,0.9); border:1px solid var(--border); }
+
+        /* ── COLECCIONES ── */
+        .collection-card { flex:0 0 285px; aspect-ratio:2/1; border-radius:var(--radius-lg); position:relative; overflow:hidden; scroll-snap-align:start; cursor:pointer; transition:transform var(--transition); }
+        .collection-card:hover { transform:translateY(-5px); }
+        .col-bg { position:absolute; width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+        .collection-card:hover .col-bg { transform:scale(1.06); }
+        .col-overlay { position:absolute; inset:0; background:linear-gradient(to top, rgba(7,7,14,0.95) 0%, rgba(7,7,14,0.1) 100%); display:flex; flex-direction:column; justify-content:flex-end; padding:16px; z-index:2; }
+        .col-overlay h3 { font-size:1.05rem; color:#fff; margin-bottom:4px; font-weight:800; }
+        .col-overlay p { font-size:0.78rem; color:var(--text-sec); }
+
+        /* ── ÚLTIMAS ACTUALIZACIONES ── */
+        .news-card { flex:0 0 265px; background:var(--bg-card); border-radius:var(--radius-lg); overflow:hidden; scroll-snap-align:start; border:1px solid var(--border); cursor:pointer; transition: transform var(--transition), border-color var(--transition); }
+        .news-card:hover { transform:translateY(-5px); border-color:rgba(0,220,90,0.25); }
+        .news-img-wrapper { position:relative; width:100%; height:136px; overflow:hidden; }
+        .news-img-wrapper img { position:absolute; width:100%; height:100%; object-fit:cover; transition:transform 0.4s; }
+        .news-card:hover .news-img-wrapper img { transform:scale(1.05); }
+        .news-tag { position:absolute; top:10px; right:10px; background:var(--accent); color:#000; font-size:0.58rem; font-weight:800; padding:3px 8px; border-radius:4px; z-index:2; }
+        .news-content { padding:14px; }
+        .news-content h4 { font-size:0.9rem; color:#fff; margin-bottom:6px; font-weight:700; line-height:1.4; }
+        .news-content p { font-size:0.78rem; color:var(--text-sec); margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+        .news-date { font-size:0.68rem; color:var(--text-muted); }
+
+        /* ── GRID LAYOUT FILTRO ── */
+        .grid-layout { display:grid; grid-template-columns:repeat(auto-fill, minmax(118px, 1fr)); gap:14px; padding:0 4%; }
+        .grid-layout .dorama-card { flex:none; width:100%; max-width:100%; }
+
+        /* ── BOTTOM NAV MÓVIL ── */
+        .bottom-nav {
+            position: fixed; 
+            bottom: 15px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            background: #252438; 
+            border-radius: 50px; 
+            padding: 5px 8px; 
+            display: flex; 
+            align-items: center; 
+            gap: 2px; 
+            z-index: 5000; 
+            width: auto; 
+            min-width: 280px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6); 
+            border: 1px solid rgba(255,255,255,0.08); 
+        }
+        .bottom-nav a { 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            padding: 8px 12px; 
+            border-radius: 40px; 
+            color: #c7c7d6; 
+            text-decoration: none; 
+            font-size: 12px; 
+            font-weight: 700; 
+            flex-direction: row; 
+            transition: 0.2s;
+        }
+        .bottom-nav a i { 
+            font-size: 14px; 
+        }
+        .bottom-nav a.active { 
+            background: var(--accent); 
+            color: #000; 
+        }
+        .bottom-nav a:hover:not(.active) {
+            color: #fff;
+        }
+
+        /* DESKTOP */
+        @media (min-width: 768px) {
+            .bottom-nav { display:none; }
+            body { padding-bottom: 0; }
+            .scroll-btn { display:flex; }
+            .dorama-card { flex:0 0 162px; width:162px; }
+            .actor-card { flex:0 0 110px; }
+            .actor-img { width:98px; height:98px; }
+            .top-card { flex:0 0 192px; height:255px; }
+            .top-card .poster { width:152px; height:225px; }
+            .top-number { font-size:148px; }
+            .grid-layout { grid-template-columns:repeat(auto-fill, minmax(152px, 1fr)); gap:16px; }
+        }
     </style>
 </head>
 <body>
 
-    <div id="lista-doramas"></div>
+    <!-- 1️⃣ HERO SLIDER -->
+    <section class="hero-container" onmouseenter="pauseSlider()" onmouseleave="resumeSlider()">
+        <div class="hero-slider" id="heroSlider">
+            <!-- Llenado por JS -->
+        </div>
+        <div class="hero-indicators" id="heroDots"></div>
+    </section>
+
+    <!-- 2️⃣ GÉNEROS / FILTROS -->
+    <div class="filter-bar">
+        <div class="filter-track">
+            <button class="filter-chip active" onclick="filter('all', this)"><i class="fa fa-fire"></i> Tendencias</button>
+            <button class="filter-chip" onclick="filter('kdrama', this)">🇰🇷 K-Dramas</button>
+            <button class="filter-chip" onclick="filter('cdrama', this)">🇨🇳 C-Dramas</button>
+            <button class="filter-chip" onclick="filter('movie', this)">🎬 Películas</button>
+        </div>
+    </div>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <div id="main-sections">
+
+        <!-- TOP 10 TENDENCIAS -->
+        <section class="content-shelf filterable" data-type="all">
+            <h2 class="shelf-title">Top 10 Tendencias <i class="fa fa-chart-line" style="color:var(--accent)"></i></h2>
+            <div class="scroller-wrapper">
+                <button class="scroll-btn left" onclick="scrollShelf(this,-1)"><i class="fa fa-chevron-left"></i></button>
+                <div class="scroller top10-scroller" id="top10Grid"></div>
+                <button class="scroll-btn right" onclick="scrollShelf(this,1)"><i class="fa fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+        <!-- K-DRAMAS -->
+        <section class="content-shelf filterable" data-type="kdrama">
+            <h2 class="shelf-title">K-Dramas Populares 🇰🇷</h2>
+            <div class="scroller-wrapper">
+                <button class="scroll-btn left" onclick="scrollShelf(this,-1)"><i class="fa fa-chevron-left"></i></button>
+                <div class="scroller" id="kdramaGrid"></div>
+                <button class="scroll-btn right" onclick="scrollShelf(this,1)"><i class="fa fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+        <!-- C-DRAMAS -->
+        <section class="content-shelf filterable" data-type="cdrama">
+            <h2 class="shelf-title">C-Dramas Populares 🇨🇳</h2>
+            <div class="scroller-wrapper">
+                <button class="scroll-btn left" onclick="scrollShelf(this,-1)"><i class="fa fa-chevron-left"></i></button>
+                <div class="scroller" id="cdramaGrid"></div>
+                <button class="scroll-btn right" onclick="scrollShelf(this,1)"><i class="fa fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+        <!-- ELENCO DESTACADO -->
+        <section class="content-shelf filterable" data-type="all">
+            <h2 class="shelf-title">Elenco Destacado <i class="fa fa-star" style="color:#FFD700"></i></h2>
+            <div class="scroller-wrapper">
+                <button class="scroll-btn left" onclick="scrollShelf(this,-1)"><i class="fa fa-chevron-left"></i></button>
+                <div class="scroller actors-scroller" id="api-actors" style="padding-top:10px;">
+                    <!-- Llenado por JS -->
+                </div>
+                <button class="scroll-btn right" onclick="scrollShelf(this,1)"><i class="fa fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+        <!-- EPISODIOS RECIÉN AGREGADOS -->
+        <section class="content-shelf filterable" data-type="all">
+            <h2 class="shelf-title">Episodios Recién Agregados <i class="fa fa-bolt" style="color:#FF3366"></i></h2>
+            <div class="scroller-wrapper">
+                <button class="scroll-btn left" onclick="scrollShelf(this,-1)"><i class="fa fa-chevron-left"></i></button>
+                <div class="scroller" id="episodesGrid"></div>
+                <button class="scroll-btn right" onclick="scrollShelf(this,1)"><i class="fa fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+        <!-- EXPLORAR COLECCIONES -->
+        <section class="content-shelf filterable" data-type="all">
+            <h2 class="shelf-title">Explorar Colecciones</h2>
+            <div class="scroller-wrapper">
+                <button class="scroll-btn left" onclick="scrollShelf(this,-1)"><i class="fa fa-chevron-left"></i></button>
+                <div class="scroller collections-scroller">
+                    <div class="collection-card" onclick="filter('romance', document.querySelector('.filter-chip'))">
+                        <img src="https://image.tmdb.org/t/p/w500/9LsJP9OuIBmBUxZpmVKtUUjF0PA.jpg" class="col-bg" loading="lazy" decoding="async" alt="Romance">
+                        <div class="col-overlay"><h3>💘 Romance Inolvidable</h3><p>Las historias de amor más dulces y emotivas.</p></div>
+                    </div>
+                    <div class="collection-card" onclick="filter('accion', document.querySelector('.filter-chip'))">
+                        <img src="https://image.tmdb.org/t/p/w500/7Q2CmqIVJuDAESPPp76rWIiA0AD.jpg" class="col-bg" loading="lazy" decoding="async" alt="Acción">
+                        <div class="col-overlay"><h3>🔥 Acción y Adrenalina</h3><p>Artes marciales, suspenso y combates épicos.</p></div>
+                    </div>
+                    <div class="collection-card" onclick="filter('comedia', document.querySelector('.filter-chip'))">
+                        <img src="https://image.tmdb.org/t/p/w500/rE5E08HjLlk8a45Yq6hljvBFxq1.jpg" class="col-bg" loading="lazy" decoding="async" alt="Comedia">
+                        <div class="col-overlay"><h3>😂 Comedia Romántica</h3><p>Situaciones divertidas para alegrar tu día.</p></div>
+                    </div>
+                    <div class="collection-card" onclick="filter('fantasia', document.querySelector('.filter-chip'))">
+                        <img src="https://image.tmdb.org/t/p/w500/bgTm5TTI6uoY0RbLA3Fbl5z32JG.jpg" class="col-bg" loading="lazy" decoding="async" alt="Fantasía">
+                        <div class="col-overlay"><h3>✨ Mundos Mágicos</h3><p>Fantasía, misterios y poderes increíbles.</p></div>
+                    </div>
+                </div>
+                <button class="scroll-btn right" onclick="scrollShelf(this,1)"><i class="fa fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+        <!-- COMEDIA ROMÁNTICA -->
+        <section class="content-shelf filterable" data-type="comedia,romance">
+            <h2 class="shelf-title">Comedia Romántica <i class="fa fa-chevron-right arrow"></i></h2>
+            <div class="scroller-wrapper">
+                <button class="scroll-btn left" onclick="scrollShelf(this,-1)"><i class="fa fa-chevron-left"></i></button>
+                <div class="scroller" id="romcomGrid"></div>
+                <button class="scroll-btn right" onclick="scrollShelf(this,1)"><i class="fa fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+        <!-- DRAMAS QUE HACEN LLORAR -->
+        <section class="content-shelf filterable" data-type="drama">
+            <h2 class="shelf-title">Dramas que Hacen Llorar <i class="fa fa-chevron-right arrow"></i></h2>
+            <div class="scroller-wrapper">
+                <button class="scroll-btn left" onclick="scrollShelf(this,-1)"><i class="fa fa-chevron-left"></i></button>
+                <div class="scroller" id="sadDramaGrid"></div>
+                <button class="scroll-btn right" onclick="scrollShelf(this,1)"><i class="fa fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+        <!-- PELÍCULAS -->
+        <section class="content-shelf filterable" data-type="movie">
+            <h2 class="shelf-title">Películas Destacadas 🎬</h2>
+            <div class="scroller-wrapper">
+                <button class="scroll-btn left" onclick="scrollShelf(this,-1)"><i class="fa fa-chevron-left"></i></button>
+                <div class="scroller" id="moviesGrid"></div>
+                <button class="scroll-btn right" onclick="scrollShelf(this,1)"><i class="fa fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+        <!-- ÚLTIMAS ACTUALIZACIONES -->
+        <section class="content-shelf filterable" data-type="all">
+            <h2 class="shelf-title">Últimas Actualizaciones 📰</h2>
+            <div class="scroller-wrapper">
+                <button class="scroll-btn left" onclick="scrollShelf(this,-1)"><i class="fa fa-chevron-left"></i></button>
+                <div class="scroller news-scroller" id="newsGrid"></div>
+                <button class="scroll-btn right" onclick="scrollShelf(this,1)"><i class="fa fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- RESULTADOS DEL FILTRO MANUAL -->
+    <section id="filter-section" class="content-shelf" style="display:none; padding-top:20px;">
+        <h2 id="filter-title" class="shelf-title">Resultados</h2>
+        <div id="filter-grid" class="grid-layout"></div>
+    </section>
+
+    <!-- MENÚ INFERIOR MÓVIL (Píldora flotante) -->
+    <footer class="bottom-nav">
+      <a href="go:inicio" class="active"><i class="fa fa-home"></i> Inicio</a>
+      <a href="go:buscador"><i class="fa fa-search"></i> Buscar</a>
+      <a href="go:reels"><i class="fa fa-play-circle"></i> Reels</a>
+      <a href="go:donacion"><i class="fa fa-heart"></i> Donar</a>
+    </footer>
 
     <script>
-        // Este script lee el archivo JSON y crea los elementos
-        fetch('data.json')
-            .then(response => response.json())
-            .then(data => {
-                const contenedor = document.getElementById('lista-doramas');
-                data.forEach(dorama => {
-                    contenedor.innerHTML += `
-                        <div class="card">
-                            <img src="${dorama.imagen}">
-                            <h3>${dorama.titulo}</h3>
-                            <a href="${dorama.enlace}" class="btn" target="_blank">Ver Ahora</a>
-                        </div>
-                    `;
+        /* =====================================================
+           CONEXIÓN CON DATA.JSON Y LÓGICA DE LA PÁGINA
+           ===================================================== */
+        let allSeries = []; // Variable global para guardar los datos
+
+        async function cargarBaseDeDatos() {
+            try {
+                // Buscamos el archivo JSON en la raíz del servidor/repositorio
+                const respuesta = await fetch('data.json');
+                if (!respuesta.ok) throw new Error("No se pudo cargar el archivo data.json");
+                
+                allSeries = await respuesta.json(); // Llenamos la variable
+                loadContent(); // Arrancamos la creación de la página
+                
+            } catch (error) {
+                console.error("Error al cargar datos:", error);
+                document.getElementById('main-sections').innerHTML = `
+                    <div style="text-align:center; padding:100px 20px; color:var(--text-sec);">
+                        <i class="fa fa-exclamation-triangle" style="font-size:3rem; color:var(--accent); margin-bottom:20px;"></i>
+                        <h2>Error de conexión</h2>
+                        <p>No se pudo cargar el catálogo. Asegúrate de que el archivo <b>data.json</b> exista en tu repositorio con la estructura correcta.</p>
+                    </div>`;
+            }
+        }
+
+        const $ = (sel) => document.querySelector(sel);
+        const $$ = (sel) => document.querySelectorAll(sel);
+
+        function slugify(t) {
+            return String(t).toLowerCase()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+                .replace(/[^\w\s-]/g,'').replace(/[\s_-]+/g,'-').replace(/^-+|-+$/g,'');
+        }
+
+        function optimizeImg(url, size = 'w342') {
+            if (!url) return '';
+            return url.replace(/\/w600_and_h900_face\/|\/original\//, `/${size}/`);
+        }
+
+        function scrollShelf(btn, dir) {
+            const scroller = btn.parentElement.querySelector('.scroller');
+            if(scroller) scroller.scrollBy({ left: scroller.clientWidth * dir * 0.82, behavior:'smooth' });
+        }
+
+        /* ── HERO SLIDER LOGIC ── */
+        const Hero = {
+            interval: null,
+            init() {
+                this.box = $('#heroSlider');
+                this.dots = $('#heroDots');
+                if(!this.box) return;
+
+                const slides = $$('.hero-slide', this.box);
+                this.dots.innerHTML = '';
+                slides.forEach((_, i) => {
+                    const d = document.createElement('div');
+                    d.className = i === 0 ? 'dot active' : 'dot';
+                    d.onclick = () => this.goTo(i);
+                    this.dots.appendChild(d);
                 });
+
+                this.box.addEventListener('scroll', () => {
+                    const idx = Math.round(this.box.scrollLeft / this.box.clientWidth);
+                    $$('.hero-indicators .dot').forEach((d,i) => d.classList.toggle('active', i === idx));
+                });
+
+                this.start();
+            },
+            goTo(idx) { this.box.scrollTo({ left: this.box.clientWidth * idx, behavior:'smooth' }); },
+            start() {
+                this.stop();
+                this.interval = setInterval(() => {
+                    const step = this.box.clientWidth;
+                    const atEnd = this.box.scrollLeft + step + 5 >= this.box.scrollWidth;
+                    this.box.scrollTo({ left: atEnd ? 0 : this.box.scrollLeft + step, behavior:'smooth' });
+                }, 6000);
+            },
+            stop() { clearInterval(this.interval); }
+        };
+        function pauseSlider() { Hero.stop(); }
+        function resumeSlider() { Hero.start(); }
+
+        /* ── CREADORES DE TARJETAS ── */
+        function createDoramaCard(item, isEp = false) {
+            const url = item.url ? item.url : `/ver/${slugify(item.title)}-${item.year}/`;
+            const optImg = optimizeImg(item.img, 'w342');
+            const subTitle = isEp ? `<span style="color:var(--accent); font-weight:600;">Episodio ${Math.floor(Math.random()*10)+1}</span>` : `<span>${item.year} • ${item.genre.charAt(0).toUpperCase() + item.genre.slice(1)}</span>`;
+            
+            return `
+            <div class="dorama-card" onclick="window.location.href='${url}'">
+                <div class="poster skeleton">
+                    <span class="badge-lang">${item.tag || 'LAT'}</span>
+                    <img class="lazy" data-src="${optImg}" decoding="async" alt="${item.title}">
+                    <div class="poster-overlay"><i class="fa fa-play-circle"></i></div>
+                </div>
+                <div class="info">
+                    <h4>${item.title}</h4>
+                    ${subTitle}
+                </div>
+            </div>`;
+        }
+
+        function createTopCard(item, index) {
+            const url = item.url ? item.url : `/ver/${slugify(item.title)}-${item.year}/`;
+            const optImg = optimizeImg(item.img, 'w342');
+            return `
+            <div class="top-card" onclick="window.location.href='${url}'">
+                <div class="top-number">${index + 1}</div>
+                <div class="poster skeleton">
+                    <img class="lazy" data-src="${optImg}" decoding="async" alt="${item.title}">
+                    <div class="poster-overlay"><i class="fa fa-play"></i></div>
+                </div>
+            </div>`;
+        }
+
+        function createNewsCard(item) {
+            const url = item.url ? item.url : `/ver/${slugify(item.title)}-${item.year}/`;
+            const optImg = optimizeImg(item.backdrop || item.img, 'w500');
+            return `
+            <div class="news-card" onclick="window.location.href='${url}'">
+                <div class="news-img-wrapper">
+                    <img class="lazy" data-src="${optImg}" decoding="async" alt="${item.title}">
+                    <span class="news-tag">ESTRENO</span>
+                </div>
+                <div class="news-content">
+                    <h4>¡Ya disponible: ${item.title}!</h4>
+                    <p>No te pierdas el último lanzamiento en calidad HD.</p>
+                    <span class="news-date">Hace unas horas</span>
+                </div>
+            </div>`;
+        }
+
+        /* ── CARGA PROGRESIVA DE CONTENIDO ── */
+        function loadContent() {
+            if(allSeries.length === 0) return; // Si no hay datos, no hacer nada
+
+            // FASE 1: Renderizar Hero y Top 10
+            const heroItems = allSeries.slice(0, 5);
+            $('#heroSlider').innerHTML = heroItems.map((item, i) => {
+                const url = item.url ? item.url : `/ver/${slugify(item.title)}-${item.year}/`;
+                const optBackdrop = optimizeImg(item.backdrop, 'w1280');
+                return `
+                <div class="hero-slide">
+                    <img src="${optBackdrop}" class="hero-bg" decoding="async" ${i===0?'fetchpriority="high"':'loading="lazy"'} alt="${item.title}">
+                    <div class="hero-vignette"></div><div class="hero-gradient-bottom"></div><div class="hero-gradient-left"></div>
+                    <div class="hero-info">
+                        <div class="hero-tags">
+                            <span class="tag-vip"><i class="fa fa-crown"></i> EXCLUSIVO</span>
+                            <span class="tag-genre">${item.genre}</span>
+                            <span class="tag-quality">4K</span>
+                        </div>
+                        <h2 class="hero-title">${item.title}</h2>
+                        <p class="hero-synopsis">${item.description}</p>
+                        <div class="hero-buttons">
+                            <button class="btn-primary" onclick="window.location.href='${url}'">
+                                <i class="fa fa-play"></i> Ver Ahora
+                            </button>
+                            <button class="btn-secondary"><i class="fa fa-bookmark"></i></button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+            Hero.init();
+
+            $('#top10Grid').innerHTML = allSeries.slice(0, 10).map((item, index) => createTopCard(item, index)).join('');
+            
+            initLazy();
+
+            // FASE 2: Diferir la carga del resto para mejor rendimiento
+            requestAnimationFrame(() => {
+                setTimeout(loadRestOfContent, 50);
             });
+        }
+
+        function loadRestOfContent() {
+            const kdramas = [], cdramas = [], romcoms = [], sadDramas = [], movies = [], actors = [];
+            const actorNames = new Set();
+
+            allSeries.forEach(item => {
+                if (item.category === 'kdrama') kdramas.push(item);
+                if (item.category === 'cdrama') cdramas.push(item);
+                if (item.genre === 'comedia' || item.genre === 'romance') romcoms.push(item);
+                if (item.genre === 'drama') sadDramas.push(item);
+                if (item.type === 'movie' || item.category === 'movie') movies.push(item);
+                
+                if (item.actors && Array.isArray(item.actors)) {
+                    item.actors.forEach(a => {
+                        if (!actorNames.has(a.name) && actors.length < 15) {
+                            actorNames.add(a.name);
+                            actors.push(a);
+                        }
+                    });
+                }
+            });
+
+            if (actors.length > 0) {
+                $('#api-actors').innerHTML = actors.map(a => {
+                    const optImg = optimizeImg(a.img, 'w138_and_h175_face');
+                    return `<div class="actor-card" onclick="window.location.href='go:buscador'">
+                        <img class="actor-img lazy" data-src="${optImg}" decoding="async" alt="${a.name}">
+                        <span class="actor-name">${a.name}</span>
+                    </div>`;
+                }).join('');
+            } else {
+                $('#api-actors').innerHTML = `<p style="color:var(--text-sec); font-size:0.8rem; text-align:center; width:100%; padding: 20px;">Los actores aparecerán a medida que subas contenido.</p>`;
+            }
+
+            $('#kdramaGrid').innerHTML = kdramas.slice(0, 15).map(i => createDoramaCard(i)).join('');
+            $('#cdramaGrid').innerHTML = cdramas.slice(0, 15).map(i => createDoramaCard(i)).join('');
+            $('#episodesGrid').innerHTML = allSeries.slice(0, 8).map(i => createDoramaCard(i, true)).join('');
+            $('#romcomGrid').innerHTML = romcoms.slice(0, 15).map(i => createDoramaCard(i)).join('');
+            $('#sadDramaGrid').innerHTML = sadDramas.slice(0, 15).map(i => createDoramaCard(i)).join('');
+            $('#moviesGrid').innerHTML = movies.slice(0, 15).map(i => createDoramaCard(i)).join('');
+            $('#newsGrid').innerHTML = allSeries.slice(0, 8).map(i => createNewsCard(i)).join('');
+
+            initLazy();
+        }
+
+        /* ── FILTRO MANUAL ── */
+        function filter(type, btn) {
+            $$('.filter-chip').forEach(b => b.classList.remove('active'));
+            btn?.classList.add('active');
+
+            const main      = $('#main-sections');
+            const hero      = $('.hero-container');
+            const filterSec = $('#filter-section');
+            const resGrid   = $('#filter-grid');
+            const titleEl   = $('#filter-title');
+
+            window.scrollTo({ top:0, behavior:'smooth' });
+
+            if(type === 'all') {
+                filterSec.style.display = 'none';
+                main.style.display = 'block';
+                hero.style.display = 'block';
+                setTimeout(initLazy, 100);
+            } else {
+                main.style.display = 'none';
+                hero.style.display = 'none';
+                filterSec.style.display = 'block';
+                titleEl.innerHTML = `Explorando <span style="color:var(--accent); text-transform:uppercase;">${type}</span>`;
+
+                const filtered = allSeries.filter(i =>
+                    [i.category, i.type, i.genre].some(v => v?.toLowerCase() === type)
+                );
+
+                resGrid.innerHTML = filtered.length
+                    ? filtered.map(i => createDoramaCard(i)).join('')
+                    : `<div style="grid-column:1/-1;text-align:center;padding:60px 0;opacity:0.5;">
+                           <i class="fa fa-ghost" style="font-size:2.8rem;color:var(--accent);display:block;margin-bottom:12px;"></i>
+                           <p style="font-size:0.9rem;">Nada por aquí aún.</p>
+                       </div>`;
+                initLazy();
+            }
+        }
+
+        /* ── LAZY LOADING OPTIMIZADO ── */
+        let observer = null;
+        function initLazy() {
+            const imgs = $$('.lazy:not(.loaded)');
+            if(!observer) {
+                observer = new IntersectionObserver((entries, obs) => {
+                    entries.forEach(entry => {
+                        if(entry.isIntersecting) {
+                            const img = entry.target;
+                            img.src = img.dataset.src;
+                            img.onload = () => {
+                                img.classList.add('loaded');
+                                img.closest('.skeleton')?.classList.remove('skeleton');
+                            };
+                            obs.unobserve(img);
+                        }
+                    });
+                }, { rootMargin: '300px 0px' });
+            }
+            imgs.forEach(img => observer.observe(img));
+        }
+
+        // Ejecutar al cargar la página: Inicia pidiendo los datos al JSON
+        document.addEventListener('DOMContentLoaded', cargarBaseDeDatos);
     </script>
 </body>
 </html>
