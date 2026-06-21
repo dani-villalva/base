@@ -1,32 +1,15 @@
 [
   {
     "title": "Propuesta Laboral",
-    "description": "Una mujer se hace pasar por su amiga en una cita a ciegas para alejar al pretendiente.",
-    "img": "https://image.tmdb.org/t/p/w600_and_h900_face/3Z8nacEGgQMNGHNi0IQPHOycsXz.jpg",
-    "backdrop": "https://image.tmdb.org/t/p/original/lq0YqJuffMuZhoKTiC5xDqvtCSn.jpg",
+    "description": "Una mujer se hace pasar por su amiga...",
+    "img": "https://image.tmdb.org/...jpg",
     "rate": "8.4",
     "year": "2022",
     "genre": "comedia",
-    "type": "series",
-    "category": "kdrama",
-    "tag": "LAT",
-    "url": "https://tu-enlace-al-video.com",
-    "actors": [
-      {"name": "Ahn Hyo-seop", "img": "https://image.tmdb.org/t/p/w200/oLS5jvS5cZ7SaXNctA8VYXPp6ax.jpg"}
+    "episodes": [
+       { "number": 1, "video": "https://tu-link-del-video-1.com/embed" },
+       { "number": 2, "video": "https://tu-link-del-video-2.com/embed" },
+       { "number": 3, "video": "https://tu-link-del-video-3.com/embed" }
     ]
-  },
-  {
-    "title": "Nombre de otro Dorama",
-    "description": "Sinopsis aquí...",
-    "img": "URL_DE_POSTER",
-    "backdrop": "URL_DE_FONDO_HORIZONTAL",
-    "rate": "9.0",
-    "year": "2023",
-    "genre": "drama",
-    "type": "series",
-    "category": "cdrama",
-    "tag": "SUB",
-    "url": "https://tu-enlace-al-video.com",
-    "actors": []
   }
 ]
