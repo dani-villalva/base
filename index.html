@@ -674,5 +674,18 @@
         // Al iniciar, carga el JSON
         document.addEventListener('DOMContentLoaded', cargarBaseDeDatos);
     </script>
+    <!-- REPRODUCTOR FLOTANTE (MODAL) -->
+<div id="videoModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:99999; flex-direction:column; align-items:center; justify-content:center; padding:20px;">
+    <button onclick="cerrarReproductor()" style="position:absolute; top:20px; right:20px; background:red; color:white; border:none; padding:10px 20px; border-radius:5px; font-weight:bold; cursor:pointer;">CERRAR ×</button>
+    
+    <div id="videoContainer" style="width:100%; max-width:800px; aspect-ratio:16/9; background:#000;">
+        <!-- Aquí se cargará el iframe -->
+    </div>
+    
+    <h2 id="modalTitle" style="margin-top:20px; color:white;"></h2>
+    <div id="modalEpisodes" style="display:flex; gap:10px; flex-wrap:wrap; margin-top:15px; justify-content:center;">
+        <!-- Aquí saldrán los botones de episodios -->
+    </div>
+</div>
 </body>
 </html>
