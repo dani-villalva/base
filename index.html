@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Galería</title>
+    <style>
+        body { font-family: sans-serif; background: #1a1a1a; color: white; display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; }
+        .card { width: 200px; border: 1px solid #444; padding: 10px; border-radius: 8px; text-align: center; }
+        .card img { width: 100%; border-radius: 5px; }
+        .btn { display: inline-block; margin-top: 10px; padding: 5px 10px; background: red; color: white; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <div id="lista-doramas"></div>
+
+    <script>
+        // Este script lee el archivo JSON y crea los elementos
+        fetch('data.json')
+            .then(response => response.json())
+            .then(data => {
+                const contenedor = document.getElementById('lista-doramas');
+                data.forEach(dorama => {
+                    contenedor.innerHTML += `
+                        <div class="card">
+                            <img src="${dorama.imagen}">
+                            <h3>${dorama.titulo}</h3>
+                            <a href="${dorama.enlace}" class="btn" target="_blank">Ver Ahora</a>
+                        </div>
+                    `;
+                });
+            });
+    </script>
+</body>
+</html>
