@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Apoya a MINIHI TV | Donaciones y VIP</title>
+    
+    <!-- Fuente Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons (Para el contenido de la página) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- FontAwesome (Para que el menú inferior sea idéntico al del resto de la app) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <style>
+        /* === VARIABLES DE DISEÑO === */
+        :root {
+            --bg-base: #07070A; 
+            --bg-surface: #111118;
+            --accent: #00DC5A; /* Verde principal */
+            --accent-glow: rgba(0, 220, 90, 0.25);
+            --vip: #F5C518; /* Dorado para VIP */
+            --vip-glow: rgba(245, 197, 24, 0.2);
+            --text-main: #FFFFFF;
+            --text-sec: #8A8A9D;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 255, 255, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            padding-bottom: 90px;
+            overflow-x: hidden;
+            line-height: 1.5;
+            background-image: radial-gradient(circle at top, rgba(0, 220, 90, 0.08) 0%, transparent 50%);
+        }
+
+        /* === HEADER === */
+        .header-donaciones {
+            padding: 50px 20px 30px;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+            animation: fadeDown 0.6s ease forwards;
+        }
+
+        .header-donaciones h1 {
+            font-size: 32px;
+            font-weight: 900;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+        }
+
+        .header-donaciones h1 span {
+            color: var(--accent);
+            text-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .header-donaciones p {
+            color: var(--text-sec);
+            font-size: 15px;
+            font-weight: 400;
+        }
+
+        .server-notice {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 13px;
+            color: #E2E8F0;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+        .server-notice i { color: #f43f5e; }
+
+        /* === CONTENEDOR PRINCIPAL === */
+        .section-donar {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* === TARJETAS (BOXES) === */
+        .box-card {
+            background: var(--bg-surface);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            animation: fadeUp 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        .box-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--border-hover);
+        }
+
+        .box-card h2 {
+            font-size: 19px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .box-card p {
+            font-size: 14px;
+            color: var(--text-sec);
+            margin-bottom: 20px;
+        }
+
+        /* --- ESTILO VIP (Eliminar Anuncios) --- */
+        .box-vip {
+            border-color: rgba(245, 197, 24, 0.3);
+            background: linear-gradient(180deg, rgba(245, 197, 24, 0.05) 0%, var(--bg-surface) 100%);
+            box-shadow: 0 10px 30px var(--vip-glow);
+        }
+        .box-vip h2 { color: var(--vip); }
+        .box-vip h2 i { font-size: 24px; }
+        
+        .vip-features {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+        .vip-features li {
+            font-size: 13.5px;
+            color: #E2E8F0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .vip-features li i { color: var(--vip); }
+
+        .btn-vip {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #F5C518, #F9A826);
+            color: #000;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 15px;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+        .btn-vip:active { transform: scale(0.97); }
+
+        /* --- BOTONES NORMALES --- */
+        .btn-primary {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: var(--accent);
+            color: #000;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 15px;
+            text-decoration: none;
+            transition: 0.2s;
+            box-shadow: 0 5px 20px var(--accent-glow);
+        }
+        .btn-primary:active { transform: scale(0.97); }
+
+        .box-normal h2 i { color: var(--accent); font-size: 22px; }
+
+        /* KO-FI CONTENEDOR */
+        .kofi-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 5px;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        /* === PREGUNTAS FRECUENTES === */
+        .faq-item {
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border);
+            transition: 0.3s;
+        }
+
+        .faq-question {
+            padding: 16px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14.5px;
+            font-weight: 600;
+            color: var(--text-main);
+            user-select: none;
+        }
+
+        .faq-question i {
+            transition: transform 0.3s ease;
+            color: var(--text-sec);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            padding: 0 20px;
+            font-size: 13.5px;
+            color: var(--text-sec);
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .faq-item.active { border-color: var(--accent); }
+        .faq-item.active .faq-question i { transform: rotate(180deg); color: var(--accent); }
+        .faq-item.active .faq-answer { padding-bottom: 16px; }
+
+        /* === NAV BAR INFERIOR EXACTO AL BUSCADOR/DORAMAS === */
+        .bottom-nav { 
+            position: fixed; 
+            bottom: 15px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            background: #252438; 
+            border-radius: 50px; 
+            padding: 5px 8px; 
+            display: flex; 
+            align-items: center; 
+            gap: 2px; 
+            z-index: 5000; 
+            width: auto; 
+            min-width: 280px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6); 
+            border: 1px solid rgba(255,255,255,0.08); 
+        }
+        .bottom-nav a { 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            padding: 8px 12px; 
+            border-radius: 40px; 
+            color: #c7c7d6; 
+            text-decoration: none; 
+            font-size: 12px; 
+            font-weight: 700; 
+            flex-direction: row; 
+            transition: 0.2s;
+        }
+        .bottom-nav a i { font-size: 14px; }
+        .bottom-nav a.active { background: var(--accent); color: #000; }
+        .bottom-nav a:hover:not(.active) { color: #fff; }
+
+        /* Animaciones */
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+
+        @media (min-width: 768px) {
+            .bottom-nav { display:none; }
+            body { padding-bottom: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header-donaciones">
+    <h1>Apoya a <span>MINIHI TV</span></h1>
+    <p>Para ofrecerte streaming rápido y en alta calidad, necesitamos tu apoyo.</p>
+    
+    <div class="server-notice">
+        <i class="ph-fill ph-hard-drives"></i>
+        Mantenemos los servidores vivos gracias a ustedes
+    </div>
+</div>
+
+<div class="section-donar">
+
+    <!-- CAJA 1: VIP (ELIMINAR ANUNCIOS) -->
+    <div class="box-card box-vip delay-1">
+        <h2><i class="ph-fill ph-crown"></i> VIP - Sin Anuncios</h2>
+        <p>¿Cansado de la publicidad? Mejora tu cuenta a VIP y disfruta de la aplicación de forma fluida y sin interrupciones.</p>
+        
+        <ul class="vip-features">
+            <li><i class="ph-fill ph-check-circle"></i> Cero anuncios en la aplicación</li>
+            <li><i class="ph-fill ph-check-circle"></i> Reproducción de video más rápida</li>
+            <li><i class="ph-fill ph-check-circle"></i> Apoyas directamente el mantenimiento de la App</li>
+        </ul>
+
+        <a class="btn-vip" href="http://action_noads" target="_blank">
+            Obtener Premium
+        </a>
+    </div>
+
+    <!-- CAJA 2: PAYPAL (DONACIÓN) -->
+    <div class="box-card box-normal delay-2">
+        <h2><i class="ph-fill ph-paypal-logo"></i> Donación Directa</h2>
+        <p>Ayúdanos a pagar el alojamiento (hosting) y mantener el catálogo actualizado. Cualquier aporte nos ayuda enormemente.</p>
+        
+        <a class="btn-primary" href="https://www.paypal.com/paypalme/MinihiTv" target="_blank" rel="noopener noreferrer">
+            Donar con PayPal
+        </a>
+    </div>
+
+    <!-- CAJA 3: KO-FI -->
+    <div class="box-card box-normal delay-3">
+        <h2><i class="ph-fill ph-coffee"></i> Invítanos un Café</h2>
+        <p>Si prefieres hacer un micro-aporte rápido, invitarnos un café en Ko-fi es la opción ideal.</p>
+
+        <div class="kofi-container">
+            <script src="https://storage.ko-fi.com/cdn/widget/Widget_2.js"></script>
+            <script>
+                // Botón verde estilo App
+                kofiwidget2.init('Invítame un café', '#00DC5A', 'B0B517ZWL1');
+                kofiwidget2.draw();
+            </script>
+        </div>
+    </div>
+
+    <!-- CAJA 4: FAQ -->
+    <div class="box-card box-normal delay-4">
+        <h2 style="margin-bottom: 15px;"><i class="ph-fill ph-question"></i> Preguntas Frecuentes</h2>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                ¿A dónde va el dinero de las donaciones?
+                <i class="ph-bold ph-caret-down"></i>
+            </div>
+            <div class="faq-answer">
+                El 100% de los ingresos se destina al pago de los servidores donde se alojan los videos, el mantenimiento de la base de datos y la renovación de la infraestructura para evitar caídas en la App.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                ¿Es obligatorio pagar?
+                <i class="ph-bold ph-caret-down"></i>
+            </div>
+            <div class="faq-answer">
+                ¡No! Todo el contenido de Minihi TV es y seguirá siendo gratuito con anuncios. El pase VIP o las donaciones son opcionales para quienes desean una mejor experiencia y apoyar el proyecto.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                ¿Qué pasa después de pagar el VIP?
+                <i class="ph-bold ph-caret-down"></i>
+            </div>
+            <div class="faq-answer">
+                Una vez realizado el pago de la suscripción VIP, envíanos el comprobante a nuestro soporte (Telegram/Correo) y activaremos los beneficios en tu cuenta inmediatamente.
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- NAV BAR INFERIOR IDÉNTICO AL BUSCADOR -->
+<footer class="bottom-nav">
+  <a href="go:inicio"><i class="fa fa-home"></i> Inicio</a>
+  <a href="go:buscador"><i class="fa fa-search"></i> Buscar</a>
+  <a href="go:reels"><i class="fa fa-play-circle"></i> Reels</a>
+  <a href="go:donacion" class="active"><i class="fa fa-heart"></i> Donar</a>
+</footer>
+
+<script>
+// Lógica para el acordeón de preguntas frecuentes con animación fluida
+document.querySelectorAll('.faq-question').forEach(q => {
+    q.addEventListener('click', () => {
+        const item = q.parentElement;
+        const answer = item.querySelector('.faq-answer');
+        
+        // Si está abierto, lo cerramos
+        if (item.classList.contains('active')) {
+            item.classList.remove('active');
+            answer.style.maxHeight = null;
+        } else {
+            // Cerramos todos los demás primero
+            document.querySelectorAll('.faq-item').forEach(otherItem => {
+                otherItem.classList.remove('active');
+                otherItem.querySelector('.faq-answer').style.maxHeight = null;
+            });
+            // Abrimos el actual calculando su altura real
+            item.classList.add('active');
+            answer.style.maxHeight = answer.scrollHeight + 20 + "px";
+        }
+    });
+});
+</script>
+
+</body>
+</html>
