@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Buscar en MINIHI | MINIHI</title>
+    
+    <!-- OPTIMIZACIÓN: Pre-conectar a dominios clave para acelerar la red -->
+    <link rel="preconnect" href="https://image.tmdb.org">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- OPTIMIZACIÓN: Cargar FontAwesome sin bloquear el renderizado -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></noscript>
+    
+    <style>
+        :root{
+            --bg-base: #06060A;
+            --bg-surface: #12121A;
+            --accent: #00DC5A;
+            --accent-glow: rgba(0, 220, 90, 0.3);
+            --text-main: #FFFFFF;
+            --text-sec: #8A8A9D;
+            --border: rgba(255, 255, 255, 0.08);
+        }
+        *{margin:0;padding:0;box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+        body{ background-color: var(--bg-base); color: var(--text-main); margin: 0; font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; padding-bottom: 80px; }
+
+        /* HEADER */
+        .search-header-fixed {
+            background: rgba(6, 6, 10, 0.85);
+            position: sticky; top: 0; z-index: 1000;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+        .header-top-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px 10px; }
+        .back-btn { color: #fff; font-size: 18px; text-decoration: none; transition: 0.2s; }
+        .back-btn:hover { color: var(--accent); }
+        .page-title { font-size: 20px; font-weight: 800; margin: 0; letter-spacing: -0.5px; flex: 1; margin-left: 15px; }
+
+        /* SEARCH BAR */
+        .search-main-bar { padding: 0 20px 15px; }
+        .search-input-group {
+            background: var(--bg-surface);
+            border-radius: 12px; display: flex; align-items: center;
+            padding: 0 15px; border: 1px solid var(--border);
+            transition: 0.3s; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        .search-input-group:focus-within { border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
+        .search-hint-icon { color: var(--text-sec); font-size: 16px; margin-right: 10px; transition: 0.3s; }
+        .search-input-group:focus-within .search-hint-icon { color: var(--accent); }
+        .search-input-group input { background: transparent; border: none; color: white; width: 100%; padding: 14px 0; outline: none; font-size: 15px; }
+        .search-input-group input::placeholder { color: var(--text-sec); }
+
+        .clear-btn { background: none; border: none; color: var(--text-sec); font-size: 18px; cursor: pointer; padding: 5px; transition: 0.2s; }
+        .clear-btn:hover { color: #fff; }
+
+        /* FAVORITES BUTTON */
+        .fav-trigger-btn {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            border-radius: 50%; width: 40px; height: 40px;
+            color: #fff; display: flex; align-items: center; justify-content: center;
+            position: relative; font-size: 18px; cursor: pointer; transition: 0.2s;
+        }
+        .fav-trigger-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .fav-trigger-btn:active { transform: scale(0.9); }
+        .count-badge {
+            position: absolute; top: -3px; right: -3px; background: #FF3366; color: #fff;
+            font-size: 10px; font-weight: 900; padding: 2px 5px; border-radius: 10px;
+            min-width: 16px; text-align: center; box-shadow: 0 0 8px rgba(255,51,102,0.6);
+        }
+
+        /* FILTROS */
+        .filters-scroll-container { margin-top: 5px; }
+        .filter-group { display: flex; align-items: center; padding: 0 20px; gap: 15px; margin-bottom: 12px; }
+        .filter-label { color: var(--text-sec); font-size: 12px; font-weight: 700; min-width: 65px; display: flex; align-items: center; gap: 5px; text-transform: uppercase; }
+        .filter-chips { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; flex: 1; padding-right: 20px; align-items: center; }
+        .filter-chips::-webkit-scrollbar { display: none; }
+
+        .chip-btn {
+            background: var(--bg-surface); border: 1px solid var(--border);
+            color: var(--text-sec); font-size: 13px; font-weight: 600;
+            white-space: nowrap; cursor: pointer; padding: 6px 14px; border-radius: 20px; transition: 0.2s;
+        }
+        .chip-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .chip-btn.active { color: #000; font-weight: 800; background: var(--accent); border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
+
+        /* OPTIMIZACIÓN: Efecto Skeleton para imágenes cargando */
+        .skeleton { background: var(--bg-surface) !important; overflow: hidden; position: relative; }
+        .skeleton::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.05) 50%, transparent 100%);
+            background-size: 200% 100%; animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+        /* RESULTADOS GRID */
+        .results-header { padding: 15px 20px; color: var(--text-sec); font-size: 13px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+
+        .series-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 15px 12px;
+            padding: 0 20px 40px;
+        }
+
+        .movie-card { position: relative; animation: fadeIn 0.4s ease; cursor: pointer; display: flex; flex-direction: column; transition: 0.3s; }
+        .movie-card:hover { transform: translateY(-5px); }
+
+        .img-wrap {
+            width: 100%; aspect-ratio: 2/3; border-radius: 8px; overflow: hidden; position: relative;
+            background: var(--bg-surface); box-shadow: 0 4px 15px rgba(0,0,0,0.5); flex-shrink: 0;
+        }
+        .img-wrap img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease, opacity 0.3s; }
+        .img-wrap:hover img { transform: scale(1.08); filter: brightness(0.7); }
+        .lazy { opacity: 0; }
+        .lazy.loaded { opacity: 1; }
+
+        .card-title {
+            font-size: 13px; font-weight: 600; color: var(--text-main); margin-top: 8px; line-height: 1.3;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+            overflow: hidden; text-overflow: ellipsis;
+        }
+
+        .card-heart {
+            position: absolute; top: 6px; right: 6px;
+            width: 28px; height: 28px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; color: #fff;
+            z-index: 10; font-size: 13px;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+            transition: 0.2s; border: 1px solid rgba(255,255,255,0.2);
+        }
+        .card-heart:hover { background: rgba(0,0,0,0.8); }
+        .card-heart:active { transform: scale(0.8); }
+        .card-heart.active { color: var(--accent); border-color: var(--accent); }
+
+        /* MODAL DE FAVORITOS */
+        .custom-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 5000; align-items: center; justify-content: center; backdrop-filter: blur(8px); animation: fadeIn 0.2s; }
+        .modal-box { background: var(--bg-surface); width: 90%; max-width: 400px; max-height: 80vh; border-radius: 16px; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,0.8); border: 1px solid var(--border); }
+        .modal-header { padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        .modal-header h4 { margin: 0; font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        .modal-close-x { background: none; border: none; color: var(--text-sec); font-size: 24px; cursor: pointer; line-height: 1; transition: 0.2s; }
+        .modal-close-x:hover { color: #fff; }
+
+        .modal-content-list { padding: 15px; overflow-y: auto; flex: 1; }
+        .fav-item { display: flex; align-items: center; gap: 15px; padding: 10px; margin-bottom: 10px; background: rgba(255,255,255,0.03); border-radius: 10px; transition: 0.2s; border: 1px solid transparent; cursor: pointer; }
+        .fav-item:hover { background: rgba(255,255,255,0.05); border-color: var(--border); }
+        .fav-item img { width: 50px; height: 75px; border-radius: 6px; object-fit: cover; }
+        .fav-item-title { flex: 1; font-size: 14px; font-weight: 600; line-height: 1.3; }
+
+        .fav-item-delete { color: var(--text-sec); cursor: pointer; padding: 10px; font-size: 18px; transition: 0.2s; }
+        .fav-item-delete:hover { color: #ef4444; transform: scale(1.1); }
+
+        .modal-footer { padding: 15px; border-top: 1px solid var(--border); }
+        .btn-close-modal { width: 100%; background: var(--accent); border: none; color: #000; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .btn-close-modal:active { transform: scale(0.98); }
+
+        @media (min-width: 768px) {
+            .series-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 20px 15px; }
+            .search-input-group input { padding: 16px 0; }
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .bottom-nav { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); background: #252438; border-radius: 50px; padding: 5px 8px; display: flex; align-items: center; gap: 2px; z-index: 5000; width: auto; min-width: 280px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.08); }
+        .bottom-nav a { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 40px; color: #c7c7d6; text-decoration: none; font-size: 12px; font-weight: 700; }
+        .bottom-nav a.active { background: var(--accent); color: #000; }
+    </style>
+</head>
+<body>
+
+<div class="search-page-wrapper">
+    <!-- CABECERA -->
+    <div class="search-header-fixed">
+        <div class="container-fluid">
+            <div class="header-top-row">
+                
+                <h1 class="page-title">Explorar Catálogo</h1>
+                <div class="header-actions">
+                    <button class="fav-trigger-btn" onclick="showFavorites()">
+                        <i class="fa fa-bookmark"></i>
+                        <span id="favCount" class="count-badge">0</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- BARRA DE BÚSQUEDA -->
+            <div class="search-main-bar">
+                <div class="search-input-group">
+                    <i class="fa fa-search search-hint-icon"></i>
+                    <input id="searchInput" placeholder="Busca por título, actor, año..." autocomplete="off">
+                    <button id="clearSearchBtn" class="clear-btn" style="display:none;">
+                        <i class="fa fa-times-circle"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- FILTROS -->
+            <div class="filters-scroll-container">
+
+                <div class="filter-group">
+                    <span class="filter-label"><i class="fa fa-tv"></i> Formato</span>
+                    <div class="filter-chips">
+                        <button class="chip-btn active" onclick="filterBy('all', 'type', this)">Todos</button>
+                        <button class="chip-btn" onclick="filterBy('series', 'type', this)">Series/Doramas</button>
+                        <button class="chip-btn" onclick="filterBy('pelicula', 'type', this)">Películas</button>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <span class="filter-label"><i class="fa fa-globe"></i> Idioma</span>
+                    <div class="filter-chips">
+                        <button class="chip-btn active" onclick="filterBy('all', 'tag', this)">Todos</button>
+                        <button class="chip-btn" onclick="filterBy('lat', 'tag', this)">Español LAT</button>
+                        <button class="chip-btn" onclick="filterBy('sub', 'tag', this)">Subtitulado</button>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <span class="filter-label"><i class="fa fa-film"></i> Género</span>
+                    <div class="filter-chips">
+                        <button class="chip-btn active" onclick="filterBy('all', 'genre', this)">Todos</button>
+                        <button class="chip-btn" onclick="filterBy('romance', 'genre', this)">Romance</button>
+                        <button class="chip-btn" onclick="filterBy('accion', 'genre', this)">Acción</button>
+                        <button class="chip-btn" onclick="filterBy('suspenso', 'genre', this)">Suspenso</button>
+                        <button class="chip-btn" onclick="filterBy('fantasia', 'genre', this)">Fantasía</button>
+                        <button class="chip-btn" onclick="filterBy('comedia', 'genre', this)">Comedia</button>
+                        <button class="chip-btn" onclick="filterBy('drama', 'genre', this)">Drama</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESULTADOS -->
+    <div class="results-header">
+        <span id="resultsStatus">Cargando catálogo...</span>
+    </div>
+
+    <div class="container-fluid">
+        <div id="resultsGrid" class="series-grid"></div>
+    </div>
+</div>
+
+<!-- MODAL FAVORITOS -->
+<div id="favOverlay" class="custom-overlay" onclick="closeFavorites()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h4><i class="fa fa-bookmark" style="color:var(--accent)"></i> Mi Lista</h4>
+            <button class="modal-close-x" onclick="closeFavorites()">×</button>
+        </div>
+        <div id="favList" class="modal-content-list"></div>
+        <div class="modal-footer">
+            <button class="btn-close-modal" onclick="closeFavorites()">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<footer class="bottom-nav">
+  <a href="go:inicio"><i class="fa fa-home"></i> Inicio</a>
+  <a href="go:buscador"  class="active"><i class="fa fa-search"></i> Buscar</a>
+  <a href="go:reels"><i class="fa fa-play-circle"></i> Reels</a>
+  <a href="go:donacion"><i class="fa fa-heart"></i> Donar</a>
+</footer>
+
+<script>
+    /* =========================================================
+       DATOS DE EJEMPLO — REEMPLAZA ESTE ARRAY CON TU CATÁLOGO
+    ========================================================= */
+    const rawData = [
+        
+      {
+    "title": "Propuesta Laboral",
+    "description": "Una mujer se hace pasar por su amiga en una cita a ciegas para alejar al pretendiente. Pero el plan se complica cuando él resulta ser su jefe y le hace una propuesta.",
+    "img": "https://image.tmdb.org/t/p/w500/3Z8nacEGgQMNGHNi0IQPHOycsXz.jpg",
+    "rate": "8.4",
+    "year": "2022",
+    "genre": "comedia",
+    "type": "series",
+    "category": "drama",
+    "tag": "LAT",
+    "url": "go:01",
+    "episodes": [],
+    "video": ""
+},
+      
+      {
+    "title": "Mi Primer Amor de Verdad",
+    "description": "Por el azar y las circunstancias, Yun Tae-o le abre las puertas de su casa a un grupo de amigos. Y las puertas de su corazón a los enredos del amor y la amistad.",
+    "img": "https://image.tmdb.org/t/p/w500/dHKjOEnAWiMzngxNzuC9NiXqMfB.jpg",
+    "rate": "8.2",
+    "year": "2019",
+    "genre": "drama",
+    "type": "series",
+    "category": "drama",
+    "tag": "LAT",
+    "url": "go:02",
+    "episodes": [],
+    "video": ""
+},
+      {
+    "title": "Un amor tan hermoso",
+    "description": "Para una adolescente perdidamente enamorada de su vecino y amigo de la infancia, el amor es dulce y difícil a la vez. ¿Podrá su relación evolucionar a medida que crecen?",
+    "img": "https://image.tmdb.org/t/p/w500/4EzrCBnBdeLAZENNQcYzYq933B.jpg",
+    "rate": "8.3",
+    "year": "2020",
+    "genre": "drama",
+    "type": "series",
+    "category": "drama",
+    "tag": "LAT",
+    "url": "go:03",
+    "episodes": [],
+    "video": ""
+},
+      
+     {
+    "title": "Woo, Una Abogada Extraordinaria",
+    "description": "Woo Young-woo, una brillante abogada con autismo, lidia con los retos que le plantean la vida cotidiana y los tribunales cuando se incorpora a un importante bufete.",
+    "img": "https://image.tmdb.org/t/p/w500/6Gd8OleJSPseygKWIAEia4AyM4G.jpg",
+    "rate": "8.5",
+    "year": "2022",
+    "genre": "drama",
+    "type": "series",
+    "category": "drama",
+    "tag": "LAT",
+    "url": "go:04",
+    "episodes": [],
+    "video": ""
+},
+      
+      {
+    "title": "Érase un amor rural",
+    "description": "En contra de su voluntad, un veterinario de la gran ciudad se traslada al campo, donde conoce a una policía, una persona de la ciudad que guarda un secreto amistoso.",
+    "img": "https://image.tmdb.org/t/p/w500/hVmycednQiwms1p1n6hlLIlLG7X.jpg",
+    "rate": "7.5",
+    "year": "2022",
+    "genre": "drama",
+    "type": "series",
+    "category": "drama",
+    "tag": "LAT",
+    "url": "go:05",
+    "episodes": [],
+    "video": ""
+},
+      
+      {
+    "title": "A todos los chicos que me amaron",
+    "description": "Una exitosa mujer de carrera renuncia al amor después de repetidos rompimientos amorosos, hasta que dos hombres entran en su vida.",
+    "img": "https://image.tmdb.org/t/p/w500/vjnOfD55GYxqWi1ERiPOgrucjvV.jpg",
+    "rate": "6.6",
+    "year": "2020",
+    "genre": "comedia",
+    "type": "series",
+    "category": "drama",
+    "tag": "LAT",
+    "url": "go:06",
+    "episodes": [],
+    "video": ""
+},
+      
+      {
+    "title": "Aquel año nuestro",
+    "description": "Años después de filmar un documental en la escuela que se volvió viral, dos examantes enemistados vuelven a estar frente a cámara... y frente a frente.",
+    "img": "https://image.tmdb.org/t/p/w500/utUJlVXFIQFT8tgcifZo0uDrFzt.jpg",
+    "rate": "8.4",
+    "year": "2021",
+    "genre": "comedia",
+    "type": "series",
+    "category": "drama",
+    "tag": "LAT",
+    "url": "go:07",
+    "episodes": [],
+    "video": ""
+},
+      
+      {
+    "title": "Big, Creciendo sin querer",
+    "description": "Después de un trágico accidente de auto, Kang Gyung Joon de 18 años  descubre que su espíritu ha sido transportado al cuerpo de Seo Yoon Jae  de 30 años . Yoon Jae es un exitoso doctor que esta comprometido con la  profesora de secundaria Gil Da Ran. pero da la casualidad que Da Ran es  la profesora de Gyung Joon. ¿Qué hace un muchacho cuando descubre que se  ha convertido en el prometido de su propia maestra por un capricho de  la naturaleza? ¿Será capaz de regresar a su vida normal o esta condenado  a vivir en el lugar del hombre mayor?",
+    "img": "https://image.tmdb.org/t/p/w500/l5y2IxdqNgCouoqBwWy4dOVhIOf.jpg",
+    "rate": "7.3",
+    "year": "2012",
+    "genre": "comedia",
+    "type": "series",
+    "category": "drama",
+    "tag": "LAT",
+    "url": "go:08",
+    "episodes": [],
+    "video": ""
+},
+      
+      {
+    "title": "¿Eres humano también?",
+    "description": "Nam Shin (Seo Kang Joon) es el hijo de una de las familias más ricas de Corea del Sur. Después de un inesperado accidente, él cae en coma. Su madre Oh Ro Ra (Kim Sung Ryung) es una de las autoridades en Ciencia cerebral e inteligencia artificial. Ella crea un androide llamado Nam Shin III que luce exactamente como su hijo Nam Shin. El androide pretende ser Nam Shin y allí conoce a So Bong (Gong Seung Yeon), la guardaespaldas de Nam Shin.",
+    "img": "https://image.tmdb.org/t/p/w500/kaabHcYHXEPrq3jstdZXWg80SV6.jpg",
+    "rate": "8.1",
+    "year": "2018",
+    "genre": "drama",
+    "type": "series",
+    "category": "drama",
+    "tag": "LAT",
+    "url": "go:09",
+    "episodes": [],
+    "video": ""
+},
+      
+      {
+    "title": "Cálido y Acogedor",
+    "description": "",
+    "img": "https://image.tmdb.org/t/p/w500/wxUg98MY245kt4mpmsm7nCrGrPv.jpg",
+    "rate": "6.2",
+    "year": "2015",
+    "genre": "comedia",
+    "type": "series",
+    "category": "drama",
+    "tag": "LAT",
+    "url": "go:10",
+    "episodes": [],
+    "video": ""
+}
+      
+      
+      
+      
+    ];
+
+    const database = Array.isArray(rawData) ? rawData : [];
+
+    let currentGenre = 'all';
+    let currentTag = 'all';
+    let currentType = 'all';
+    let searchTerm = '';
+
+    // OPTIMIZACIÓN: Compresión dinámica de imágenes según el caso
+    function optimizeImg(url, size = 'w342') {
+        if (!url) return '';
+        return url.replace(/\/w600_and_h900_face\/|\/w500\/|\/original\//, `/${size}/`);
+    }
+
+    function slugify(text) {
+        if (!text) return 'untitled';
+        return text.toString().toLowerCase().trim()
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-');
+    }
+
+    function renderResults(data) {
+        const grid = document.getElementById('resultsGrid');
+        const status = document.getElementById('resultsStatus');
+
+        if (!data || data.length === 0) {
+            grid.innerHTML = `
+                <div style="grid-column:1/-1; text-align:center; padding:60px 20px; color:var(--text-sec);">
+                    <i class="fa fa-folder-open-o" style="font-size: 45px; margin-bottom:15px; display:block; color:var(--accent);"></i>
+                    <h3 style="margin:0; color:#fff;">Sin resultados</h3>
+                    <p style="font-size:14px; margin-top:5px;">Intenta con otras palabras clave o filtros.</p>
+                </div>`;
+            status.innerText = "0 resultados encontrados";
+            return;
+        }
+
+        status.innerHTML = searchTerm
+            ? `Resultados para <span style="color:var(--accent);">"${searchTerm}"</span>`
+            : `Mostrando <b>${data.length}</b> títulos`;
+
+        grid.innerHTML = data.map(item => {
+            const link = item.url ? item.url : `/ver/${slugify(item.title)}-${item.year || ''}/`;
+            const isFavorite = isFav(item.title);
+            const favClass = isFavorite ? 'active' : '';
+            const safeTitle = item.title.replace(/'/g, "\\'");
+            
+            // Reducimos peso de la imagen dinámicamente
+            const optImg = optimizeImg(item.img, 'w342');
+
+            // Agregamos estructura de Skeleton y Lazy Load
+            return `
+            <div class="movie-card" onclick="window.location.href='${link}'">
+                <div class="img-wrap skeleton">
+                    <div class="card-heart ${favClass}" onclick="toggleFav('${safeTitle}', '${optImg}', event)">
+                        <i class="fa ${isFavorite ? 'fa-check' : 'fa-plus'}"></i>
+                    </div>
+                    <img class="lazy" data-src="${optImg}" decoding="async" alt="${item.title}" onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
+                </div>
+                <div class="card-title">${item.title}</div>
+            </div>`;
+        }).join('');
+
+        updateFavCount();
+        initLazy(); // Llamar al observador de imágenes después de inyectar el HTML
+    }
+
+    function applyAllFilters() {
+        let filtered = database;
+
+        if (searchTerm) {
+            const term = searchTerm.toLowerCase();
+            filtered = filtered.filter(d =>
+                (d.title && d.title.toLowerCase().includes(term)) ||
+                (d.description && d.description.toLowerCase().includes(term)) ||
+                (d.year && d.year.toString().includes(term))
+            );
+        }
+
+        if (currentGenre !== 'all') {
+            const lowerGenre = currentGenre.toLowerCase();
+            filtered = filtered.filter(d => d.genre && d.genre.toLowerCase().includes(lowerGenre));
+        }
+
+        if (currentTag !== 'all') {
+            const lowerTag = currentTag.toLowerCase();
+            filtered = filtered.filter(d => d.tag && d.tag.toLowerCase() === lowerTag);
+        }
+
+        if (currentType !== 'all') {
+            filtered = filtered.filter(d => {
+                const lowerType = d.type ? d.type.toLowerCase() : '';
+                const lowerCat = d.category ? d.category.toLowerCase() : '';
+                const isMovie = (lowerType === 'movie' || lowerCat === 'movie' || lowerType === 'pelicula' || lowerCat === 'pelicula');
+                if (currentType === 'pelicula') return isMovie;
+                if (currentType === 'series') return !isMovie;
+                return true;
+            });
+        }
+
+        // Ejecutar renderización en el siguiente frame para no congelar la pantalla
+        requestAnimationFrame(() => renderResults(filtered));
+    }
+
+    function filterBy(value, type, el) {
+        const siblings = el.parentElement.children;
+        for (let btn of siblings) { btn.classList.remove('active'); }
+        el.classList.add('active');
+
+        if (type === 'genre') currentGenre = value;
+        if (type === 'tag') currentTag = value;
+        if (type === 'type') currentType = value;
+
+        applyAllFilters();
+    }
+
+    /* --- DEBOUNCE PARA BUSCADOR (Evita congelamientos si escriben rápido) --- */
+    const searchInput = document.getElementById('searchInput');
+    const clearBtn = document.getElementById('clearSearchBtn');
+    let searchTimeout = null;
+
+    searchInput.addEventListener('input', (e) => {
+        searchTerm = e.target.value.trim();
+        clearBtn.style.display = searchTerm ? 'block' : 'none';
+        
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            applyAllFilters();
+        }, 150); // Espera 150ms después de dejar de escribir para filtrar
+    });
+
+    clearBtn.onclick = () => {
+        searchInput.value = '';
+        searchInput.focus();
+        searchTerm = '';
+        clearBtn.style.display = 'none';
+        applyAllFilters();
+    };
+
+    /* --- LAZY LOADING OPTIMIZADO --- */
+    let observer = null;
+    function initLazy() {
+        const imgs = document.querySelectorAll('.lazy:not(.loaded)');
+        if(!observer) {
+            observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if(entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src;
+                        img.onload = () => {
+                            img.classList.add('loaded');
+                            img.closest('.skeleton')?.classList.remove('skeleton');
+                        };
+                        obs.unobserve(img); // Dejar de observar una vez cargada
+                    }
+                });
+            }, { rootMargin: '400px 0px' }); // Empieza a cargar imágenes 400px antes de hacer scroll
+        }
+        imgs.forEach(img => observer.observe(img));
+    }
+
+    /* --- FAVORITOS --- */
+    function getFavs() {
+        try { return JSON.parse(localStorage.getItem('myFavs')) || []; }
+        catch (e) { return []; }
+    }
+
+    function isFav(title) {
+        return getFavs().some(f => f.title === title);
+    }
+
+    function toggleFav(title, img, e) {
+        if (e) {
+            e.stopPropagation();
+            const btn = e.currentTarget;
+            btn.style.transform = "scale(1.3)";
+            setTimeout(() => btn.style.transform = "scale(1)", 200);
+        }
+
+        let favs = getFavs();
+        const index = favs.findIndex(f => f.title === title);
+
+        if (index > -1) favs.splice(index, 1);
+        else favs.push({ title, img });
+
+        localStorage.setItem('myFavs', JSON.stringify(favs));
+
+        updateFavCount();
+        applyAllFilters();
+        if (document.getElementById('favOverlay').style.display === 'flex') showFavorites();
+    }
+
+    function updateFavCount() {
+        const count = getFavs().length;
+        const badge = document.getElementById('favCount');
+        badge.innerText = count;
+        badge.style.display = count > 0 ? 'block' : 'none';
+    }
+
+    function showFavorites() {
+        let favs = getFavs();
+        const list = document.getElementById('favList');
+
+        if (favs.length === 0) {
+            list.innerHTML = `
+                <div style="text-align:center; padding:50px 20px; color:var(--text-sec);">
+                    <i class="fa fa-bookmark-o" style="font-size:40px; margin-bottom:15px; display:block;"></i>
+                    <p style="margin:0; font-size:14px;">Aún no tienes títulos en tu lista.</p>
+                </div>`;
+        } else {
+            list.innerHTML = favs.map(f => {
+                // Optimizar imagen miniatura en favoritos
+                const optImgMini = optimizeImg(f.img, 'w154');
+                return `
+                <div class="fav-item" onclick="window.location.href='/ver/${slugify(f.title)}/'">
+                    <img src="${optImgMini}" loading="lazy" decoding="async" onerror="this.src='https://via.placeholder.com/50'">
+                    <div class="fav-item-title">${f.title}</div>
+                    <div class="fav-item-delete" onclick="toggleFav('${f.title.replace(/'/g, "\\'")}', '', event)">
+                        <i class="fa fa-trash"></i>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+        document.getElementById('favOverlay').style.display = 'flex';
+    }
+
+    function closeFavorites() {
+        document.getElementById('favOverlay').style.display = 'none';
+    }
+
+    // Inicializar app
+    updateFavCount();
+    renderResults(database);
+</script>
+</body>
+</html>
