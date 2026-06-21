@@ -5,14 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Minihi Tv - Doramas</title>
     
-    <!-- OPTIMIZACIÓN: Pre-conectar a dominios clave para acelerar la carga -->
+    <!-- OPTIMIZACIÓN: Pre-conectar a dominios clave -->
     <link rel="preconnect" href="https://image.tmdb.org">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     
     <!-- Fuentes y CSS -->
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <!-- OPTIMIZACIÓN: Cargar FontAwesome sin bloquear el renderizado de la página -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     
@@ -36,6 +35,7 @@
             --radius-card:   10px;
             --radius-lg:     14px;
             --transition:    0.28s cubic-bezier(.4,0,.2,1);
+            --nav-height:    65px;
         }
 
         *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -55,8 +55,34 @@
         }
         @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
+        /* ── MENÚ SUPERIOR (HEADER) NUEVO ── */
+        .top-navbar {
+            position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 4%; z-index: 9999;
+            background: linear-gradient(to bottom, rgba(7,7,14,0.9) 0%, transparent 100%);
+            transition: all 0.3s ease;
+        }
+        .top-navbar.scrolled {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+        }
+        .nav-logo { font-size: 1.4rem; font-weight: 900; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+        .nav-logo i { color: var(--accent); }
+        .nav-logo span { color: var(--accent); }
+        
+        .nav-links { display: none; gap: 24px; align-items: center; }
+        .nav-links a { color: var(--text-sec); text-decoration: none; font-size: 0.9rem; font-weight: 700; transition: color 0.2s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; }
+        
+        .nav-icons { display: flex; gap: 18px; align-items: center; }
+        .nav-icons button { background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; transition: color 0.2s; }
+        .nav-icons button:hover { color: var(--accent); }
+
         /* ── HERO SLIDER ── */
-        .hero-container { position:relative; height:87vh; min-height:520px; contain:layout; }
+        .hero-container { position:relative; height:87vh; min-height:520px; contain:layout; margin-top: 0; }
         .hero-slider { display:flex; height:100%; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; }
         .hero-slider::-webkit-scrollbar { display:none; }
         .hero-slide { min-width:100%; height:100%; position:relative; scroll-snap-align:start; will-change:transform; }
@@ -87,7 +113,7 @@
         /* ── FILTER BAR ── */
         .filter-bar { 
             position:sticky; 
-            top:0; 
+            top: var(--nav-height); /* Se pega debajo del menú principal */
             z-index:90; 
             background:var(--glass); 
             backdrop-filter:blur(20px) saturate(150%); 
@@ -129,14 +155,13 @@
         .info h4 { font-size:0.82rem; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#fff; }
         .info span { font-size:0.68rem; color:var(--text-sec); margin-top:2px; display:block; }
 
-        /* ── ACTORES ── */
+        /* ── ACTORES Y TOP 10 ── */
         .actor-card { flex:0 0 90px; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; scroll-snap-align:start; transition:transform var(--transition); }
         .actor-card:hover { transform:translateY(-4px); }
         .actor-img { width:80px; height:80px; border-radius:50%; object-fit:cover; border:2px solid transparent; transition:all var(--transition); background:var(--bg-card); }
         .actor-card:hover .actor-img { border-color:var(--accent); box-shadow:0 0 0 3px rgba(0,220,90,0.2), 0 6px 20px rgba(0,0,0,0.6); }
         .actor-name { font-size:0.72rem; font-weight:600; text-align:center; color:var(--text-sec); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; display:block; }
 
-        /* ── TOP 10 ── */
         .top10-scroller { padding-left:24px; }
         .top-card { flex:0 0 155px; height:200px; display:flex; align-items:flex-end; position:relative; scroll-snap-align:start; cursor:pointer; transition:transform var(--transition); }
         .top-card:hover { transform:translateY(-6px); }
@@ -144,7 +169,7 @@
         .top-card:first-child .top-number { -webkit-text-stroke:2.5px var(--accent); text-shadow:0 0 25px var(--accent-glow); }
         .top-card .poster { width:120px; height:180px; margin-left:auto; z-index:2; box-shadow:-6px 0 25px rgba(0,0,0,0.9); border:1px solid var(--border); }
 
-        /* ── COLECCIONES ── */
+        /* ── COLECCIONES Y NOTICIAS ── */
         .collection-card { flex:0 0 285px; aspect-ratio:2/1; border-radius:var(--radius-lg); position:relative; overflow:hidden; scroll-snap-align:start; cursor:pointer; transition:transform var(--transition); }
         .collection-card:hover { transform:translateY(-5px); }
         .col-bg { position:absolute; width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
@@ -153,7 +178,6 @@
         .col-overlay h3 { font-size:1.05rem; color:#fff; margin-bottom:4px; font-weight:800; }
         .col-overlay p { font-size:0.78rem; color:var(--text-sec); }
 
-        /* ── ÚLTIMAS ACTUALIZACIONES ── */
         .news-card { flex:0 0 265px; background:var(--bg-card); border-radius:var(--radius-lg); overflow:hidden; scroll-snap-align:start; border:1px solid var(--border); cursor:pointer; transition: transform var(--transition), border-color var(--transition); }
         .news-card:hover { transform:translateY(-5px); border-color:rgba(0,220,90,0.25); }
         .news-img-wrapper { position:relative; width:100%; height:136px; overflow:hidden; }
@@ -165,55 +189,26 @@
         .news-content p { font-size:0.78rem; color:var(--text-sec); margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
         .news-date { font-size:0.68rem; color:var(--text-muted); }
 
-        /* ── GRID LAYOUT FILTRO ── */
         .grid-layout { display:grid; grid-template-columns:repeat(auto-fill, minmax(118px, 1fr)); gap:14px; padding:0 4%; }
         .grid-layout .dorama-card { flex:none; width:100%; max-width:100%; }
 
         /* ── BOTTOM NAV MÓVIL ── */
         .bottom-nav {
-            position: fixed; 
-            bottom: 15px; 
-            left: 50%; 
-            transform: translateX(-50%); 
-            background: #252438; 
-            border-radius: 50px; 
-            padding: 5px 8px; 
-            display: flex; 
-            align-items: center; 
-            gap: 2px; 
-            z-index: 5000; 
-            width: auto; 
-            min-width: 280px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6); 
+            position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); 
+            background: #252438; border-radius: 50px; padding: 5px 8px; 
+            display: flex; align-items: center; gap: 2px; z-index: 5000; 
+            width: auto; min-width: 280px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); 
             border: 1px solid rgba(255,255,255,0.08); 
         }
-        .bottom-nav a { 
-            display: flex; 
-            align-items: center; 
-            gap: 6px; 
-            padding: 8px 12px; 
-            border-radius: 40px; 
-            color: #c7c7d6; 
-            text-decoration: none; 
-            font-size: 12px; 
-            font-weight: 700; 
-            flex-direction: row; 
-            transition: 0.2s;
-        }
-        .bottom-nav a i { 
-            font-size: 14px; 
-        }
-        .bottom-nav a.active { 
-            background: var(--accent); 
-            color: #000; 
-        }
-        .bottom-nav a:hover:not(.active) {
-            color: #fff;
-        }
+        .bottom-nav a { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 40px; color: #c7c7d6; text-decoration: none; font-size: 12px; font-weight: 700; transition: 0.2s; }
+        .bottom-nav a i { font-size: 14px; }
+        .bottom-nav a.active { background: var(--accent); color: #000; }
+        .bottom-nav a:hover:not(.active) { color: #fff; }
 
-        /* DESKTOP */
+        /* DESKTOP MEDIA QUERIES */
         @media (min-width: 768px) {
-            .bottom-nav { display:none; }
+            .nav-links { display: flex; } /* Muestra el menú en PC */
+            .bottom-nav { display:none; } /* Oculta el menú de abajo en PC */
             body { padding-bottom: 0; }
             .scroll-btn { display:flex; }
             .dorama-card { flex:0 0 162px; width:162px; }
@@ -227,6 +222,27 @@
     </style>
 </head>
 <body>
+
+    <!-- MENÚ SUPERIOR (HEADER) -->
+    <header class="top-navbar" id="mainHeader">
+        <a href="#" class="nav-logo" onclick="filter('all', document.querySelector('.filter-chip'))">
+            <i class="fa fa-play-circle"></i> Minihi<span>TV</span>
+        </a>
+        
+        <!-- Enlaces para PC -->
+        <nav class="nav-links">
+            <a href="#" class="active" onclick="filter('all', document.querySelector('.filter-chip:nth-child(1)'))">Inicio</a>
+            <a href="#" onclick="filter('kdrama', document.querySelector('.filter-chip:nth-child(2)'))">K-Dramas</a>
+            <a href="#" onclick="filter('cdrama', document.querySelector('.filter-chip:nth-child(3)'))">C-Dramas</a>
+            <a href="#" onclick="filter('movie', document.querySelector('.filter-chip:nth-child(4)'))">Películas</a>
+        </nav>
+        
+        <!-- Iconos a la derecha -->
+        <div class="nav-icons">
+            <button onclick="document.querySelector('.bottom-nav a:nth-child(2)').click()"><i class="fa fa-search"></i></button>
+            <button><i class="fa fa-user-circle"></i></button>
+        </div>
+    </header>
 
     <!-- 1️⃣ HERO SLIDER -->
     <section class="hero-container" onmouseenter="pauseSlider()" onmouseleave="resumeSlider()">
@@ -358,16 +374,6 @@
             </div>
         </section>
 
-        <!-- ÚLTIMAS ACTUALIZACIONES -->
-        <section class="content-shelf filterable" data-type="all">
-            <h2 class="shelf-title">Últimas Actualizaciones 📰</h2>
-            <div class="scroller-wrapper">
-                <button class="scroll-btn left" onclick="scrollShelf(this,-1)"><i class="fa fa-chevron-left"></i></button>
-                <div class="scroller news-scroller" id="newsGrid"></div>
-                <button class="scroll-btn right" onclick="scrollShelf(this,1)"><i class="fa fa-chevron-right"></i></button>
-            </div>
-        </section>
-
     </div>
 
     <!-- RESULTADOS DEL FILTRO MANUAL -->
@@ -378,7 +384,7 @@
 
     <!-- MENÚ INFERIOR MÓVIL (Píldora flotante) -->
     <footer class="bottom-nav">
-      <a href="go:inicio" class="active"><i class="fa fa-home"></i> Inicio</a>
+      <a href="#" class="active" onclick="filter('all', document.querySelector('.filter-chip'))"><i class="fa fa-home"></i> Inicio</a>
       <a href="go:buscador"><i class="fa fa-search"></i> Buscar</a>
       <a href="go:reels"><i class="fa fa-play-circle"></i> Reels</a>
       <a href="go:donacion"><i class="fa fa-heart"></i> Donar</a>
@@ -386,30 +392,42 @@
 
     <script>
         /* =====================================================
-           CONEXIÓN CON DATA.JSON Y LÓGICA DE LA PÁGINA
+           CONEXIÓN A LA BASE DE DATOS EXTERNA (data.json)
            ===================================================== */
-        let allSeries = []; // Variable global para guardar los datos
+        let allSeries = []; // La lista empieza vacía
 
         async function cargarBaseDeDatos() {
             try {
-                // Buscamos el archivo JSON en la raíz del servidor/repositorio
                 const respuesta = await fetch('data.json');
-                if (!respuesta.ok) throw new Error("No se pudo cargar el archivo data.json");
+                if (!respuesta.ok) throw new Error("No se pudo cargar data.json");
                 
-                allSeries = await respuesta.json(); // Llenamos la variable
-                loadContent(); // Arrancamos la creación de la página
+                allSeries = await respuesta.json(); // Llenamos la lista con tu archivo externo
+                loadContent(); // Creamos la web
                 
             } catch (error) {
-                console.error("Error al cargar datos:", error);
+                console.error("Error al cargar:", error);
                 document.getElementById('main-sections').innerHTML = `
                     <div style="text-align:center; padding:100px 20px; color:var(--text-sec);">
-                        <i class="fa fa-exclamation-triangle" style="font-size:3rem; color:var(--accent); margin-bottom:20px;"></i>
-                        <h2>Error de conexión</h2>
-                        <p>No se pudo cargar el catálogo. Asegúrate de que el archivo <b>data.json</b> exista en tu repositorio con la estructura correcta.</p>
+                        <i class="fa fa-database" style="font-size:3rem; color:var(--accent); margin-bottom:20px;"></i>
+                        <h2>Falta la base de datos</h2>
+                        <p>Por favor, crea un archivo llamado <b>data.json</b> en tu repositorio con la lista de tus doramas.</p>
                     </div>`;
             }
         }
 
+        /* ── EFECTO DEL MENÚ SUPERIOR AL HACER SCROLL ── */
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('mainHeader');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        /* =====================================================
+           LÓGICA DEL SITIO OPTIMIZADA PARA VELOCIDAD
+           ===================================================== */
         const $ = (sel) => document.querySelector(sel);
         const $$ = (sel) => document.querySelectorAll(sel);
 
@@ -429,7 +447,6 @@
             if(scroller) scroller.scrollBy({ left: scroller.clientWidth * dir * 0.82, behavior:'smooth' });
         }
 
-        /* ── HERO SLIDER LOGIC ── */
         const Hero = {
             interval: null,
             init() {
@@ -467,7 +484,6 @@
         function pauseSlider() { Hero.stop(); }
         function resumeSlider() { Hero.start(); }
 
-        /* ── CREADORES DE TARJETAS ── */
         function createDoramaCard(item, isEp = false) {
             const url = item.url ? item.url : `/ver/${slugify(item.title)}-${item.year}/`;
             const optImg = optimizeImg(item.img, 'w342');
@@ -511,17 +527,15 @@
                 </div>
                 <div class="news-content">
                     <h4>¡Ya disponible: ${item.title}!</h4>
-                    <p>No te pierdas el último lanzamiento en calidad HD.</p>
+                    <p>No te pierdas el último lanzamiento.</p>
                     <span class="news-date">Hace unas horas</span>
                 </div>
             </div>`;
         }
 
-        /* ── CARGA PROGRESIVA DE CONTENIDO ── */
         function loadContent() {
-            if(allSeries.length === 0) return; // Si no hay datos, no hacer nada
+            if(allSeries.length === 0) return;
 
-            // FASE 1: Renderizar Hero y Top 10
             const heroItems = allSeries.slice(0, 5);
             $('#heroSlider').innerHTML = heroItems.map((item, i) => {
                 const url = item.url ? item.url : `/ver/${slugify(item.title)}-${item.year}/`;
@@ -550,10 +564,8 @@
             Hero.init();
 
             $('#top10Grid').innerHTML = allSeries.slice(0, 10).map((item, index) => createTopCard(item, index)).join('');
-            
             initLazy();
 
-            // FASE 2: Diferir la carga del resto para mejor rendimiento
             requestAnimationFrame(() => {
                 setTimeout(loadRestOfContent, 50);
             });
@@ -583,13 +595,11 @@
             if (actors.length > 0) {
                 $('#api-actors').innerHTML = actors.map(a => {
                     const optImg = optimizeImg(a.img, 'w138_and_h175_face');
-                    return `<div class="actor-card" onclick="window.location.href='go:buscador'">
+                    return `<div class="actor-card">
                         <img class="actor-img lazy" data-src="${optImg}" decoding="async" alt="${a.name}">
                         <span class="actor-name">${a.name}</span>
                     </div>`;
                 }).join('');
-            } else {
-                $('#api-actors').innerHTML = `<p style="color:var(--text-sec); font-size:0.8rem; text-align:center; width:100%; padding: 20px;">Los actores aparecerán a medida que subas contenido.</p>`;
             }
 
             $('#kdramaGrid').innerHTML = kdramas.slice(0, 15).map(i => createDoramaCard(i)).join('');
@@ -598,15 +608,13 @@
             $('#romcomGrid').innerHTML = romcoms.slice(0, 15).map(i => createDoramaCard(i)).join('');
             $('#sadDramaGrid').innerHTML = sadDramas.slice(0, 15).map(i => createDoramaCard(i)).join('');
             $('#moviesGrid').innerHTML = movies.slice(0, 15).map(i => createDoramaCard(i)).join('');
-            $('#newsGrid').innerHTML = allSeries.slice(0, 8).map(i => createNewsCard(i)).join('');
 
             initLazy();
         }
 
-        /* ── FILTRO MANUAL ── */
         function filter(type, btn) {
-            $$('.filter-chip').forEach(b => b.classList.remove('active'));
-            btn?.classList.add('active');
+            $$('.filter-chip, .nav-links a').forEach(b => b.classList.remove('active'));
+            if(btn) btn.classList.add('active');
 
             const main      = $('#main-sections');
             const hero      = $('.hero-container');
@@ -641,7 +649,6 @@
             }
         }
 
-        /* ── LAZY LOADING OPTIMIZADO ── */
         let observer = null;
         function initLazy() {
             const imgs = $$('.lazy:not(.loaded)');
@@ -663,7 +670,7 @@
             imgs.forEach(img => observer.observe(img));
         }
 
-        // Ejecutar al cargar la página: Inicia pidiendo los datos al JSON
+        // Al iniciar, carga el JSON
         document.addEventListener('DOMContentLoaded', cargarBaseDeDatos);
     </script>
 </body>
