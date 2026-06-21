@@ -482,7 +482,7 @@
         function resumeSlider() { Hero.start(); }
 
         function createDoramaCard(item, isEp = false) {
-            const url = item.url ? item.url : `/ver/${slugify(item.title)}-${item.year}/`;
+            const url = `reproductor.html?id=${slugify(item.title)}`;
             const optImg = optimizeImg(item.img, 'w342');
             const subTitle = isEp ? `<span style="color:var(--accent); font-weight:600;">Episodio ${Math.floor(Math.random()*10)+1}</span>` : `<span>${item.year} • ${item.genre.charAt(0).toUpperCase() + item.genre.slice(1)}</span>`;
             
@@ -501,7 +501,7 @@
         }
 
         function createTopCard(item, index) {
-            const url = item.url ? item.url : `/ver/${slugify(item.title)}-${item.year}/`;
+            const url = `reproductor.html?id=${slugify(item.title)}`;
             const optImg = optimizeImg(item.img, 'w342');
             return `
             <div class="top-card" onclick="window.location.href='${url}'">
@@ -514,7 +514,7 @@
         }
 
         function createNewsCard(item) {
-            const url = item.url ? item.url : `/ver/${slugify(item.title)}-${item.year}/`;
+            const url = `reproductor.html?id=${slugify(item.title)}`;
             const optImg = optimizeImg(item.backdrop || item.img, 'w500');
             return `
             <div class="news-card" onclick="window.location.href='${url}'">
@@ -535,7 +535,7 @@
 
             const heroItems = allSeries.slice(0, 5);
             $('#heroSlider').innerHTML = heroItems.map((item, i) => {
-                const url = item.url ? item.url : `/ver/${slugify(item.title)}-${item.year}/`;
+                const url = `reproductor.html?id=${slugify(item.title)}`;
                 const optBackdrop = optimizeImg(item.backdrop, 'w1280');
                 return `
                 <div class="hero-slide">
