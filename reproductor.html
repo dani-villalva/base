@@ -23,6 +23,14 @@ body.cine-mode .scroll-content, body.cine-mode .app-top-bar { opacity: 0.05; poi
 .sticky-player-wrapper { position: sticky; top: 0; z-index: 1000; background: var(--bg-base); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
 .video-wrapper { position: relative; padding-bottom: 56.25%; background: #000 center/cover; }
 .video-wrapper iframe, .video-wrapper video { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+
+/* BARRA DE SERVIDORES NUEVA */
+.server-bar { display: flex; gap: 8px; padding: 12px 15px 0; align-items: center; overflow-x: auto; scrollbar-width: none; }
+.server-bar::-webkit-scrollbar { display: none; }
+.server-label { font-size: 11px; font-weight: 700; color: var(--text-sec); letter-spacing: 1px; }
+.server-btn { background: var(--bg-card); border: 1px solid var(--border); color: #fff; padding: 6px 14px; border-radius: 6px; font-size: 11px; font-weight: bold; white-space: nowrap; transition: 0.2s; }
+.server-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
 .player-toolbar { display: flex; gap: 8px; padding: 10px 15px; }
 .tool-btn { flex: 1; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-sec); padding: 8px 5px; border-radius: 6px; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 5px; text-transform: uppercase; }
 .tool-btn.active { color: var(--accent); border-color: var(--accent); }
@@ -48,6 +56,8 @@ body.cine-mode .scroll-content, body.cine-mode .app-top-bar { opacity: 0.05; poi
 .comment-avatar-preview { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-dim); color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: bold; }
 .comment-form input, .comment-form textarea { background: var(--bg-base); border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-family: inherit; }
 .submit-btn { background: var(--accent); color: #000; padding: 10px 20px; border-radius: 8px; font-weight: bold; width: 100%; }
+
+.geo-alert { font-size: 11px; color: #ff5252; text-align: center; margin-top: 5px; padding: 0 15px; display: none; }
 </style>
 </head>
 <body>
@@ -59,6 +69,16 @@ body.cine-mode .scroll-content, body.cine-mode .app-top-bar { opacity: 0.05; poi
 
   <div class="sticky-player-wrapper">
     <div class="video-wrapper" id="mediaContainer"></div>
+    
+    <!-- CONTENEDOR DE SERVIDORES -->
+    <div class="server-bar" id="serverBar">
+      <span class="server-label">SERVIDOR:</span>
+    </div>
+    <!-- ALERTA DE BLOQUEO -->
+    <div class="geo-alert" id="geoAlert">
+      <i class="fas fa-exclamation-triangle"></i> Si el video no carga, intenta con otra Opción o usa una app VPN.
+    </div>
+
     <div class="player-toolbar">
       <button class="tool-btn" onclick="toggleCine()"><i class="fas fa-moon"></i> Cine</button>
       <button class="tool-btn" onclick="toggleFullScreen()"><i class="fas fa-expand"></i> Full</button>
@@ -126,7 +146,6 @@ async function loadData() {
         let data = await res.json();
         if (!Array.isArray(data)) data = [data];
 
-        // Búsqueda inteligente (ignora mayúsculas y espacios extras)
         const serie = data.find(s => s.title.trim().toLowerCase() === titleParam.trim().toLowerCase());
         
         if (serie) {
@@ -150,23 +169,62 @@ async function loadData() {
 
 function renderMedia(url) {
     const c = document.getElementById('mediaContainer');
-    if(url.includes('dailymotion.com') || url.includes('iframe')) {
+    if(url.includes('dailymotion.com') || url.includes('iframe') || url.includes('youtube.com')) {
         c.innerHTML = `<iframe src="${url}" allowfullscreen allow="autoplay; fullscreen" style="width:100%;height:100%;"></iframe>`;
     } else {
         c.innerHTML = `<video src="${url}" controls autoplay style="width:100%;height:100%;"></video>`;
     }
 }
 
+// NUEVA FUNCIÓN PARA CAMBIAR DE SERVIDOR
+function setServer(url, btnElement) {
+    // Quitar activo a todos los botones
+    document.querySelectorAll('.server-btn').forEach(btn => btn.classList.remove('active'));
+    // Poner activo al que se dio clic
+    if(btnElement) btnElement.classList.add('active');
+    
+    renderMedia(url);
+}
+
 function changeVideo(index) {
     if(index < 0 || index >= EPISODES.length) return;
     currentIndex = index;
-    renderMedia(EPISODES[index].video || EPISODES[index].src);
+    const ep = EPISODES[index];
     
+    // CREAR BOTONES DE SERVIDOR
+    const serverBar = document.getElementById('serverBar');
+    let btnsHtml = '<span class="server-label">OPCIÓN:</span>';
+    
+    // Si tiene el servidor principal (video o src)
+    let mainVideo = ep.video || ep.src;
+    if(mainVideo) {
+        btnsHtml += `<button class="server-btn active" onclick="setServer('${mainVideo}', this)">1</button>`;
+    }
+    // Si en el JSON le pones "video2": "..."
+    if(ep.video2) {
+        btnsHtml += `<button class="server-btn" onclick="setServer('${ep.video2}', this)">2</button>`;
+    }
+    // Si en el JSON le pones "video3": "..."
+    if(ep.video3) {
+        btnsHtml += `<button class="server-btn" onclick="setServer('${ep.video3}', this)">3</button>`;
+    }
+    
+    serverBar.innerHTML = btnsHtml;
+    
+    // Mostrar alerta si hay más de una opción (significa que pusiste resplado)
+    document.getElementById('geoAlert').style.display = 'block';
+
+    // Reproducir el servidor 1 por defecto
+    renderMedia(mainVideo);
+    
+    // Marcar episodio activo
     const grid = document.getElementById('episodeGrid');
-    grid.innerHTML = EPISODES.map((ep, i) => `
+    grid.innerHTML = EPISODES.map((e, i) => `
         <button class="ep-btn ${i===currentIndex?'active':''}" onclick="changeVideo(${i})">
-            ${ep.number || (i+1)}
+            ${e.number || (i+1)}
         </button>`).join('');
+        
+    window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
 function navigateEpisode(dir) { changeVideo(currentIndex + dir); }
