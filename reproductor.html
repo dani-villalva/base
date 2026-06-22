@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-/* CSS INTACTO DE TU DISEÑO ORIGINAL */
+/* CSS EXPORTADO Y MEJORADO */
 :root {
   --bg-base: #0b0e14; --bg-card: #1a1f26; --accent: #00c853;
   --accent-dim: #0d251a; --text-main: #ffffff; --text-sec: #a0a0a0;
@@ -16,27 +16,35 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html { scroll-behavior: smooth; }
-body { background: var(--bg-base); color: var(--text-main); font-family: 'Inter', sans-serif; display: flex; justify-content: center; }
+
+/* Efecto Cine */
+body { background: var(--bg-base); color: var(--text-main); font-family: 'Inter', sans-serif; display: flex; justify-content: center; transition: background 0.3s; }
+body.cine-mode { background: #000; }
+body.cine-mode .scroll-content { opacity: 0.1; pointer-events: none; }
+body.cine-mode .app-top-bar { opacity: 0.1; pointer-events: none; }
+
 a { text-decoration: none; color: inherit; }
 button { cursor: pointer; font-family: inherit; border: none; background: none; }
 
-.player-page-container { width: 100%; max-width: 480px; background: var(--bg-base); min-height: 100vh; padding-bottom: 50px; }
+.player-page-container { width: 100%; max-width: 480px; background: inherit; min-height: 100vh; padding-bottom: 50px; }
 
 /* Barra Superior */
-.app-top-bar { display: flex; align-items: center; justify-content: space-between; padding: 15px; background: var(--bg-base); }
+.app-top-bar { display: flex; align-items: center; justify-content: space-between; padding: 15px; background: inherit; transition: opacity 0.3s; }
 .back-link { font-weight: 700; font-size: 14px; display: flex; gap: 8px; align-items: center; color: #fff; }
 .top-icons { display: flex; gap: 15px; color: var(--text-sec); font-size: 18px; }
 
 /* REPRODUCTOR STICKY */
-.sticky-player-wrapper { position: sticky; top: 0; z-index: 1000; background: var(--bg-base); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-.video-wrapper { position: relative; padding-bottom: 56.25%; background: #000 center/cover; }
+.sticky-player-wrapper { position: sticky; top: 0; z-index: 1000; background: inherit; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+.video-wrapper { position: relative; padding-bottom: 56.25%; background: #000 center/cover; transition: all 0.3s; }
 .video-wrapper iframe, .video-wrapper video { position: absolute; inset: 0; width: 100%; height: 100%; border: none; background: #000; }
 
 .player-toolbar { display: flex; gap: 8px; padding: 10px 15px; }
-.tool-btn { flex: 1; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-sec); padding: 8px 5px; border-radius: 6px; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 5px; text-transform: uppercase; }
+.tool-btn { flex: 1; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-sec); padding: 8px 5px; border-radius: 6px; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 5px; text-transform: uppercase; transition: 0.2s; }
+.tool-btn.active { color: var(--accent); border-color: var(--accent); }
 
 /* Contenido Principal */
-.scroll-content { padding-top: 10px; }
+.scroll-content { padding-top: 10px; transition: opacity 0.3s; }
+
 .main-info-padding { padding: 0 15px; }
 .series-eyebrow { font-size: 12px; font-weight: 700; color: var(--text-sec); text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.5px; }
 .main-title { font-size: 20px; font-weight: 800; margin-bottom: 10px; line-height: 1.2; }
@@ -51,8 +59,7 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
 .reactions-bar { padding: 5px 15px 20px; display: flex; flex-direction: column; gap: 10px; }
 .reaction-label { font-size: 11px; font-weight: 700; color: #777; text-transform: uppercase; letter-spacing: 1px; }
 .emoji-row { display: flex; justify-content: space-between; }
-.reaction-btn { background: var(--bg-card); width: 45px; height: 45px; border-radius: 50%; font-size: 20px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); transition: 0.2s;}
-.reaction-btn:active { transform: scale(1.2); background: var(--accent-dim); border-color: var(--accent); }
+.reaction-btn { background: var(--bg-card); width: 45px; height: 45px; border-radius: 50%; font-size: 20px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); transition: transform 0.2s; }
 
 /* Sinopsis */
 .synopsis-wrap { padding: 0 15px; margin-bottom: 25px; }
@@ -61,14 +68,14 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
 /* Botones de Navegación */
 .ep-nav-top { display: flex; gap: 10px; padding: 0 15px 25px; }
 .nav-btn { flex: 1; background: var(--bg-card); border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
-.nav-btn.active { background: var(--btn-bg); border-color: #3d4653; }
+.nav-btn:active { background: var(--btn-bg); border-color: #3d4653; }
 
 /* Grid de Episodios */
 .section-header { display: flex; justify-content: space-between; align-items: center; padding: 0 15px; margin-bottom: 15px; }
 .section-header h2 { font-size: 18px; font-weight: 800; }
 .ep-status { font-size: 11px; font-weight: 700; color: var(--accent); background: var(--accent-dim); padding: 4px 10px; border-radius: 12px; }
 .episode-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 0 15px 30px; }
-.ep-btn { background: var(--bg-card); aspect-ratio: 1; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: var(--text-sec); position: relative; border: 1px solid transparent; }
+.ep-btn { background: var(--bg-card); aspect-ratio: 1; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: var(--text-sec); border: 1px solid transparent; }
 .ep-btn.active { background: #0d1a14; border-color: #005a26; color: var(--accent); }
 
 /* Comentarios */
@@ -76,7 +83,7 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
 .comments-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .comment-form { background: var(--bg-card); border-radius: 12px; padding: 15px; border: 1px solid var(--border); margin-bottom: 20px;}
 .form-row { display: flex; gap: 10px; margin-bottom: 10px; }
-.comment-avatar-preview { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-dim); color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: bold; }
+.comment-avatar-preview { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-dim); color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
 .comment-form input, .comment-form textarea { flex: 1; background: var(--bg-base); border: 1px solid var(--border); color: #fff; padding: 12px 15px; border-radius: 8px; font-size: 13px; outline: none; width: 100%; font-family: inherit; }
 .comment-form input:focus, .comment-form textarea:focus { border-color: var(--accent); }
 .comment-form textarea { height: 80px; resize: none; margin-bottom: 15px; }
@@ -89,26 +96,28 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
 <div class="player-page-container">
   
   <div class="app-top-bar">
-    <!-- history.back() devuelve al usuario a donde estaba (inicio o buscador) -->
-    <a href="javascript:history.back()" class="back-link"><i class="fas fa-chevron-left"></i> Volver</a>
+    <!-- RETROCEDER A BUSCAR.HTML (Como lo pediste) -->
+    <a href="buscar.html" class="back-link"><i class="fas fa-chevron-left"></i> Volver</a>
     <div class="top-icons">
-      <i class="fas fa-share-alt" style="cursor:pointer;" onclick="shareSerie()"></i>
+      <!-- BOTON COMPARTIR NATIVO APPCREATOR24 -->
+      <i class="fas fa-share-alt" style="cursor:pointer;" onclick="window.location.href='http://action_share'"></i>
     </div>
   </div>
 
   <div class="sticky-player-wrapper">
     <div class="video-wrapper" id="mediaContainer"></div>
     <div class="player-toolbar">
-      <button class="tool-btn"><i class="fas fa-moon"></i> Cine</button>
-      <button class="tool-btn"><i class="fas fa-clone"></i> Flotante</button>
-      <button class="tool-btn"><i class="fas fa-expand-arrows-alt"></i> Full</button>
+      <button class="tool-btn" id="btnCine" onclick="toggleCine()"><i class="fas fa-moon"></i> Cine</button>
+      <button class="tool-btn" onclick="togglePiP()"><i class="fas fa-clone"></i> Flotante</button>
+      <button class="tool-btn" onclick="toggleFullScreen()"><i class="fas fa-expand-arrows-alt"></i> Full</button>
     </div>
   </div>
 
   <div class="scroll-content">
+    
     <div class="main-info-padding">
-      <p class="series-eyebrow" id="displayCategory">DRAMA</p>
-      <h1 class="main-title" id="displayTitle">Cargando contenido...</h1>
+      <p class="series-eyebrow" id="displayCategory">CARGANDO...</p>
+      <h1 class="main-title" id="displayTitle">Buscando serie...</h1>
       <div class="meta-tags-row">
         <span class="badge badge-hd">HD</span>
         <span class="badge-rating"><i class="fas fa-star"></i> <span id="displayRate">--</span></span>
@@ -130,12 +139,12 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
     </div>
 
     <div class="synopsis-wrap">
-      <p class="synopsis-text" id="displaySynopsis">Cargando información...</p>
+      <p class="synopsis-text" id="displaySynopsis">Por favor espera unos segundos...</p>
     </div>
 
     <div class="ep-nav-top">
       <button class="nav-btn" onclick="navigateEpisode(-1)"><i class="fas fa-chevron-left"></i> Anterior</button>
-      <button class="nav-btn active" onclick="navigateEpisode(1)">Siguiente <i class="fas fa-chevron-right"></i></button>
+      <button class="nav-btn" onclick="navigateEpisode(1)">Siguiente <i class="fas fa-chevron-right"></i></button>
     </div>
 
     <section>
@@ -143,6 +152,7 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
       <div class="episode-grid" id="episodeGrid"></div>
     </section>
 
+    <!-- ZONA DE COMENTARIOS ACTIVADA -->
     <section class="comments-section">
       <div class="comments-header"><h3>Comentarios</h3><span id="commentCountLabel">0 en total</span></div>
       <div class="comment-form">
@@ -150,12 +160,14 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
           <div class="comment-avatar-preview" id="avatarPreview">?</div>
           <input type="text" id="commentUser" placeholder="Tu nombre o alias" oninput="updateAvatar(this.value)">
         </div>
-        <textarea id="commentText" placeholder="¿Qué te pareció?"></textarea>
+        <textarea id="commentText" placeholder="¿Qué te pareció este episodio?"></textarea>
         <div class="form-footer">
-          <label class="spoiler-label"><input type="checkbox" id="commentSpoiler"> <i class="fas fa-eye-slash"></i> Spoiler</label>
+          <label class="spoiler-label"><input type="checkbox" id="commentSpoiler"> <i class="fas fa-eye-slash"></i> Contiene spoiler</label>
           <button class="submit-btn" onclick="sendComment()">Publicar</button>
         </div>
       </div>
+      
+      <!-- AQUÍ SE GENERAN LOS COMENTARIOS -->
       <div id="commentsList"></div>
     </section>
   </div>
@@ -163,7 +175,7 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
 
 <script>
 let EPISODES = [];
-let SERIES_TITLE = "";
+let SERIES_TITLE = "serie_desconocida";
 let POSTER_IMG = "";
 let currentIndex = 0;
 
@@ -173,70 +185,66 @@ function isDirectVideo(url){ return /\.(mp4|webm|ogg)(\?.*)?$/i.test(url); }
 function getCommentKey() { return 'comments_' + SERIES_TITLE.replace(/\s+/g, '_'); }
 
 // ==========================================
-// 1. CONEXIÓN CON DATA.JSON 
+// 1. CONEXIÓN DIRECTA CON DATA.JSON
 // ==========================================
-async function initPage() {
-    // Extraer el nombre de la serie de la URL (Ej: reproductor.html?title=Batman)
-    const params = new URLSearchParams(window.location.search);
-    const titleParam = params.get('title');
-
-    if (!titleParam) {
-        document.getElementById('displayTitle').textContent = "Error: Serie no especificada";
-        return;
-    }
-
+async function startApp() {
     try {
-        // Cargar el JSON central
+        const params = new URLSearchParams(window.location.search);
+        const titleParam = params.get('title');
+
+        if (!titleParam) {
+            document.getElementById('displayTitle').textContent = "Error: Sin título";
+            document.getElementById('displaySynopsis').textContent = "Vuelve al menú principal y selecciona un dorama.";
+            return;
+        }
+
+        // Cargar Base de Datos
         const res = await fetch('data.json?v=' + Date.now());
         let data = await res.json();
         if (!Array.isArray(data)) data = [data];
 
-        // Buscar el dorama específico
+        // Buscar información en JSON
         const serie = data.find(s => s.title === titleParam);
         
         if (!serie) {
             document.getElementById('displayTitle').textContent = "Contenido no encontrado";
+            document.getElementById('displaySynopsis').textContent = "La base de datos no contiene este dorama.";
             return;
         }
 
-        // Llenar datos globales
+        // Cargar Variables Globales
         SERIES_TITLE = serie.title;
         EPISODES = serie.episodes || [];
         POSTER_IMG = serie.img || "";
 
-        // Actualizar Textos en pantalla
-        document.title = "Ver " + serie.title + " | Minihi Tv";
+        // Inyectar a la pantalla HTML
+        document.title = "Ver " + serie.title;
         document.getElementById('displayTitle').textContent = serie.title;
         document.getElementById('displaySynopsis').textContent = serie.description || "Sinopsis no disponible.";
-        document.getElementById('displayCategory').textContent = serie.category || "CONTENIDO";
+        document.getElementById('displayCategory').textContent = serie.category || "DRAMA";
         document.getElementById('displayGenre').textContent = serie.genre || "Drama";
         document.getElementById('displayYear').textContent = "• " + (serie.year || '') + " •";
         document.getElementById('displayRate').textContent = serie.rate || "N/A";
         document.getElementById('epCount').textContent = EPISODES.length + " EP";
 
-        // Actualizar Fondo del Reproductor
         const bgImg = serie.backdrop || serie.img;
-        if(bgImg) {
-            document.querySelector('.video-wrapper').style.backgroundImage = `url('${bgImg}')`;
-        }
+        if(bgImg) document.querySelector('.video-wrapper').style.backgroundImage = "url('" + bgImg + "')";
 
-        // Iniciar video y comentarios
-        if(EPISODES.length > 0) {
-            changeVideo(0);
-        } else {
-            document.getElementById('mediaContainer').innerHTML = '<div style="color:#555; text-align:center; padding-top:25%;">Próximamente episodios</div>';
-        }
+        // Arrancar episodios y Comentarios
+        if(EPISODES.length > 0) changeVideo(0);
+        else document.getElementById('mediaContainer').innerHTML = '<div style="color:#555; text-align:center; padding-top:25%;">Próximamente episodios</div>';
         
         loadComments();
 
-    } catch (error) {
-        console.error(error);
-        document.getElementById('displayTitle').textContent = "Error al cargar los datos";
+    } catch (e) {
+        console.error(e);
+        document.getElementById('displayTitle').textContent = "Error de conexión";
+        document.getElementById('displaySynopsis').textContent = "Revise su internet o archivo JSON.";
     }
 }
 
 // ==========================================
-// LOGICA DE REPRODUCTOR ORIGINAL
+// LÓGICA DE REPRODUCTOR Y EPISODIOS
 // ==========================================
 function renderMedia(url){
   const c = document.getElementById('mediaContainer');
@@ -244,21 +252,20 @@ function renderMedia(url){
   if(!url) { c.innerHTML = '<div style="color:#555; text-align:center; padding-top:25%;">Video no disponible</div>'; return; }
   
   if(isDirectVideo(url)){
-    c.innerHTML = `<video src="${url}" poster="${POSTER_IMG}" controls autoplay playsinline style="width:100%;height:100%;"></video>`;
+    c.innerHTML = '<video id="myVideo" src="'+url+'" poster="'+POSTER_IMG+'" controls autoplay playsinline style="width:100%;height:100%;"></video>';
   } else {
-    // Permisos adaptados para que AppCreator24 permita pantalla completa
-    c.innerHTML = `<iframe src="${url}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="width:100%;height:100%;"></iframe>`;
+    c.innerHTML = '<iframe id="myIframe" src="'+url+'" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="width:100%;height:100%;"></iframe>';
   }
 }
 
 function renderGrid(){
   const grid = document.getElementById('episodeGrid');
   grid.innerHTML = '';
-  EPISODES.forEach((ep,i)=>{
+  EPISODES.forEach((ep, i) => {
     const btn = document.createElement('button');
     btn.className = 'ep-btn' + (i===currentIndex ? ' active' : '');
     btn.innerHTML = ep.number || (i + 1);
-    btn.onclick = ()=> changeVideo(i);
+    btn.onclick = () => changeVideo(i);
     grid.appendChild(btn);
   });
 }
@@ -267,17 +274,45 @@ function changeVideo(index){
   if(index<0 || index>=EPISODES.length) return;
   currentIndex = index;
   const ep = EPISODES[index];
-  renderMedia(ep.video || ep.src); // Soporta tanto 'video' (tu json actual) como 'src' (tu json viejo)
+  renderMedia(ep.video || ep.src);
   renderGrid();
   window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
 function navigateEpisode(dir){
-  changeVideo(currentIndex+dir);
+  changeVideo(currentIndex + dir);
 }
 
 // ==========================================
-// COMENTARIOS Y BOTONES EXTRAS
+// FUNCIONES DE HERRAMIENTAS (CINE, FULL)
+// ==========================================
+function toggleCine() {
+    document.body.classList.toggle('cine-mode');
+    document.getElementById('btnCine').classList.toggle('active');
+}
+
+function toggleFullScreen() {
+    const wrapper = document.querySelector('.video-wrapper');
+    if (!document.fullscreenElement) {
+        if (wrapper.requestFullscreen) wrapper.requestFullscreen();
+        else if (wrapper.webkitRequestFullscreen) wrapper.webkitRequestFullscreen();
+    } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+    }
+}
+
+function togglePiP() {
+    const video = document.getElementById('myVideo');
+    if (video) {
+        if (document.pictureInPictureElement) document.exitPictureInPicture();
+        else if (video.requestPictureInPicture) video.requestPictureInPicture();
+    } else {
+        alert("Modo flotante no disponible para este servidor.");
+    }
+}
+
+// ==========================================
+// SISTEMA DE COMENTARIOS
 // ==========================================
 function updateAvatar(val){
   const av = document.getElementById('avatarPreview');
@@ -288,7 +323,6 @@ function updateAvatar(val){
 }
 
 function loadComments() {
-  if(!SERIES_TITLE) return;
   const list = document.getElementById('commentsList');
   const comments = JSON.parse(localStorage.getItem(getCommentKey())) || [];
   document.getElementById('commentCountLabel').textContent = comments.length + ' en total';
@@ -307,7 +341,7 @@ function loadComments() {
     
     htmlStr += '<div style="background:var(--bg-base); border:1px solid var(--border); padding:12px; border-radius:8px; margin-top:10px;">' +
                '<div style="display:flex; gap:10px; align-items:center; margin-bottom:8px;">' +
-               '<div style="width:30px; height:30px; border-radius:50%; background:var(--accent-dim); color:var(--accent); display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:12px;">'+init+'</div>' +
+               '<div style="width:30px; height:30px; border-radius:50%; background:var(--accent-dim); color:var(--accent); display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:12px; flex-shrink:0;">'+init+'</div>' +
                '<div><strong style="font-size:13px;">'+safeUser+'</strong> <span style="font-size:10px; color:var(--text-sec); margin-left:8px;">'+c.date+'</span></div>' +
                '</div><p style="font-size:13px; color:#ddd; line-height:1.4;">'+txtHtml+'</p></div>';
   });
@@ -337,18 +371,9 @@ function animEmoji(btn){
   setTimeout(() => btn.style.transform = "scale(1)", 150);
 }
 
-function shareSerie() {
-    if (navigator.share) {
-        navigator.share({
-            title: SERIES_TITLE,
-            text: `¡Mira ${SERIES_TITLE} en Minihi TV!`,
-            url: window.location.href
-        });
-    }
-}
+// INICIAR DE INMEDIATO AL FINAL DEL SCRIPT (Evita errores de carga)
+startApp();
 
-// Iniciar al cargar
-window.addEventListener('load', initPage);
 </script>
 </body>
 </html>
