@@ -223,11 +223,21 @@
 
     <script>
         let allSeries = [];
+        
+        // Indicamos la ruta local al archivo de la misma carpeta
+        const URL_JSON = 'data.json';
 
         async function cargarBaseDeDatos() {
             try {
-                const res = await fetch('data.json?v=' + Date.now());
+                // Se mantiene la prevención de caché para que se actualice al momento si subes doramas nuevos
+                const res = await fetch(URL_JSON + '?v=' + Date.now());
                 allSeries = await res.json();
+                
+                // Salvaguarda: si por error el JSON no es un arreglo, lo convertimos para evitar que se rompa la web
+                if (!Array.isArray(allSeries)) {
+                    allSeries = [allSeries];
+                }
+                
                 loadContent();
             } catch (e) {
                 console.error("Error cargando JSON", e);
@@ -283,7 +293,8 @@
                     btn.onclick = () => {
                         document.querySelectorAll('.ep-btn-modal').forEach(b => b.classList.remove('active'));
                         btn.classList.add('active');
-                        container.innerHTML = `<iframe src="${ep.video}" style="width:100%; height:100%; border:none;" allowfullscreen allow="autoplay"></iframe>`;
+                        // Ajuste clave: Se agregan permisos avanzados (allowfullscreen, picture-in-picture) para AppCreator24
+                        container.innerHTML = `<iframe src="${ep.video}" style="width:100%; height:100%; border:none;" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>`;
                     };
                     episodesEl.appendChild(btn);
                 });
