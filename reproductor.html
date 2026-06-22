@@ -96,10 +96,8 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
 <div class="player-page-container">
   
   <div class="app-top-bar">
-    <!-- RETROCEDER A BUSCAR.HTML (Como lo pediste) -->
     <a href="buscar.html" class="back-link"><i class="fas fa-chevron-left"></i> Volver</a>
     <div class="top-icons">
-      <!-- BOTON COMPARTIR NATIVO APPCREATOR24 -->
       <i class="fas fa-share-alt" style="cursor:pointer;" onclick="window.location.href='http://action_share'"></i>
     </div>
   </div>
@@ -152,7 +150,7 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
       <div class="episode-grid" id="episodeGrid"></div>
     </section>
 
-    <!-- ZONA DE COMENTARIOS ACTIVADA -->
+    <!-- ZONA DE COMENTARIOS -->
     <section class="comments-section">
       <div class="comments-header"><h3>Comentarios</h3><span id="commentCountLabel">0 en total</span></div>
       <div class="comment-form">
@@ -166,8 +164,6 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
           <button class="submit-btn" onclick="sendComment()">Publicar</button>
         </div>
       </div>
-      
-      <!-- AQUÍ SE GENERAN LOS COMENTARIOS -->
       <div id="commentsList"></div>
     </section>
   </div>
@@ -179,8 +175,19 @@ let SERIES_TITLE = "serie_desconocida";
 let POSTER_IMG = "";
 let currentIndex = 0;
 
-// Utilidades
-function esc(str){ if(!str) return ''; return String(str).replace(/[&<>'"]/g, t => ({'&':'&','<':'<','>':'>',"'":''','"':'"'}[t])); }
+// Utilidades corregidas (sin el error de Unexpected String)
+function esc(str) {
+    if (!str) return '';
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    };
+    return String(str).replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
 function isDirectVideo(url){ return /\.(mp4|webm|ogg)(\?.*)?$/i.test(url); }
 function getCommentKey() { return 'comments_' + SERIES_TITLE.replace(/\s+/g, '_'); }
 
@@ -198,12 +205,10 @@ async function startApp() {
             return;
         }
 
-        // Cargar Base de Datos
         const res = await fetch('data.json?v=' + Date.now());
         let data = await res.json();
         if (!Array.isArray(data)) data = [data];
 
-        // Buscar información en JSON
         const serie = data.find(s => s.title === titleParam);
         
         if (!serie) {
@@ -212,12 +217,10 @@ async function startApp() {
             return;
         }
 
-        // Cargar Variables Globales
         SERIES_TITLE = serie.title;
         EPISODES = serie.episodes || [];
         POSTER_IMG = serie.img || "";
 
-        // Inyectar a la pantalla HTML
         document.title = "Ver " + serie.title;
         document.getElementById('displayTitle').textContent = serie.title;
         document.getElementById('displaySynopsis').textContent = serie.description || "Sinopsis no disponible.";
@@ -230,7 +233,6 @@ async function startApp() {
         const bgImg = serie.backdrop || serie.img;
         if(bgImg) document.querySelector('.video-wrapper').style.backgroundImage = "url('" + bgImg + "')";
 
-        // Arrancar episodios y Comentarios
         if(EPISODES.length > 0) changeVideo(0);
         else document.getElementById('mediaContainer').innerHTML = '<div style="color:#555; text-align:center; padding-top:25%;">Próximamente episodios</div>';
         
@@ -371,7 +373,7 @@ function animEmoji(btn){
   setTimeout(() => btn.style.transform = "scale(1)", 150);
 }
 
-// INICIAR DE INMEDIATO AL FINAL DEL SCRIPT (Evita errores de carga)
+// INICIAR LA APP
 startApp();
 
 </script>
