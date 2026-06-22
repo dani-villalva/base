@@ -96,8 +96,7 @@
         .hero-buttons { display:flex; gap:12px; align-items:center; margin-top:4px; }
         
         .btn-primary { background: var(--accent); color: #000; border: none; padding: 13px 30px; border-radius:8px; font-weight: 800; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 6px 24px var(--accent-glow); transition: all var(--transition); }
-        .btn-secondary { background: rgba(255,255,255,0.12); backdrop-filter:blur(12px); color: #fff; border: 1px solid rgba(255,255,255,0.2); width:46px; height:46px; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; }
-
+        
         /* ── FILTER BAR ── */
         .filter-bar { position:sticky; top: var(--nav-height); z-index:90; background:var(--glass); backdrop-filter:blur(20px); padding:15px 0; border-bottom:1px solid var(--border); }
         .filter-track { display:flex; gap:8px; padding:0 4%; overflow-x:auto; scrollbar-width:none; }
@@ -200,21 +199,15 @@
 
     <script>
         let allSeries = [];
-        
-        // Indicamos la ruta local al archivo de la misma carpeta
         const URL_JSON = 'data.json';
 
         async function cargarBaseDeDatos() {
             try {
-                // Prevención de caché
                 const res = await fetch(URL_JSON + '?v=' + Date.now());
                 allSeries = await res.json();
-                
-                // Salvaguarda si no es array
                 if (!Array.isArray(allSeries)) {
                     allSeries = [allSeries];
                 }
-                
                 loadContent();
             } catch (e) {
                 console.error("Error cargando JSON", e);
