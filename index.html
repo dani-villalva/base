@@ -122,19 +122,6 @@
         .top-number { font-size:118px; font-weight:900; color:var(--bg-base); -webkit-text-stroke:2.5px #2A2A3A; position:absolute; left:-18px; bottom:-22px; z-index:1; }
         .top-card .poster { width:120px; height:180px; margin-left:auto; z-index:2; }
 
-        /* ── MODAL REPRODUCTOR ── */
-        #videoModal {
-            display:none; position:fixed; inset:0; background:rgba(7,7,14,0.98); 
-            z-index:100000; flex-direction:column; align-items:center; justify-content:flex-start; 
-            padding:20px; overflow-y:auto;
-        }
-        .modal-content { width:100%; max-width:800px; margin-top: 40px; }
-        .video-box { width:100%; aspect-ratio:16/9; background:#000; border-radius:10px; overflow:hidden; border:1px solid var(--border); box-shadow:0 20px 50px rgba(0,0,0,0.8); }
-        #modalEpisodes { display:flex; gap:10px; flex-wrap:wrap; margin-top:20px; justify-content:center; padding-bottom:40px; }
-        .ep-btn-modal { background:#1a1f26; color:white; border:1px solid var(--border); padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold; transition:0.2s; }
-        .ep-btn-modal.active { background:var(--accent); color:#000; border-color:var(--accent); }
-        .close-modal { position:fixed; top:20px; right:20px; background:rgba(255,255,255,0.1); color:white; border:none; width:45px; height:45px; border-radius:50%; font-size:20px; cursor:pointer; z-index:100001; }
-
         /* ── BOTTOM NAV MÓVIL ── */
         .bottom-nav {
             position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); 
@@ -203,16 +190,6 @@
         <div id="filter-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(130px, 1fr)); gap:15px; padding:0 4%;"></div>
     </div>
 
-    <!-- REPRODUCTOR MODAL (EL CORAZÓN DEL SITIO) -->
-    <div id="videoModal">
-        <button class="close-modal" onclick="cerrarReproductor()">×</button>
-        <div class="modal-content">
-            <div class="video-box" id="videoContainer"></div>
-            <h2 id="modalTitle" style="text-align:center; margin-top:20px; font-size:1.5rem;"></h2>
-            <div id="modalEpisodes"></div>
-        </div>
-    </div>
-
     <!-- MENÚ INFERIOR -->
     <footer class="bottom-nav">
       <a href="index.html" class="active"><i class="fa fa-home"></i> Inicio</a>
@@ -229,11 +206,11 @@
 
         async function cargarBaseDeDatos() {
             try {
-                // Se mantiene la prevención de caché para que se actualice al momento si subes doramas nuevos
+                // Prevención de caché
                 const res = await fetch(URL_JSON + '?v=' + Date.now());
                 allSeries = await res.json();
                 
-                // Salvaguarda: si por error el JSON no es un arreglo, lo convertimos para evitar que se rompa la web
+                // Salvaguarda si no es array
                 if (!Array.isArray(allSeries)) {
                     allSeries = [allSeries];
                 }
@@ -252,7 +229,7 @@
         // CARRETE DE DORAMAS
         function createDoramaCard(item) {
             return `
-            <div class="dorama-card" onclick="abrirReproductor('${item.title.replace(/'/g, "\\'")}')">
+            <div class="dorama-card" onclick="window.location.href='reproductor.html?title=' + encodeURIComponent('${item.title.replace(/'/g, "\\'")}')">
                 <div class="poster skeleton">
                     <img class="lazy" data-src="${optimizeImg(item.img)}" alt="${item.title}">
                     <div class="poster-overlay"><i class="fa fa-play-circle"></i></div>
@@ -266,56 +243,17 @@
 
         function createTopCard(item, index) {
             return `
-            <div class="top-card" onclick="abrirReproductor('${item.title.replace(/'/g, "\\'")}')">
+            <div class="top-card" onclick="window.location.href='reproductor.html?title=' + encodeURIComponent('${item.title.replace(/'/g, "\\'")}')">
                 <div class="top-number">${index + 1}</div>
                 <div class="poster skeleton"><img class="lazy" data-src="${optimizeImg(item.img)}"></div>
             </div>`;
-        }
-
-        // LÓGICA REPRODUCTOR
-        function abrirReproductor(titulo) {
-            const drama = allSeries.find(d => d.title === titulo);
-            if (!drama) return;
-
-            document.getElementById('videoModal').style.display = 'flex';
-            document.getElementById('modalTitle').innerText = drama.title;
-            document.body.style.overflow = 'hidden'; // Bloquear scroll
-
-            const episodesEl = document.getElementById('modalEpisodes');
-            const container = document.getElementById('videoContainer');
-            
-            episodesEl.innerHTML = "";
-            if (drama.episodes && drama.episodes.length > 0) {
-                drama.episodes.forEach((ep, i) => {
-                    const btn = document.createElement('button');
-                    btn.className = 'ep-btn-modal';
-                    btn.innerText = "EP " + (ep.number || i+1);
-                    btn.onclick = () => {
-                        document.querySelectorAll('.ep-btn-modal').forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-                        // Ajuste clave: Se agregan permisos avanzados (allowfullscreen, picture-in-picture) para AppCreator24
-                        container.innerHTML = `<iframe src="${ep.video}" style="width:100%; height:100%; border:none;" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>`;
-                    };
-                    episodesEl.appendChild(btn);
-                });
-                // Cargar el primer video automáticamente
-                episodesEl.firstChild.click();
-            } else {
-                container.innerHTML = "<div style='color:white; text-align:center; padding-top:20%;'>Próximamente episodios</div>";
-            }
-        }
-
-        function cerrarReproductor() {
-            document.getElementById('videoModal').style.display = 'none';
-            document.getElementById('videoContainer').innerHTML = "";
-            document.body.style.overflow = 'auto';
         }
 
         // RENDERIZADO INICIAL
         function loadContent() {
             // Slider
             $('#heroSlider').innerHTML = allSeries.slice(0, 5).map(item => `
-                <div class="hero-slide" onclick="abrirReproductor('${item.title.replace(/'/g, "\\'")}')">
+                <div class="hero-slide" onclick="window.location.href='reproductor.html?title=' + encodeURIComponent('${item.title.replace(/'/g, "\\'")}')">
                     <img src="${item.backdrop || item.img}" class="hero-bg">
                     <div class="hero-gradient-bottom"></div>
                     <div class="hero-info">
