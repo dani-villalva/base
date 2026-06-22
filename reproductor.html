@@ -7,162 +7,99 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-/* CSS EXPORTADO Y MEJORADO */
 :root {
   --bg-base: #0b0e14; --bg-card: #1a1f26; --accent: #00c853;
   --accent-dim: #0d251a; --text-main: #ffffff; --text-sec: #a0a0a0;
   --border: #2d343e; --btn-bg: #242a32;
 }
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html { scroll-behavior: smooth; }
-
-/* Efecto Cine */
 body { background: var(--bg-base); color: var(--text-main); font-family: 'Inter', sans-serif; display: flex; justify-content: center; transition: background 0.3s; }
 body.cine-mode { background: #000; }
-body.cine-mode .scroll-content { opacity: 0.1; pointer-events: none; }
-body.cine-mode .app-top-bar { opacity: 0.1; pointer-events: none; }
-
-a { text-decoration: none; color: inherit; }
-button { cursor: pointer; font-family: inherit; border: none; background: none; }
-
+body.cine-mode .scroll-content, body.cine-mode .app-top-bar { opacity: 0.05; pointer-events: none; }
 .player-page-container { width: 100%; max-width: 480px; background: inherit; min-height: 100vh; padding-bottom: 50px; }
-
-/* Barra Superior */
-.app-top-bar { display: flex; align-items: center; justify-content: space-between; padding: 15px; background: inherit; transition: opacity 0.3s; }
+.app-top-bar { display: flex; align-items: center; justify-content: space-between; padding: 15px; }
 .back-link { font-weight: 700; font-size: 14px; display: flex; gap: 8px; align-items: center; color: #fff; }
-.top-icons { display: flex; gap: 15px; color: var(--text-sec); font-size: 18px; }
-
-/* REPRODUCTOR STICKY */
-.sticky-player-wrapper { position: sticky; top: 0; z-index: 1000; background: inherit; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-.video-wrapper { position: relative; padding-bottom: 56.25%; background: #000 center/cover; transition: all 0.3s; }
-.video-wrapper iframe, .video-wrapper video { position: absolute; inset: 0; width: 100%; height: 100%; border: none; background: #000; }
-
+.sticky-player-wrapper { position: sticky; top: 0; z-index: 1000; background: var(--bg-base); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+.video-wrapper { position: relative; padding-bottom: 56.25%; background: #000 center/cover; }
+.video-wrapper iframe, .video-wrapper video { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
 .player-toolbar { display: flex; gap: 8px; padding: 10px 15px; }
-.tool-btn { flex: 1; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-sec); padding: 8px 5px; border-radius: 6px; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 5px; text-transform: uppercase; transition: 0.2s; }
+.tool-btn { flex: 1; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-sec); padding: 8px 5px; border-radius: 6px; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 5px; text-transform: uppercase; }
 .tool-btn.active { color: var(--accent); border-color: var(--accent); }
-
-/* Contenido Principal */
-.scroll-content { padding-top: 10px; transition: opacity 0.3s; }
-
+.scroll-content { padding-top: 10px; }
 .main-info-padding { padding: 0 15px; }
-.series-eyebrow { font-size: 12px; font-weight: 700; color: var(--text-sec); text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.5px; }
-.main-title { font-size: 20px; font-weight: 800; margin-bottom: 10px; line-height: 1.2; }
-.meta-tags-row { display: flex; align-items: center; gap: 8px; font-size: 12px; margin-bottom: 15px; flex-wrap: wrap; }
-.badge { padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; }
-.badge-hd { background: #2d343e; color: #fff; }
-.badge-rating { color: #ffca28; font-weight: bold; }
-.meta-text { color: var(--text-sec); }
-.meta-genre { color: var(--accent); font-weight: 600; text-transform: capitalize; }
-
-/* Reacciones */
-.reactions-bar { padding: 5px 15px 20px; display: flex; flex-direction: column; gap: 10px; }
-.reaction-label { font-size: 11px; font-weight: 700; color: #777; text-transform: uppercase; letter-spacing: 1px; }
-.emoji-row { display: flex; justify-content: space-between; }
-.reaction-btn { background: var(--bg-card); width: 45px; height: 45px; border-radius: 50%; font-size: 20px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); transition: transform 0.2s; }
-
-/* Sinopsis */
-.synopsis-wrap { padding: 0 15px; margin-bottom: 25px; }
-.synopsis-text { font-size: 13px; color: #bbb; line-height: 1.6; }
-
-/* Botones de Navegación */
+.series-eyebrow { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; margin-bottom: 5px; }
+.main-title { font-size: 22px; font-weight: 800; margin-bottom: 10px; }
+.meta-tags-row { display: flex; align-items: center; gap: 8px; font-size: 12px; margin-bottom: 15px; }
+.badge { padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; background: #2d343e; }
+.badge-rating { color: #ffca28; }
+.reactions-bar { padding: 5px 15px 20px; }
+.emoji-row { display: flex; justify-content: space-between; margin-top: 10px; }
+.reaction-btn { background: var(--bg-card); width: 45px; height: 45px; border-radius: 50%; font-size: 20px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); transition: 0.2s; }
+.synopsis-wrap { padding: 0 15px; margin-bottom: 25px; font-size: 13px; color: #bbb; line-height: 1.6; }
 .ep-nav-top { display: flex; gap: 10px; padding: 0 15px 25px; }
-.nav-btn { flex: 1; background: var(--bg-card); border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
-.nav-btn:active { background: var(--btn-bg); border-color: #3d4653; }
-
-/* Grid de Episodios */
-.section-header { display: flex; justify-content: space-between; align-items: center; padding: 0 15px; margin-bottom: 15px; }
-.section-header h2 { font-size: 18px; font-weight: 800; }
-.ep-status { font-size: 11px; font-weight: 700; color: var(--accent); background: var(--accent-dim); padding: 4px 10px; border-radius: 12px; }
+.nav-btn { flex: 1; background: var(--bg-card); border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px; }
 .episode-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 0 15px 30px; }
-.ep-btn { background: var(--bg-card); aspect-ratio: 1; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: var(--text-sec); border: 1px solid transparent; }
-.ep-btn.active { background: #0d1a14; border-color: #005a26; color: var(--accent); }
-
+.ep-btn { background: var(--bg-card); aspect-ratio: 1; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--text-sec); border: 1px solid transparent; }
+.ep-btn.active { background: #0d1a14; border-color: var(--accent); color: var(--accent); }
 /* Comentarios */
 .comments-section { padding: 30px 15px; border-top: 1px solid var(--border); }
-.comments-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .comment-form { background: var(--bg-card); border-radius: 12px; padding: 15px; border: 1px solid var(--border); margin-bottom: 20px;}
-.form-row { display: flex; gap: 10px; margin-bottom: 10px; }
-.comment-avatar-preview { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-dim); color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
-.comment-form input, .comment-form textarea { flex: 1; background: var(--bg-base); border: 1px solid var(--border); color: #fff; padding: 12px 15px; border-radius: 8px; font-size: 13px; outline: none; width: 100%; font-family: inherit; }
-.comment-form input:focus, .comment-form textarea:focus { border-color: var(--accent); }
-.comment-form textarea { height: 80px; resize: none; margin-bottom: 15px; }
-.form-footer { display: flex; justify-content: space-between; align-items: center; }
-.spoiler-label { font-size: 13px; color: var(--text-sec); display: flex; align-items: center; gap: 8px; }
-.submit-btn { background: var(--accent); color: #000; padding: 10px 25px; border-radius: 8px; font-weight: bold; font-size: 13px; }
+.comment-avatar-preview { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-dim); color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: bold; }
+.comment-form input, .comment-form textarea { background: var(--bg-base); border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-family: inherit; }
+.submit-btn { background: var(--accent); color: #000; padding: 10px 20px; border-radius: 8px; font-weight: bold; width: 100%; }
 </style>
 </head>
 <body>
 <div class="player-page-container">
-  
   <div class="app-top-bar">
     <a href="buscar.html" class="back-link"><i class="fas fa-chevron-left"></i> Volver</a>
-    <div class="top-icons">
-      <i class="fas fa-share-alt" style="cursor:pointer;" onclick="window.location.href='http://action_share'"></i>
-    </div>
+    <i class="fas fa-share-alt" style="cursor:pointer; color:var(--text-sec);" onclick="window.location.href='http://action_share'"></i>
   </div>
 
   <div class="sticky-player-wrapper">
     <div class="video-wrapper" id="mediaContainer"></div>
     <div class="player-toolbar">
-      <button class="tool-btn" id="btnCine" onclick="toggleCine()"><i class="fas fa-moon"></i> Cine</button>
-      <button class="tool-btn" onclick="togglePiP()"><i class="fas fa-clone"></i> Flotante</button>
-      <button class="tool-btn" onclick="toggleFullScreen()"><i class="fas fa-expand-arrows-alt"></i> Full</button>
+      <button class="tool-btn" onclick="toggleCine()"><i class="fas fa-moon"></i> Cine</button>
+      <button class="tool-btn" onclick="toggleFullScreen()"><i class="fas fa-expand"></i> Full</button>
     </div>
   </div>
 
   <div class="scroll-content">
-    
     <div class="main-info-padding">
       <p class="series-eyebrow" id="displayCategory">CARGANDO...</p>
-      <h1 class="main-title" id="displayTitle">Buscando serie...</h1>
+      <h1 class="main-title" id="displayTitle">Buscando...</h1>
       <div class="meta-tags-row">
-        <span class="badge badge-hd">HD</span>
+        <span class="badge">HD</span>
         <span class="badge-rating"><i class="fas fa-star"></i> <span id="displayRate">--</span></span>
-        <span class="meta-text" id="displayYear">• ---- •</span>
-        <span class="meta-genre" id="displayGenre">Categoría</span>
+        <span class="meta-text" id="displayYear">----</span>
       </div>
     </div>
 
     <div class="reactions-bar">
-      <span class="reaction-label">Reacciona</span>
       <div class="emoji-row">
           <button class="reaction-btn" onclick="animEmoji(this)">❤️</button>
           <button class="reaction-btn" onclick="animEmoji(this)">🔥</button>
           <button class="reaction-btn" onclick="animEmoji(this)">😭</button>
           <button class="reaction-btn" onclick="animEmoji(this)">🤣</button>
           <button class="reaction-btn" onclick="animEmoji(this)">😱</button>
-          <button class="reaction-btn" onclick="animEmoji(this)">🤩</button>
       </div>
     </div>
 
-    <div class="synopsis-wrap">
-      <p class="synopsis-text" id="displaySynopsis">Por favor espera unos segundos...</p>
-    </div>
+    <div class="synopsis-wrap" id="displaySynopsis">Cargando sinopsis...</div>
 
     <div class="ep-nav-top">
-      <button class="nav-btn" onclick="navigateEpisode(-1)"><i class="fas fa-chevron-left"></i> Anterior</button>
-      <button class="nav-btn" onclick="navigateEpisode(1)">Siguiente <i class="fas fa-chevron-right"></i></button>
+      <button class="nav-btn" onclick="navigateEpisode(-1)"><i class="fas fa-arrow-left"></i> Ant.</button>
+      <button class="nav-btn" onclick="navigateEpisode(1)">Sig. <i class="fas fa-arrow-right"></i></button>
     </div>
 
-    <section>
-      <div class="section-header"><h2>Episodios</h2><span class="ep-status" id="epCount">0 EP</span></div>
-      <div class="episode-grid" id="episodeGrid"></div>
-    </section>
+    <div class="episode-grid" id="episodeGrid"></div>
 
-    <!-- ZONA DE COMENTARIOS -->
     <section class="comments-section">
-      <div class="comments-header"><h3>Comentarios</h3><span id="commentCountLabel">0 en total</span></div>
       <div class="comment-form">
-        <div class="form-row">
-          <div class="comment-avatar-preview" id="avatarPreview">?</div>
-          <input type="text" id="commentUser" placeholder="Tu nombre o alias" oninput="updateAvatar(this.value)">
-        </div>
-        <textarea id="commentText" placeholder="¿Qué te pareció este episodio?"></textarea>
-        <div class="form-footer">
-          <label class="spoiler-label"><input type="checkbox" id="commentSpoiler"> <i class="fas fa-eye-slash"></i> Contiene spoiler</label>
-          <button class="submit-btn" onclick="sendComment()">Publicar</button>
-        </div>
+        <input type="text" id="commentUser" placeholder="Tu nombre" oninput="updateAvatar(this.value)">
+        <textarea id="commentText" placeholder="Escribe un comentario..."></textarea>
+        <button class="submit-btn" onclick="sendComment()">Publicar</button>
       </div>
       <div id="commentsList"></div>
     </section>
@@ -171,211 +108,102 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
 
 <script>
 let EPISODES = [];
-let SERIES_TITLE = "serie_desconocida";
-let POSTER_IMG = "";
+let SERIES_TITLE = "";
 let currentIndex = 0;
 
-// Utilidades corregidas (sin el error de Unexpected String)
 function esc(str) {
     if (!str) return '';
-    const map = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#39;'
-    };
-    return String(str).replace(/[&<>"']/g, function(m) { return map[m]; });
+    return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
 
-function isDirectVideo(url){ return /\.(mp4|webm|ogg)(\?.*)?$/i.test(url); }
-function getCommentKey() { return 'comments_' + SERIES_TITLE.replace(/\s+/g, '_'); }
+async function loadData() {
+    const params = new URLSearchParams(window.location.search);
+    const titleParam = params.get('title');
+    if (!titleParam) return;
 
-// ==========================================
-// 1. CONEXIÓN DIRECTA CON DATA.JSON
-// ==========================================
-async function startApp() {
     try {
-        const params = new URLSearchParams(window.location.search);
-        const titleParam = params.get('title');
-
-        if (!titleParam) {
-            document.getElementById('displayTitle').textContent = "Error: Sin título";
-            document.getElementById('displaySynopsis').textContent = "Vuelve al menú principal y selecciona un dorama.";
-            return;
-        }
-
         const res = await fetch('data.json?v=' + Date.now());
         let data = await res.json();
         if (!Array.isArray(data)) data = [data];
 
-        const serie = data.find(s => s.title === titleParam);
+        // Búsqueda inteligente (ignora mayúsculas y espacios extras)
+        const serie = data.find(s => s.title.trim().toLowerCase() === titleParam.trim().toLowerCase());
         
-        if (!serie) {
-            document.getElementById('displayTitle').textContent = "Contenido no encontrado";
-            document.getElementById('displaySynopsis').textContent = "La base de datos no contiene este dorama.";
-            return;
+        if (serie) {
+            SERIES_TITLE = serie.title;
+            EPISODES = serie.episodes || [];
+            document.getElementById('displayTitle').textContent = serie.title;
+            document.getElementById('displaySynopsis').textContent = serie.description || "";
+            document.getElementById('displayCategory').textContent = serie.category || "DRAMA";
+            document.getElementById('displayYear').textContent = serie.year || "";
+            document.getElementById('displayRate').textContent = serie.rate || "7.5";
+            
+            if(serie.backdrop || serie.img) {
+                document.querySelector('.video-wrapper').style.backgroundImage = "url('" + (serie.backdrop || serie.img) + "')";
+            }
+
+            if(EPISODES.length > 0) changeVideo(0);
+            loadComments();
         }
-
-        SERIES_TITLE = serie.title;
-        EPISODES = serie.episodes || [];
-        POSTER_IMG = serie.img || "";
-
-        document.title = "Ver " + serie.title;
-        document.getElementById('displayTitle').textContent = serie.title;
-        document.getElementById('displaySynopsis').textContent = serie.description || "Sinopsis no disponible.";
-        document.getElementById('displayCategory').textContent = serie.category || "DRAMA";
-        document.getElementById('displayGenre').textContent = serie.genre || "Drama";
-        document.getElementById('displayYear').textContent = "• " + (serie.year || '') + " •";
-        document.getElementById('displayRate').textContent = serie.rate || "N/A";
-        document.getElementById('epCount').textContent = EPISODES.length + " EP";
-
-        const bgImg = serie.backdrop || serie.img;
-        if(bgImg) document.querySelector('.video-wrapper').style.backgroundImage = "url('" + bgImg + "')";
-
-        if(EPISODES.length > 0) changeVideo(0);
-        else document.getElementById('mediaContainer').innerHTML = '<div style="color:#555; text-align:center; padding-top:25%;">Próximamente episodios</div>';
-        
-        loadComments();
-
-    } catch (e) {
-        console.error(e);
-        document.getElementById('displayTitle').textContent = "Error de conexión";
-        document.getElementById('displaySynopsis').textContent = "Revise su internet o archivo JSON.";
-    }
+    } catch (e) { console.error("Error cargando serie", e); }
 }
 
-// ==========================================
-// LÓGICA DE REPRODUCTOR Y EPISODIOS
-// ==========================================
-function renderMedia(url){
-  const c = document.getElementById('mediaContainer');
-  c.innerHTML = '';
-  if(!url) { c.innerHTML = '<div style="color:#555; text-align:center; padding-top:25%;">Video no disponible</div>'; return; }
-  
-  if(isDirectVideo(url)){
-    c.innerHTML = '<video id="myVideo" src="'+url+'" poster="'+POSTER_IMG+'" controls autoplay playsinline style="width:100%;height:100%;"></video>';
-  } else {
-    c.innerHTML = '<iframe id="myIframe" src="'+url+'" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="width:100%;height:100%;"></iframe>';
-  }
-}
-
-function renderGrid(){
-  const grid = document.getElementById('episodeGrid');
-  grid.innerHTML = '';
-  EPISODES.forEach((ep, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'ep-btn' + (i===currentIndex ? ' active' : '');
-    btn.innerHTML = ep.number || (i + 1);
-    btn.onclick = () => changeVideo(i);
-    grid.appendChild(btn);
-  });
-}
-
-function changeVideo(index){
-  if(index<0 || index>=EPISODES.length) return;
-  currentIndex = index;
-  const ep = EPISODES[index];
-  renderMedia(ep.video || ep.src);
-  renderGrid();
-  window.scrollTo({top: 0, behavior: 'smooth'});
-}
-
-function navigateEpisode(dir){
-  changeVideo(currentIndex + dir);
-}
-
-// ==========================================
-// FUNCIONES DE HERRAMIENTAS (CINE, FULL)
-// ==========================================
-function toggleCine() {
-    document.body.classList.toggle('cine-mode');
-    document.getElementById('btnCine').classList.toggle('active');
-}
-
-function toggleFullScreen() {
-    const wrapper = document.querySelector('.video-wrapper');
-    if (!document.fullscreenElement) {
-        if (wrapper.requestFullscreen) wrapper.requestFullscreen();
-        else if (wrapper.webkitRequestFullscreen) wrapper.webkitRequestFullscreen();
+function renderMedia(url) {
+    const c = document.getElementById('mediaContainer');
+    if(url.includes('dailymotion.com') || url.includes('iframe')) {
+        c.innerHTML = `<iframe src="${url}" allowfullscreen allow="autoplay; fullscreen" style="width:100%;height:100%;"></iframe>`;
     } else {
-        if (document.exitFullscreen) document.exitFullscreen();
+        c.innerHTML = `<video src="${url}" controls autoplay style="width:100%;height:100%;"></video>`;
     }
 }
 
-function togglePiP() {
-    const video = document.getElementById('myVideo');
-    if (video) {
-        if (document.pictureInPictureElement) document.exitPictureInPicture();
-        else if (video.requestPictureInPicture) video.requestPictureInPicture();
-    } else {
-        alert("Modo flotante no disponible para este servidor.");
-    }
-}
-
-// ==========================================
-// SISTEMA DE COMENTARIOS
-// ==========================================
-function updateAvatar(val){
-  const av = document.getElementById('avatarPreview');
-  if(!av) return;
-  if(!val){ av.textContent='?'; return; }
-  const parts = val.trim().split(' ');
-  av.textContent = (parts[0][0]+(parts[1]?parts[1][0]:'')).toUpperCase();
-}
-
-function loadComments() {
-  const list = document.getElementById('commentsList');
-  const comments = JSON.parse(localStorage.getItem(getCommentKey())) || [];
-  document.getElementById('commentCountLabel').textContent = comments.length + ' en total';
-  
-  if(comments.length === 0) {
-    list.innerHTML = '<div style="text-align:center; color:#777; font-size:13px; padding:15px 0;">Sé el primero en comentar.</div>';
-    return;
-  }
-  
-  let htmlStr = '';
-  comments.slice().reverse().forEach(function(c) {
-    var init = c.user ? c.user.charAt(0).toUpperCase() : '?';
-    var safeUser = esc(c.user);
-    var safeText = esc(c.text);
-    var txtHtml = c.spoiler ? '<span style="filter:blur(5px);cursor:pointer;" onclick="this.style.filter=\'none\'">' + safeText + '</span>' : safeText;
+function changeVideo(index) {
+    if(index < 0 || index >= EPISODES.length) return;
+    currentIndex = index;
+    renderMedia(EPISODES[index].video || EPISODES[index].src);
     
-    htmlStr += '<div style="background:var(--bg-base); border:1px solid var(--border); padding:12px; border-radius:8px; margin-top:10px;">' +
-               '<div style="display:flex; gap:10px; align-items:center; margin-bottom:8px;">' +
-               '<div style="width:30px; height:30px; border-radius:50%; background:var(--accent-dim); color:var(--accent); display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:12px; flex-shrink:0;">'+init+'</div>' +
-               '<div><strong style="font-size:13px;">'+safeUser+'</strong> <span style="font-size:10px; color:var(--text-sec); margin-left:8px;">'+c.date+'</span></div>' +
-               '</div><p style="font-size:13px; color:#ddd; line-height:1.4;">'+txtHtml+'</p></div>';
-  });
-  list.innerHTML = htmlStr;
+    const grid = document.getElementById('episodeGrid');
+    grid.innerHTML = EPISODES.map((ep, i) => `
+        <button class="ep-btn ${i===currentIndex?'active':''}" onclick="changeVideo(${i})">
+            ${ep.number || (i+1)}
+        </button>`).join('');
 }
 
+function navigateEpisode(dir) { changeVideo(currentIndex + dir); }
+function toggleCine() { document.body.classList.toggle('cine-mode'); }
+function toggleFullScreen() {
+    const el = document.getElementById('mediaContainer');
+    if (el.requestFullscreen) el.requestFullscreen();
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+}
+
+// Comentarios
+function getCommentKey() { return 'comm_' + SERIES_TITLE.replace(/\s/g, '_'); }
+function loadComments() {
+    const list = document.getElementById('commentsList');
+    const comments = JSON.parse(localStorage.getItem(getCommentKey())) || [];
+    list.innerHTML = comments.reverse().map(c => `
+        <div style="background:#1a1f26; padding:10px; border-radius:8px; margin-bottom:10px; border:1px solid #2d343e;">
+            <strong style="font-size:12px; color:var(--accent);">${esc(c.user)}</strong>
+            <p style="font-size:13px; margin-top:5px;">${esc(c.text)}</p>
+        </div>`).join('');
+}
 function sendComment() {
-  const user = document.getElementById('commentUser').value.trim() || 'Anónimo';
-  const text = document.getElementById('commentText').value.trim();
-  const spoiler = document.getElementById('commentSpoiler').checked;
-  
-  if(!text) return;
-  
-  const comments = JSON.parse(localStorage.getItem(getCommentKey())) || [];
-  const date = new Date().toLocaleDateString();
-  comments.push({ user: user, text: text, spoiler: spoiler, date: date });
-  
-  localStorage.setItem(getCommentKey(), JSON.stringify(comments));
-  
-  document.getElementById('commentText').value = '';
-  document.getElementById('commentSpoiler').checked = false;
-  loadComments();
+    const user = document.getElementById('commentUser').value || "Anónimo";
+    const text = document.getElementById('commentText').value;
+    if(!text) return;
+    const comments = JSON.parse(localStorage.getItem(getCommentKey())) || [];
+    comments.push({user, text});
+    localStorage.setItem(getCommentKey(), JSON.stringify(comments));
+    document.getElementById('commentText').value = "";
+    loadComments();
+}
+function animEmoji(btn) {
+    btn.style.transform = "scale(1.4)";
+    setTimeout(() => btn.style.transform = "scale(1)", 200);
 }
 
-function animEmoji(btn){
-  btn.style.transform = "scale(1.3)";
-  setTimeout(() => btn.style.transform = "scale(1)", 150);
-}
-
-// INICIAR LA APP
-startApp();
-
+loadData();
 </script>
 </body>
 </html>
