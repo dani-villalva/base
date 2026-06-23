@@ -221,7 +221,7 @@
     "category": "vivo",
     "tag": "LAT",
     "episodes": [
-        { "number": 1, "video": "https://tvtvhd.com/tv/canales.php?stream=tycsports" }
+        { "number": 1, "video": "https://tvtvhd.com/tv/canales.php?stream=tycsports", "video2": "https://aw1wcm92zq.fubo18.com/tycsports/mono.m3u8?token=f9a519656b9d61af811a06c75c9ef005d9717a27-4f-1782246638-1782228638" }
     ]
 }
 ]
