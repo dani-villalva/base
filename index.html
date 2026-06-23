@@ -25,15 +25,12 @@
             --bg-card:       #141420;
             --accent:        #00DC5A;
             --accent-glow:   rgba(0,220,90,0.35);
-            --accent-hover:  #00f065;
             --pink:          #FF3366;
             --text-main:     #FFFFFF;
             --text-sec:      #7A7A95;
-            --text-muted:    #44445A;
             --glass:         rgba(7,7,14,0.88);
             --border:        rgba(255,255,255,0.07);
             --radius-card:   10px;
-            --radius-lg:     14px;
             --transition:    0.28s cubic-bezier(.4,0,.2,1);
         }
 
@@ -106,7 +103,7 @@
         .bottom-nav a.active { background: var(--accent); color: #000; }
 
         @media (min-width: 768px) {
-            .nav-links { display: flex; } .bottom-nav { display:none; }
+            .bottom-nav { display:none; }
             .dorama-card { flex:0 0 162px; width:162px; }
             .top-card { flex:0 0 192px; height:255px; }
             .top-card .poster { width:152px; height:225px; }
@@ -121,7 +118,7 @@
         <div class="hero-indicators" id="heroDots"></div>
     </section>
 
-    <!-- FILTROS -->
+    <!-- FILTROS (Se quedan pegados arriba al scrollear) -->
     <div class="filter-bar">
         <div class="filter-track">
             <button class="filter-chip active" onclick="filter('all', this)">Tendencias</button>
@@ -134,26 +131,69 @@
     <!-- CONTENEDOR PRINCIPAL -->
     <div id="main-sections">
         
-        <!-- SECCIÓN: SEGUIR VIENDO (Dinámica) -->
+        <!-- SECCIÓN: SEGUIR VIENDO -->
         <section class="content-shelf" id="continueSection" style="display:none;">
             <h2 class="shelf-title">
-                <i class="fa fa-play-circle" style="color:var(--accent); font-size:1rem;"></i> Seguir Viendo
+                <i class="fa fa-play-circle" style="color:var(--accent); font-size:1.1rem;"></i> Seguir Viendo
             </h2>
             <div class="scroller" id="continueGrid"></div>
         </section>
 
-        <!-- SECCIÓN: RECOMENDADO PARA TI (Dinámica) -->
+        <!-- SECCIÓN: RECOMENDADOS -->
         <section class="content-shelf" id="recommendSection" style="display:none;">
             <h2 class="shelf-title">
-                <i class="fa fa-star" style="color:#ffca28; font-size:1rem;"></i> Recomendado para ti
+                <i class="fa fa-star" style="color:#ffca28; font-size:1.1rem;"></i> Recomendado para ti
             </h2>
             <div class="scroller" id="recommendGrid"></div>
         </section>
 
-        <section class="content-shelf"><h2 class="shelf-title">Top 10 Tendencias</h2><div class="scroller" id="top10Grid"></div></section>
-        <section class="content-shelf"><h2 class="shelf-title">K-Dramas 🇰🇷</h2><div class="scroller" id="kdramaGrid"></div></section>
-        <section class="content-shelf"><h2 class="shelf-title">C-Dramas 🇨🇳</h2><div class="scroller" id="cdramaGrid"></div></section>
-        <section class="content-shelf"><h2 class="shelf-title">Películas 🎬</h2><div class="scroller" id="moviesGrid"></div></section>
+        <!-- SECCIÓN: NUEVOS CAPÍTULOS AGREGADOS (Muestra lo último del JSON) -->
+        <section class="content-shelf">
+            <h2 class="shelf-title">⚡ Capítulos Agregados Recientemente</h2>
+            <div class="scroller" id="nuevosGrid"></div>
+        </section>
+
+        <!-- TOP 10 -->
+        <section class="content-shelf">
+            <h2 class="shelf-title">🔥 Top 10 Tendencias</h2>
+            <div class="scroller" id="top10Grid"></div>
+        </section>
+
+        <!-- K-DRAMAS -->
+        <section class="content-shelf">
+            <h2 class="shelf-title">🇰🇷 K-Dramas</h2>
+            <div class="scroller" id="kdramaGrid"></div>
+        </section>
+
+        <!-- C-DRAMAS -->
+        <section class="content-shelf">
+            <h2 class="shelf-title">🇨🇳 C-Dramas</h2>
+            <div class="scroller" id="cdramaGrid"></div>
+        </section>
+
+        <!-- ROMANCE -->
+        <section class="content-shelf">
+            <h2 class="shelf-title">💖 Amor y Romance</h2>
+            <div class="scroller" id="romanceGrid"></div>
+        </section>
+
+        <!-- COMEDIA -->
+        <section class="content-shelf">
+            <h2 class="shelf-title">😂 Comedia</h2>
+            <div class="scroller" id="comediaGrid"></div>
+        </section>
+
+        <!-- FANTASÍA Y ACCIÓN -->
+        <section class="content-shelf">
+            <h2 class="shelf-title">🐉 Fantasía y Acción</h2>
+            <div class="scroller" id="accionGrid"></div>
+        </section>
+
+        <!-- PELÍCULAS -->
+        <section class="content-shelf">
+            <h2 class="shelf-title">🎬 Películas</h2>
+            <div class="scroller" id="moviesGrid"></div>
+        </section>
     </div>
 
     <!-- SECCIÓN FILTRO (OCULTA POR DEFECTO) -->
@@ -198,25 +238,16 @@
         function verContenido(titulo) {
             const item = allSeries.find(s => s.title === titulo);
             if (item) {
-                // Leer historial actual
                 let history = JSON.parse(localStorage.getItem('watchHistory')) || [];
-                
-                // Si ya estaba en la lista, lo quitamos para ponerlo de primero
                 history = history.filter(h => h.title !== titulo);
-                
-                // Guardar la información básica
                 history.unshift({ title: item.title });
-                
-                // Mantener solo los últimos 15 vistos
                 if(history.length > 15) history.pop();
-                
                 localStorage.setItem('watchHistory', JSON.stringify(history));
             }
-            // Ir al reproductor
             window.location.href = 'reproductor.html?title=' + encodeURIComponent(titulo);
         }
 
-        // CARRETE DE DORAMAS
+        // CARRETE DE DORAMAS NORMALES
         function createDoramaCard(item) {
             return `
             <div class="dorama-card" onclick="verContenido('${item.title.replace(/'/g, "\\'")}')">
@@ -226,11 +257,12 @@
                 </div>
                 <div style="padding-top:8px">
                     <h4 style="font-size:0.8rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.title}</h4>
-                    <span style="font-size:0.7rem; color:gray;">${item.year}</span>
+                    <span style="font-size:0.7rem; color:gray;">${item.year || ''} ${item.genre ? '• ' + item.genre : ''}</span>
                 </div>
             </div>`;
         }
 
+        // CARRETE TOP 10
         function createTopCard(item, index) {
             return `
             <div class="top-card" onclick="verContenido('${item.title.replace(/'/g, "\\'")}')">
@@ -242,8 +274,6 @@
         // RENDERIZADO DE SECCIONES INTELIGENTES
         function renderPersonalizedRows() {
             let history = JSON.parse(localStorage.getItem('watchHistory')) || [];
-            
-            // Cruzar historial con la base de datos actual para que no carguen series borradas
             let historyItems = history.map(h => allSeries.find(s => s.title === h.title)).filter(Boolean);
 
             if (historyItems.length > 0) {
@@ -251,27 +281,19 @@
                 document.getElementById('continueSection').style.display = 'block';
                 document.getElementById('continueGrid').innerHTML = historyItems.map(i => createDoramaCard(i)).join('');
 
-                // 2. Calcular "Recomendados" (Basado en el género que más ve)
+                // 2. Calcular "Recomendados"
                 let genres = historyItems.map(i => i.genre).filter(Boolean);
                 if (genres.length > 0) {
-                    // Contar qué género se repite más
                     let counts = {};
                     let maxCount = 0;
                     let topGenre = genres[0];
                     for (let g of genres) {
                         counts[g] = (counts[g] || 0) + 1;
-                        if (counts[g] > maxCount) {
-                            maxCount = counts[g];
-                            topGenre = g;
-                        }
+                        if (counts[g] > maxCount) { maxCount = counts[g]; topGenre = g; }
                     }
 
-                    // Buscar series del mismo género que NO estén en su historial
                     let historyTitles = historyItems.map(i => i.title);
-                    let recommended = allSeries.filter(s => s.genre === topGenre && !historyTitles.includes(s.title));
-                    
-                    // Solo mostrar hasta 15 sugerencias
-                    recommended = recommended.slice(0, 15);
+                    let recommended = allSeries.filter(s => s.genre === topGenre && !historyTitles.includes(s.title)).slice(0, 15);
 
                     if (recommended.length > 0) {
                         document.getElementById('recommendSection').style.display = 'block';
@@ -281,9 +303,9 @@
             }
         }
 
-        // RENDERIZADO INICIAL
+        // RENDERIZADO INICIAL DE TODAS LAS SECCIONES
         function loadContent() {
-            // Slider
+            // Slider Hero
             $('#heroSlider').innerHTML = allSeries.slice(0, 5).map(item => `
                 <div class="hero-slide" onclick="verContenido('${item.title.replace(/'/g, "\\'")}')">
                     <img src="${item.backdrop || item.img}" class="hero-bg">
@@ -296,14 +318,28 @@
                     </div>
                 </div>`).join('');
 
-            // Cargar Historial y Recomendaciones
+            // Dinámicos (Seguir Viendo / Recomendados)
             renderPersonalizedRows();
 
-            // Cargar Catálogo General
+            // ⚡ NUEVOS CAPÍTULOS AGREGADOS (Lee el JSON a la inversa para mostrar lo último)
+            $('#nuevosGrid').innerHTML = allSeries.slice().reverse().slice(0, 15).map(i => createDoramaCard(i)).join('');
+
+            // 🔥 Top 10
             $('#top10Grid').innerHTML = allSeries.slice(0, 10).map((i, idx) => createTopCard(i, idx)).join('');
+            
+            // 🇰🇷 K-Dramas & 🇨🇳 C-Dramas
             $('#kdramaGrid').innerHTML = allSeries.filter(i => i.category === 'kdrama').slice(0, 15).map(i => createDoramaCard(i)).join('');
             $('#cdramaGrid').innerHTML = allSeries.filter(i => i.category === 'cdrama').slice(0, 15).map(i => createDoramaCard(i)).join('');
-            $('#moviesGrid').innerHTML = allSeries.filter(i => i.type === 'movie').slice(0, 15).map(i => createDoramaCard(i)).join('');
+            
+            // 💖 Romance & 😂 Comedia
+            $('#romanceGrid').innerHTML = allSeries.filter(i => i.genre && i.genre.toLowerCase() === 'romance').slice(0, 15).map(i => createDoramaCard(i)).join('');
+            $('#comediaGrid').innerHTML = allSeries.filter(i => i.genre && i.genre.toLowerCase() === 'comedia').slice(0, 15).map(i => createDoramaCard(i)).join('');
+            
+            // 🐉 Fantasía y Acción (Agrupa ambos)
+            $('#accionGrid').innerHTML = allSeries.filter(i => i.genre && (i.genre.toLowerCase() === 'accion' || i.genre.toLowerCase() === 'fantasia')).slice(0, 15).map(i => createDoramaCard(i)).join('');
+
+            // 🎬 Películas
+            $('#moviesGrid').innerHTML = allSeries.filter(i => i.type === 'movie' || i.category === 'movie').slice(0, 15).map(i => createDoramaCard(i)).join('');
             
             initLazy();
         }
