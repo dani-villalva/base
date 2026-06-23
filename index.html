@@ -35,7 +35,6 @@
             --radius-card:   10px;
             --radius-lg:     14px;
             --transition:    0.28s cubic-bezier(.4,0,.2,1);
-            --nav-height:    65px;
         }
 
         *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -55,32 +54,6 @@
         }
         @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
-        /* ── MENÚ SUPERIOR (HEADER) ── */
-        .top-navbar {
-            position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 4%; z-index: 9999;
-            background: linear-gradient(to bottom, rgba(7,7,14,0.9) 0%, transparent 100%);
-            transition: all 0.3s ease;
-        }
-        .top-navbar.scrolled {
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            border-bottom: 1px solid var(--border);
-            box-shadow: 0 4px 30px rgba(0,0,0,0.5);
-        }
-        .nav-logo { font-size: 1.4rem; font-weight: 900; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 8px; }
-        .nav-logo i { color: var(--accent); }
-        .nav-logo span { color: var(--accent); }
-        
-        .nav-links { display: none; gap: 24px; align-items: center; }
-        .nav-links a { color: var(--text-sec); text-decoration: none; font-size: 0.9rem; font-weight: 700; transition: color 0.2s; }
-        .nav-links a:hover, .nav-links a.active { color: #fff; }
-        
-        .nav-icons { display: flex; gap: 18px; align-items: center; }
-        .nav-icons a { color: #fff; font-size: 1.2rem; text-decoration: none; transition: color 0.2s; }
-        .nav-icons a:hover { color: var(--accent); }
-
         /* ── HERO SLIDER ── */
         .hero-container { position:relative; height:87vh; min-height:520px; contain:layout; margin-top: 0; }
         .hero-slider { display:flex; height:100%; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; }
@@ -98,7 +71,7 @@
         .btn-primary { background: var(--accent); color: #000; border: none; padding: 13px 30px; border-radius:8px; font-weight: 800; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 6px 24px var(--accent-glow); transition: all var(--transition); }
         
         /* ── FILTER BAR ── */
-        .filter-bar { position:sticky; top: var(--nav-height); z-index:90; background:var(--glass); backdrop-filter:blur(20px); padding:15px 0; border-bottom:1px solid var(--border); }
+        .filter-bar { position:sticky; top: 0; z-index:90; background:var(--glass); backdrop-filter:blur(20px); padding:15px 0; border-bottom:1px solid var(--border); }
         .filter-track { display:flex; gap:8px; padding:0 4%; overflow-x:auto; scrollbar-width:none; }
         .filter-track::-webkit-scrollbar { display:none; }
         .filter-chip { background: var(--bg-surface); color:var(--text-sec); border:1px solid var(--border); padding:8px 20px; border-radius:20px; font-size:0.82rem; font-weight:700; cursor:pointer; white-space:nowrap; transition: all 0.2s; }
@@ -142,21 +115,6 @@
 </head>
 <body>
 
-    <!-- MENÚ SUPERIOR -->
-    <header class="top-navbar" id="mainHeader">
-        
-        <nav class="nav-links">
-            <a href="index.html" class="active">Inicio</a>
-            <a href="#" onclick="filter('kdrama')">K-Dramas</a>
-            <a href="#" onclick="filter('movie')">Películas</a>
-            <a href="reels.html">Reels</a>
-            <a href="donacion.html">Donar</a>
-        </nav>
-        <div class="nav-icons">
-            <a href="buscar.html"><i class="fa fa-search"></i></a>
-        </div>
-    </header>
-
     <!-- HERO SLIDER -->
     <section class="hero-container">
         <div class="hero-slider" id="heroSlider"></div>
@@ -183,7 +141,7 @@
 
     <!-- SECCIÓN FILTRO (OCULTA POR DEFECTO) -->
     <div id="filter-section" style="display:none; padding: 20px 0;">
-        <h2 id="filter-title" class="shelf-title" style="margin-top:80px">Resultados</h2>
+        <h2 id="filter-title" class="shelf-title" style="margin-top:20px">Resultados</h2>
         <div id="filter-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(130px, 1fr)); gap:15px; padding:0 4%;"></div>
     </div>
 
@@ -302,11 +260,6 @@
             });
             document.querySelectorAll('.lazy').forEach(img => observer.observe(img));
         }
-
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) $('#mainHeader').classList.add('scrolled');
-            else $('#mainHeader').classList.remove('scrolled');
-        });
 
         document.addEventListener('DOMContentLoaded', cargarBaseDeDatos);
     </script>
