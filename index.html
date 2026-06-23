@@ -58,7 +58,7 @@
         .hero-container { position:relative; height:87vh; min-height:520px; contain:layout; margin-top: 0; }
         .hero-slider { display:flex; height:100%; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; }
         .hero-slider::-webkit-scrollbar { display:none; }
-        .hero-slide { min-width:100%; height:100%; position:relative; scroll-snap-align:start; will-change:transform; }
+        .hero-slide { min-width:100%; height:100%; position:relative; scroll-snap-align:start; will-change:transform; cursor: pointer;}
         .hero-bg { width:100%; height:100%; object-fit:cover; object-position:center 20%; display:block; }
         .hero-vignette { position:absolute; inset:0; background:radial-gradient(ellipse at center, transparent 30%, rgba(7,7,14,0.85) 100%); z-index:1; }
         .hero-gradient-bottom { position:absolute; bottom:0; width:100%; height:65%; background:linear-gradient(to top, var(--bg-base) 0%, rgba(7,7,14,0.6) 60%, transparent 100%); z-index:2; }
@@ -133,6 +133,23 @@
 
     <!-- CONTENEDOR PRINCIPAL -->
     <div id="main-sections">
+        
+        <!-- SECCIÓN: SEGUIR VIENDO (Dinámica) -->
+        <section class="content-shelf" id="continueSection" style="display:none;">
+            <h2 class="shelf-title">
+                <i class="fa fa-play-circle" style="color:var(--accent); font-size:1rem;"></i> Seguir Viendo
+            </h2>
+            <div class="scroller" id="continueGrid"></div>
+        </section>
+
+        <!-- SECCIÓN: RECOMENDADO PARA TI (Dinámica) -->
+        <section class="content-shelf" id="recommendSection" style="display:none;">
+            <h2 class="shelf-title">
+                <i class="fa fa-star" style="color:#ffca28; font-size:1rem;"></i> Recomendado para ti
+            </h2>
+            <div class="scroller" id="recommendGrid"></div>
+        </section>
+
         <section class="content-shelf"><h2 class="shelf-title">Top 10 Tendencias</h2><div class="scroller" id="top10Grid"></div></section>
         <section class="content-shelf"><h2 class="shelf-title">K-Dramas 🇰🇷</h2><div class="scroller" id="kdramaGrid"></div></section>
         <section class="content-shelf"><h2 class="shelf-title">C-Dramas 🇨🇳</h2><div class="scroller" id="cdramaGrid"></div></section>
@@ -175,10 +192,34 @@
             return url.replace(/\/w600_and_h900_face\/|\/original\//, `/${size}/`);
         }
 
+        // =====================================
+        // FUNCION MAGICA: GUARDA Y REPRODUCE
+        // =====================================
+        function verContenido(titulo) {
+            const item = allSeries.find(s => s.title === titulo);
+            if (item) {
+                // Leer historial actual
+                let history = JSON.parse(localStorage.getItem('watchHistory')) || [];
+                
+                // Si ya estaba en la lista, lo quitamos para ponerlo de primero
+                history = history.filter(h => h.title !== titulo);
+                
+                // Guardar la información básica
+                history.unshift({ title: item.title });
+                
+                // Mantener solo los últimos 15 vistos
+                if(history.length > 15) history.pop();
+                
+                localStorage.setItem('watchHistory', JSON.stringify(history));
+            }
+            // Ir al reproductor
+            window.location.href = 'reproductor.html?title=' + encodeURIComponent(titulo);
+        }
+
         // CARRETE DE DORAMAS
         function createDoramaCard(item) {
             return `
-            <div class="dorama-card" onclick="window.location.href='reproductor.html?title=' + encodeURIComponent('${item.title.replace(/'/g, "\\'")}')">
+            <div class="dorama-card" onclick="verContenido('${item.title.replace(/'/g, "\\'")}')">
                 <div class="poster skeleton">
                     <img class="lazy" data-src="${optimizeImg(item.img)}" alt="${item.title}">
                     <div class="poster-overlay"><i class="fa fa-play-circle"></i></div>
@@ -192,17 +233,59 @@
 
         function createTopCard(item, index) {
             return `
-            <div class="top-card" onclick="window.location.href='reproductor.html?title=' + encodeURIComponent('${item.title.replace(/'/g, "\\'")}')">
+            <div class="top-card" onclick="verContenido('${item.title.replace(/'/g, "\\'")}')">
                 <div class="top-number">${index + 1}</div>
                 <div class="poster skeleton"><img class="lazy" data-src="${optimizeImg(item.img)}"></div>
             </div>`;
+        }
+
+        // RENDERIZADO DE SECCIONES INTELIGENTES
+        function renderPersonalizedRows() {
+            let history = JSON.parse(localStorage.getItem('watchHistory')) || [];
+            
+            // Cruzar historial con la base de datos actual para que no carguen series borradas
+            let historyItems = history.map(h => allSeries.find(s => s.title === h.title)).filter(Boolean);
+
+            if (historyItems.length > 0) {
+                // 1. Mostrar "Seguir Viendo"
+                document.getElementById('continueSection').style.display = 'block';
+                document.getElementById('continueGrid').innerHTML = historyItems.map(i => createDoramaCard(i)).join('');
+
+                // 2. Calcular "Recomendados" (Basado en el género que más ve)
+                let genres = historyItems.map(i => i.genre).filter(Boolean);
+                if (genres.length > 0) {
+                    // Contar qué género se repite más
+                    let counts = {};
+                    let maxCount = 0;
+                    let topGenre = genres[0];
+                    for (let g of genres) {
+                        counts[g] = (counts[g] || 0) + 1;
+                        if (counts[g] > maxCount) {
+                            maxCount = counts[g];
+                            topGenre = g;
+                        }
+                    }
+
+                    // Buscar series del mismo género que NO estén en su historial
+                    let historyTitles = historyItems.map(i => i.title);
+                    let recommended = allSeries.filter(s => s.genre === topGenre && !historyTitles.includes(s.title));
+                    
+                    // Solo mostrar hasta 15 sugerencias
+                    recommended = recommended.slice(0, 15);
+
+                    if (recommended.length > 0) {
+                        document.getElementById('recommendSection').style.display = 'block';
+                        document.getElementById('recommendGrid').innerHTML = recommended.map(i => createDoramaCard(i)).join('');
+                    }
+                }
+            }
         }
 
         // RENDERIZADO INICIAL
         function loadContent() {
             // Slider
             $('#heroSlider').innerHTML = allSeries.slice(0, 5).map(item => `
-                <div class="hero-slide" onclick="window.location.href='reproductor.html?title=' + encodeURIComponent('${item.title.replace(/'/g, "\\'")}')">
+                <div class="hero-slide" onclick="verContenido('${item.title.replace(/'/g, "\\'")}')">
                     <img src="${item.backdrop || item.img}" class="hero-bg">
                     <div class="hero-gradient-bottom"></div>
                     <div class="hero-info">
@@ -213,6 +296,10 @@
                     </div>
                 </div>`).join('');
 
+            // Cargar Historial y Recomendaciones
+            renderPersonalizedRows();
+
+            // Cargar Catálogo General
             $('#top10Grid').innerHTML = allSeries.slice(0, 10).map((i, idx) => createTopCard(i, idx)).join('');
             $('#kdramaGrid').innerHTML = allSeries.filter(i => i.category === 'kdrama').slice(0, 15).map(i => createDoramaCard(i)).join('');
             $('#cdramaGrid').innerHTML = allSeries.filter(i => i.category === 'cdrama').slice(0, 15).map(i => createDoramaCard(i)).join('');
