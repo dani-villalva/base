@@ -26,6 +26,7 @@
             --accent:        #00DC5A;
             --accent-glow:   rgba(0,220,90,0.35);
             --pink:          #FF3366;
+            --gold:          #FFC94D;
             --text-main:     #FFFFFF;
             --text-sec:      #7A7A95;
             --glass:         rgba(7,7,14,0.88);
@@ -77,6 +78,7 @@
         /* ── SHELVES & CARDS ── */
         .content-shelf { margin-top:32px; position:relative; }
         .shelf-title { font-size:1.15rem; font-weight:800; padding:0 4% 12px; margin:0; display:flex; align-items:center; gap:8px; }
+        .shelf-sub { font-size:0.74rem; color:var(--text-sec); font-weight:600; margin-left:4px; }
         .scroller { display:flex; gap:14px; overflow-x:auto; padding:4px 4% 20px; scrollbar-width:none; }
         .scroller::-webkit-scrollbar { display:none; }
 
@@ -86,10 +88,63 @@
         .poster img { width:100%; height:100%; object-fit:cover; transition: transform 0.4s; }
         .poster-overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:2.2rem; color:#fff; opacity:0; transition:opacity 0.3s; background: rgba(0,0,0,0.4); }
         .dorama-card:hover .poster-overlay { opacity:1; }
+        .type-badge { position:absolute; top:6px; left:6px; background:rgba(0,0,0,0.65); backdrop-filter:blur(4px); color:#fff; font-size:0.6rem; font-weight:800; letter-spacing:0.04em; padding:3px 7px; border-radius:5px; text-transform:uppercase; z-index:3; }
+        .type-badge.movie { background: rgba(255,51,102,0.85); }
+        .type-badge.serie { background: rgba(0,220,90,0.85); color:#000; }
 
         .top-card { flex:0 0 155px; height:200px; display:flex; align-items:flex-end; position:relative; cursor:pointer; transition:transform 0.3s; }
         .top-number { font-size:118px; font-weight:900; color:var(--bg-base); -webkit-text-stroke:2.5px #2A2A3A; position:absolute; left:-18px; bottom:-22px; z-index:1; }
         .top-card .poster { width:120px; height:180px; margin-left:auto; z-index:2; }
+
+        /* ── NUEVO: TARJETA DESTACADA (Capítulos Agregados) ── */
+        .featured-scroller { display:flex; gap:16px; overflow-x:auto; padding:4px 4% 24px; scrollbar-width:none; }
+        .featured-scroller::-webkit-scrollbar { display:none; }
+        .featured-card {
+            flex:0 0 280px; height:165px; border-radius:14px; position:relative; cursor:pointer;
+            overflow:hidden; background:var(--bg-card); box-shadow:0 8px 24px rgba(0,0,0,0.55);
+            transition: transform var(--transition), box-shadow var(--transition);
+        }
+        .featured-card:hover { transform:translateY(-5px) scale(1.015); box-shadow:0 14px 32px rgba(0,0,0,0.65); }
+        .featured-card img { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; }
+        .featured-fade { position:absolute; inset:0; background:linear-gradient(180deg, rgba(7,7,14,0) 35%, rgba(7,7,14,0.92) 100%); }
+        .featured-badge {
+            position:absolute; top:10px; left:10px; background:var(--accent); color:#000;
+            font-size:0.62rem; font-weight:900; letter-spacing:0.06em; padding:4px 9px; border-radius:6px;
+            text-transform:uppercase; display:flex; align-items:center; gap:5px; z-index:3;
+        }
+        .featured-play {
+            position:absolute; top:10px; right:10px; width:34px; height:34px; border-radius:50%;
+            background:rgba(255,255,255,0.12); backdrop-filter:blur(6px); display:flex; align-items:center;
+            justify-content:center; color:#fff; font-size:0.85rem; z-index:3; border:1px solid rgba(255,255,255,0.2);
+        }
+        .featured-info { position:absolute; bottom:0; left:0; width:100%; padding:12px 14px; z-index:2; }
+        .featured-info h4 { font-size:0.95rem; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .featured-info span { font-size:0.7rem; color:var(--text-sec); font-weight:600; }
+
+        /* ── NUEVO: SLIDER DE PELÍCULAS (formato cine) ── */
+        .movie-scroller { display:flex; gap:16px; overflow-x:auto; padding:4px 4% 24px; scrollbar-width:none; }
+        .movie-scroller::-webkit-scrollbar { display:none; }
+        .movie-card {
+            flex:0 0 220px; aspect-ratio:16/10; border-radius:12px; position:relative; cursor:pointer;
+            overflow:hidden; background:var(--bg-card); box-shadow:0 6px 20px rgba(0,0,0,0.5);
+            transition: transform var(--transition);
+        }
+        .movie-card:hover { transform:translateY(-5px); }
+        .movie-card img { width:100%; height:100%; object-fit:cover; }
+        .movie-fade { position:absolute; inset:0; background:linear-gradient(180deg, rgba(7,7,14,0) 40%, rgba(7,7,14,0.95) 100%); }
+        .movie-tag {
+            position:absolute; top:8px; left:8px; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px);
+            color:var(--gold); font-size:0.6rem; font-weight:800; padding:3px 8px; border-radius:5px;
+            text-transform:uppercase; letter-spacing:0.05em; display:flex; align-items:center; gap:4px;
+        }
+        .movie-info { position:absolute; bottom:0; left:0; width:100%; padding:10px 12px; }
+        .movie-info h4 { font-size:0.82rem; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .movie-info span { font-size:0.65rem; color:var(--text-sec); font-weight:600; }
+        .movie-card .play-circle {
+            position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+            font-size:1.8rem; color:#fff; opacity:0; transition:opacity 0.25s; background:rgba(0,0,0,0.35);
+        }
+        .movie-card:hover .play-circle { opacity:1; }
 
         /* ── BOTTOM NAV MÓVIL ── */
         .bottom-nav {
@@ -107,6 +162,8 @@
             .dorama-card { flex:0 0 162px; width:162px; }
             .top-card { flex:0 0 192px; height:255px; }
             .top-card .poster { width:152px; height:225px; }
+            .featured-card { flex:0 0 360px; height:200px; }
+            .movie-card { flex:0 0 280px; }
         }
     </style>
 </head>
@@ -147,10 +204,16 @@
             <div class="scroller" id="recommendGrid"></div>
         </section>
 
-        <!-- SECCIÓN: NUEVOS CAPÍTULOS AGREGADOS (Muestra lo último del JSON) -->
+        <!-- SECCIÓN: NUEVOS CAPÍTULOS AGREGADOS (rediseñado, tarjetas destacadas) -->
         <section class="content-shelf">
             <h2 class="shelf-title">⚡ Capítulos Agregados Recientemente</h2>
-            <div class="scroller" id="nuevosGrid"></div>
+            <div class="featured-scroller" id="nuevosGrid"></div>
+        </section>
+
+        <!-- NUEVO: SLIDER DE PELÍCULAS (formato cine, distinto al de pósters) -->
+        <section class="content-shelf">
+            <h2 class="shelf-title">🎞️ Películas Destacadas <span class="shelf-sub">en cartelera</span></h2>
+            <div class="movie-scroller" id="moviesFeaturedGrid"></div>
         </section>
 
         <!-- TOP 10 -->
@@ -194,6 +257,9 @@
             <h2 class="shelf-title">🎬 Películas</h2>
             <div class="scroller" id="moviesGrid"></div>
         </section>
+
+        <!-- NUEVO: COLECCIONES MIXTAS POR GÉNERO (películas + series juntas) -->
+        <div id="genreCollections"></div>
     </div>
 
     <!-- SECCIÓN FILTRO (OCULTA POR DEFECTO) -->
@@ -232,6 +298,10 @@
             return url.replace(/\/w600_and_h900_face\/|\/original\//, `/${size}/`);
         }
 
+        function esPelicula(item) {
+            return item.type === 'movie' || item.category === 'movie';
+        }
+
         // =====================================
         // FUNCION MAGICA: GUARDA Y REPRODUCE
         // =====================================
@@ -249,9 +319,12 @@
 
         // CARRETE DE DORAMAS NORMALES
         function createDoramaCard(item) {
+            const tipo = esPelicula(item) ? 'movie' : 'serie';
+            const etiqueta = esPelicula(item) ? 'Película' : 'Serie';
             return `
             <div class="dorama-card" onclick="verContenido('${item.title.replace(/'/g, "\\'")}')">
                 <div class="poster skeleton">
+                    <span class="type-badge ${tipo}">${etiqueta}</span>
                     <img class="lazy" data-src="${optimizeImg(item.img)}" alt="${item.title}">
                     <div class="poster-overlay"><i class="fa fa-play-circle"></i></div>
                 </div>
@@ -268,6 +341,38 @@
             <div class="top-card" onclick="verContenido('${item.title.replace(/'/g, "\\'")}')">
                 <div class="top-number">${index + 1}</div>
                 <div class="poster skeleton"><img class="lazy" data-src="${optimizeImg(item.img)}"></div>
+            </div>`;
+        }
+
+        // NUEVO: TARJETA DESTACADA (Capítulos Agregados recientemente)
+        function createFeaturedCard(item) {
+            const img = optimizeImg(item.backdrop || item.img, 'w500');
+            return `
+            <div class="featured-card skeleton" onclick="verContenido('${item.title.replace(/'/g, "\\'")}')">
+                <span class="featured-badge"><i class="fa fa-bolt"></i> Nuevo</span>
+                <span class="featured-play"><i class="fa fa-play"></i></span>
+                <img class="lazy" data-src="${img}" alt="${item.title}">
+                <div class="featured-fade"></div>
+                <div class="featured-info">
+                    <h4>${item.title}</h4>
+                    <span>${item.year || ''} ${item.genre ? '• ' + item.genre : ''}</span>
+                </div>
+            </div>`;
+        }
+
+        // NUEVO: TARJETA DE PELÍCULA (formato cine, horizontal)
+        function createMovieCard(item) {
+            const img = optimizeImg(item.backdrop || item.img, 'w500');
+            return `
+            <div class="movie-card skeleton" onclick="verContenido('${item.title.replace(/'/g, "\\'")}')">
+                <span class="movie-tag"><i class="fa fa-film"></i> Película</span>
+                <img class="lazy" data-src="${img}" alt="${item.title}">
+                <div class="movie-fade"></div>
+                <div class="play-circle"><i class="fa fa-play-circle"></i></div>
+                <div class="movie-info">
+                    <h4>${item.title}</h4>
+                    <span>${item.year || ''} ${item.genre ? '• ' + item.genre : ''}</span>
+                </div>
             </div>`;
         }
 
@@ -303,6 +408,41 @@
             }
         }
 
+        // NUEVO: COLECCIONES MIXTAS POR GÉNERO (películas + series del mismo género, juntas)
+        function renderGenreCollections() {
+            const iconos = {
+                romance: '💖', comedia: '😂', accion: '🐉', fantasia: '🐉',
+                drama: '🎭', misterio: '🕵️', thriller: '🔪', historico: '🏯',
+                amistad: '🤝', familia: '🏠', deporte: '⚽', musical: '🎵'
+            };
+
+            // Géneros únicos presentes en el catálogo
+            const generos = [...new Set(allSeries.map(i => (i.genre || '').toLowerCase()).filter(Boolean))];
+
+            const contenedor = document.getElementById('genreCollections');
+            let html = '';
+
+            generos.forEach(genero => {
+                const items = allSeries.filter(i => (i.genre || '').toLowerCase() === genero);
+                // Solo crea la colección si mezcla al menos 2 títulos y aporta algo nuevo
+                if (items.length < 4) return;
+
+                const tieneAmbos = items.some(esPelicula) && items.some(i => !esPelicula(i));
+                if (!tieneAmbos) return; // esta colección ya existe arriba como fila exclusiva de series
+
+                const icono = iconos[genero] || '🎯';
+                const nombre = genero.charAt(0).toUpperCase() + genero.slice(1);
+
+                html += `
+                <section class="content-shelf">
+                    <h2 class="shelf-title">${icono} Colección: ${nombre} <span class="shelf-sub">series y películas</span></h2>
+                    <div class="scroller">${items.slice(0, 15).map(i => createDoramaCard(i)).join('')}</div>
+                </section>`;
+            });
+
+            contenedor.innerHTML = html;
+        }
+
         // RENDERIZADO INICIAL DE TODAS LAS SECCIONES
         function loadContent() {
             // Slider Hero
@@ -321,8 +461,12 @@
             // Dinámicos (Seguir Viendo / Recomendados)
             renderPersonalizedRows();
 
-            // ⚡ NUEVOS CAPÍTULOS AGREGADOS (Lee el JSON a la inversa para mostrar lo último)
-            $('#nuevosGrid').innerHTML = allSeries.slice().reverse().slice(0, 15).map(i => createDoramaCard(i)).join('');
+            // ⚡ NUEVOS CAPÍTULOS AGREGADOS (rediseñado con tarjetas destacadas)
+            $('#nuevosGrid').innerHTML = allSeries.slice().reverse().slice(0, 15).map(i => createFeaturedCard(i)).join('');
+
+            // 🎞️ Slider de Películas (formato cine)
+            const peliculasDestacadas = allSeries.filter(esPelicula).slice(0, 15);
+            $('#moviesFeaturedGrid').innerHTML = peliculasDestacadas.map(i => createMovieCard(i)).join('');
 
             // 🔥 Top 10
             $('#top10Grid').innerHTML = allSeries.slice(0, 10).map((i, idx) => createTopCard(i, idx)).join('');
@@ -339,7 +483,10 @@
             $('#accionGrid').innerHTML = allSeries.filter(i => i.genre && (i.genre.toLowerCase() === 'accion' || i.genre.toLowerCase() === 'fantasia')).slice(0, 15).map(i => createDoramaCard(i)).join('');
 
             // 🎬 Películas
-            $('#moviesGrid').innerHTML = allSeries.filter(i => i.type === 'movie' || i.category === 'movie').slice(0, 15).map(i => createDoramaCard(i)).join('');
+            $('#moviesGrid').innerHTML = allSeries.filter(esPelicula).slice(0, 15).map(i => createDoramaCard(i)).join('');
+
+            // 🎯 Colecciones mixtas por género (series + películas)
+            renderGenreCollections();
             
             initLazy();
         }
