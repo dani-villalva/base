@@ -208,5 +208,20 @@
         { "number": 15, "video": "https://geo.dailymotion.com/player.html?video=x8gedi1" },
         { "number": 16, "video": "https://geo.dailymotion.com/player.html?video=x8gdfic" }
     ]
+},
+    {
+    "title": "Portugal vs Uzbekistán",
+    "description": "Copa del mundo FIFA 2026",
+    "img": "https://assets.dev-filo.dift.io/img/2023/05/18/logomundial20269385_sq.jpg",
+    "backdrop": "https://ssl.gstatic.com/onebox/media/sports/videos/vita/BsLJ4eBZEs2gg9Wd_768x432.jpg",
+    "rate": "",
+    "year": "",
+    "genre": "deportes",
+    "type": "tv",
+    "category": "vivo",
+    "tag": "LAT",
+    "episodes": [
+        { "number": 1, "video": "https://rojadirectatv.net/embed/eventos.html?r=aHR0cHM6Ly90dnR2aGQuY29tL3Zpdm8vY2FuYWwucGhwP3N0cmVhbT1kc3BvcnRz", "video2": "https://golazohd.com/online/canal.php?stream=tycsports" }
+    ]
 }
 ]
