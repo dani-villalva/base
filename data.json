@@ -148,5 +148,65 @@
         { "number": 11, "video": "https://geo.dailymotion.com/player.html?video=x8g8azs" },
         { "number": 12, "video": "https://geo.dailymotion.com/player.html?video=x8g8azq" }
     ]
-}
+},
+    {
+    "title": "A todos los chicos que me amaron",
+    "description": "Una exitosa mujer de carrera renuncia al amor después de repetidos rompimientos amorosos, hasta que dos hombres entran en su vida.",
+    "img": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/vjnOfD55GYxqWi1ERiPOgrucjvV.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/oBUi286ITmuZJexj8lWlQplCPF6.jpg",
+    "rate": "6.6",
+    "year": "2020",
+    "genre": "comedia",
+    "type": "series",
+    "category": "kdrama",
+    "tag": "LAT",
+    "episodes": [
+        { "number": 1, "video": "https://geo.dailymotion.com/player.html?video=x8ivjbc" },
+        { "number": 2, "video": "https://geo.dailymotion.com/player.html?video=x8ivjbb" },
+        { "number": 3, "video": "https://geo.dailymotion.com/player.html?video=x8iojff" },
+        { "number": 4, "video": "https://geo.dailymotion.com/player.html?video=x8iojfd" },
+        { "number": 5, "video": "https://geo.dailymotion.com/player.html?video=x8ih037" },
+        { "number": 6, "video": "https://geo.dailymotion.com/player.html?video=x8igzzb" },
+        { "number": 7, "video": "https://geo.dailymotion.com/player.html?video=x8i9nq1" },
+        { "number": 8, "video": "https://geo.dailymotion.com/player.html?video=x8i9n9l" },
+        { "number": 9, "video": "https://geo.dailymotion.com/player.html?video=x8hzq39" },
+        { "number": 10, "video": "https://geo.dailymotion.com/player.html?video=x8hzq3c" },
+        { "number": 11, "video": "https://geo.dailymotion.com/player.html?video=x8hpzfq" },
+        { "number": 12, "video": "https://geo.dailymotion.com/player.html?video=x8hpzfs" },
+        { "number": 13, "video": "https://geo.dailymotion.com/player.html?video=x8hisl2" },
+        { "number": 14, "video": "https://geo.dailymotion.com/player.html?video=x8hisl1" },
+        { "number": 15, "video": "https://geo.dailymotion.com/player.html?video=x8haebp" },
+        { "number": 16, "video": "https://geo.dailymotion.com/player.html?video=x93k6cq" }
+    ]
+},
+    {
+    "title": "Aquel año nuestro",
+    "description": "Años después de filmar un documental en la escuela que se volvió viral, dos examantes enemistados vuelven a estar frente a cámara... y frente a frente.",
+    "img": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/utUJlVXFIQFT8tgcifZo0uDrFzt.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/A4WAgjXnuCHWdY5TYyLf2wvAIPD.jpg",
+    "rate": "8.4",
+    "year": "2021",
+    "genre": "comedia",
+    "type": "series",
+    "category": "kdrama",
+    "tag": "LAT",
+    "episodes": [
+        { "number": 1, "video": "https://geo.dailymotion.com/player.html?video=x8iqtsb" },
+        { "number": 2, "video": "https://geo.dailymotion.com/player.html?video=x8is2l3" },
+        { "number": 3, "video": "https://geo.dailymotion.com/player.html?video=x8iqtse" },
+        { "number": 4, "video": "https://geo.dailymotion.com/player.html?video=x8iqtsd" },
+        { "number": 5, "video": "https://geo.dailymotion.com/player.html?video=x8iqtsc" },
+        { "number": 6, "video": "https://geo.dailymotion.com/player.html?video=x9hiq76" },
+        { "number": 7, "video": "https://geo.dailymotion.com/player.html?video=x8iqt54" },
+        { "number": 8, "video": "https://geo.dailymotion.com/player.html?video=x8iqt51" },
+        { "number": 9, "video": "https://geo.dailymotion.com/player.html?video=x8iqt50" },
+        { "number": 10, "video": "https://geo.dailymotion.com/player.html?video=x8iqt4z" },
+        { "number": 11, "video": "https://geo.dailymotion.com/player.html?video=x8iqt4x" },
+        { "number": 12, "video": "https://geo.dailymotion.com/player.html?video=x9hiq78" },
+        { "number": 13, "video": "https://geo.dailymotion.com/player.html?video=x8gedi3" },
+        { "number": 14, "video": "https://geo.dailymotion.com/player.html?video=x8gedi2" },
+        { "number": 15, "video": "https://geo.dailymotion.com/player.html?video=x8gedi1" },
+        { "number": 16, "video": "https://geo.dailymotion.com/player.html?video=x8gdfic" }
+    ]
+},
 ]
