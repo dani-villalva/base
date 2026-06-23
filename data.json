@@ -122,5 +122,31 @@
         { "number": 15, "video": "https://geo.dailymotion.com/player.html?video=x8fbura" },
         { "number": 16, "video": "https://geo.dailymotion.com/player.html?video=x8fbttk" }
     ]
-}
+},
+    {
+    "title": "Érase un amor rural",
+    "description": "En contra de su voluntad, un veterinario de la gran ciudad se traslada al campo, donde conoce a una policía, una persona de la ciudad que guarda un secreto amistoso.",
+    "img": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/hVmycednQiwms1p1n6hlLIlLG7X.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/bdkfBz4waYCe3DsgLMMHsgQGw8R.jpg",
+    "rate": "7.5",
+    "year": "2022",
+    "genre": "comedia",
+    "type": "series",
+    "category": "kdrama",
+    "tag": "LAT",
+    "episodes": [
+        { "number": 1, "video": "https://geo.dailymotion.com/player.html?video=x8gbb0d" },
+        { "number": 2, "video": "https://geo.dailymotion.com/player.html?video=x8gbb0c" },
+        { "number": 3, "video": "https://geo.dailymotion.com/player.html?video=x8gbb0f" },
+        { "number": 4, "video": "https://geo.dailymotion.com/player.html?video=x8gbb0e" },
+        { "number": 5, "video": "https://geo.dailymotion.com/player.html?video=x8gb9s1" },
+        { "number": 6, "video": "https://geo.dailymotion.com/player.html?video=x8gb9s0" },
+        { "number": 7, "video": "https://geo.dailymotion.com/player.html?video=x8gb9rz" },
+        { "number": 8, "video": "https://geo.dailymotion.com/player.html?video=x8gb9s4" },
+        { "number": 9, "video": "https://geo.dailymotion.com/player.html?video=x8gb9s3" },
+        { "number": 10, "video": "https://geo.dailymotion.com/player.html?video=x8g8azu" },
+        { "number": 11, "video": "https://geo.dailymotion.com/player.html?video=x8g8azs" },
+        { "number": 12, "video": "https://geo.dailymotion.com/player.html?video=x8g8azq" }
+    ]
+},
 ]
