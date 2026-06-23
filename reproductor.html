@@ -14,32 +14,30 @@
   --accent-dim: #0d251a; --text-main: #ffffff; --text-sec: #a0a0a0;
   --border: #2d343e; --btn-bg: #242a32;
 }
-
 /* =========================================================
-   TEMÁTICA DEPORTIVA (MUNDIAL / EN VIVO)
+TEMÁTICA DEPORTIVA (MUNDIAL / EN VIVO)
 ========================================================== */
 body.sports-theme {
-  --bg-base: #07070e; 
-  --bg-card: #141420; 
-  --accent: #FF3366; /* Rosa del mundial */
-  --accent-dim: #2a0b16;
-  --border: rgba(255, 51, 102, 0.2);
+--bg-base: #07070e;
+--bg-card: #141420;
+--accent: #FF3366; /* Rosa del mundial */
+--accent-dim: #2a0b16;
+--border: rgba(255, 51, 102, 0.2);
 }
 body.sports-theme .series-eyebrow {
-  animation: pulseLive 2s infinite;
-  display: inline-block;
+animation: pulseLive 2s infinite;
+display: inline-block;
 }
-@keyframes pulseLive { 
-  0% { opacity: 1; } 
-  50% { opacity: 0.4; } 
-  100% { opacity: 1; } 
+@keyframes pulseLive {
+0% { opacity: 1; }
+50% { opacity: 0.4; }
+100% { opacity: 1; }
 }
 body.sports-theme .ep-nav-top,
 body.sports-theme .episode-grid {
-  display: none !important; /* Oculta los episodios en la TV */
+display: none !important; /* Oculta los episodios en la TV */
 }
 /* ========================================================= */
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html { scroll-behavior: smooth; }
 body { background: var(--bg-base); color: var(--text-main); font-family: 'Inter', sans-serif; display: flex; justify-content: center; transition: background 0.3s; }
@@ -58,7 +56,6 @@ body.cine-mode .scroll-content, body.cine-mode .app-top-bar { opacity: 0.05; poi
 .server-label { font-size: 11px; font-weight: 700; color: var(--text-sec); letter-spacing: 1px; }
 .server-btn { background: var(--bg-card); border: 1px solid var(--border); color: #fff; padding: 6px 14px; border-radius: 6px; font-size: 11px; font-weight: bold; white-space: nowrap; transition: 0.2s; cursor:pointer;}
 .server-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
-
 .player-toolbar { display: flex; gap: 8px; padding: 10px 15px; }
 .tool-btn { flex: 1; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-sec); padding: 8px 5px; border-radius: 6px; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 5px; text-transform: uppercase; cursor:pointer;}
 .tool-btn.active { color: var(--accent); border-color: var(--accent); }
@@ -84,9 +81,34 @@ body.cine-mode .scroll-content, body.cine-mode .app-top-bar { opacity: 0.05; poi
 .comment-avatar-preview { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-dim); color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: bold; }
 .comment-form input, .comment-form textarea { background: var(--bg-base); border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-family: inherit; }
 .submit-btn { background: var(--accent); color: #000; padding: 10px 20px; border-radius: 8px; font-weight: bold; width: 100%; border:none; cursor:pointer;}
-
 .geo-alert { font-size: 11px; color: #ff5252; text-align: center; margin-top: 5px; padding: 0 15px; display: none; }
 .ad-block-alert { font-size: 11px; color: var(--accent); text-align: center; margin-top: 5px; padding: 0 15px; display: none; }
+
+/* =========================================================
+ESTILOS DEL ANUNCIO PRE-ROLL (NUEVO)
+========================================================== */
+.ad-overlay {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: #000; z-index: 9999; display: flex; flex-direction: column;
+  justify-content: center; align-items: center; overflow: hidden;
+}
+.ad-video {
+  width: 100%; height: 100%; object-fit: cover; cursor: pointer;
+}
+.skip-ad-btn {
+  position: absolute; bottom: 15px; right: 15px;
+  background: rgba(0, 0, 0, 0.8); color: #fff;
+  border: 1px solid var(--accent); padding: 8px 15px;
+  border-radius: 4px; font-weight: bold; cursor: pointer;
+  font-size: 12px; z-index: 10000; transition: 0.3s;
+}
+.skip-ad-btn:disabled { border-color: #555; color: #aaa; cursor: not-allowed; }
+.ad-badge {
+  position: absolute; top: 10px; left: 10px;
+  background: #ffcc00; color: #000; padding: 2px 6px;
+  font-size: 10px; font-weight: bold; border-radius: 3px; z-index: 10000;
+  pointer-events: none;
+}
 </style>
 </head>
 <body>
@@ -95,15 +117,15 @@ body.cine-mode .scroll-content, body.cine-mode .app-top-bar { opacity: 0.05; poi
     <a href="index.html" class="back-link"><i class="fas fa-chevron-left"></i> Volver</a>
     <i class="fas fa-share-alt" style="cursor:pointer; color:var(--text-sec);" onclick="navigator.share({title: SERIES_TITLE, url: window.location.href})"></i>
   </div>
-
   <div class="sticky-player-wrapper">
-    <div class="video-wrapper" id="mediaContainer"></div>
     
+    <div class="video-wrapper" id="mediaContainer"></div>
+
     <!-- CONTENEDOR DE SERVIDORES -->
     <div class="server-bar" id="serverBar">
       <span class="server-label">SERVIDOR:</span>
     </div>
-    
+
     <!-- ALERTAS -->
     <div class="geo-alert" id="geoAlert">
       <i class="fas fa-exclamation-triangle"></i> Si el video no carga, intenta con otra Opción.
@@ -117,7 +139,6 @@ body.cine-mode .scroll-content, body.cine-mode .app-top-bar { opacity: 0.05; poi
       <button class="tool-btn" onclick="toggleFullScreen()"><i class="fas fa-expand"></i> Full</button>
     </div>
   </div>
-
   <div class="scroll-content">
     <div class="main-info-padding">
       <p class="series-eyebrow" id="displayCategory">CARGANDO...</p>
@@ -158,7 +179,6 @@ body.cine-mode .scroll-content, body.cine-mode .app-top-bar { opacity: 0.05; poi
     </section>
   </div>
 </div>
-
 <script>
 let EPISODES = [];
 let SERIES_TITLE = "";
@@ -194,7 +214,7 @@ async function loadData() {
                 document.body.classList.add('sports-theme');
                 document.getElementById('displayCategory').innerHTML = "🔴 EN VIVO - MUNDIAL";
                 document.getElementById('displayCategory').style.color = "var(--accent)";
-                document.getElementById('adBlockAlert').style.display = 'block'; // Aviso de Anti-Popups
+                document.getElementById('adBlockAlert').style.display = 'block'; 
             } else {
                 document.getElementById('displayCategory').textContent = serie.category || "DRAMA";
             }
@@ -213,14 +233,10 @@ function renderMedia(url) {
     const c = document.getElementById('mediaContainer');
     
     // 1. DETECCIÓN DE PÁGINAS DE TV EN VIVO Y ENLACES EXTERNOS
-    // Aquí detectamos si es tvtvhd, golazohd, .php o páginas similares
     if(url.includes('dailymotion.com') || url.includes('youtube.com') || 
        url.includes('.php') || url.includes('.html') || 
        url.includes('tvtvhd.com') || url.includes('golazohd.com')) {
         
-        // REPRODUCTOR PROTEGIDO CON ADBLOCK NATIVO:
-        // 'sandbox="allow-scripts allow-same-origin"' permite reproducir el video,
-        // pero BLOQUEA que la página descargue archivos o abra ventanas emergentes (anuncios).
         c.innerHTML = `<iframe src="${url}" 
             sandbox="allow-scripts allow-same-origin"
             allowfullscreen scrolling="no" frameborder="0" 
@@ -248,7 +264,52 @@ function renderMedia(url) {
     } else {
         c.innerHTML = `<video src="${url}" controls autoplay style="width:100%;height:100%;"></video>`;
     }
+
+    // ========== EJECUCIÓN DEL ANUNCIO PRE-ROLL ==========
+    showAdOverlay(c);
 }
+
+// FUNCIÓN DEL ANUNCIO (NUEVA)
+function showAdOverlay(container) {
+    const adLink = "https://www.effectivecpmnetwork.com/h2z9bj3qss?key=0c57a3998f9b0fd69d2acdbe6f2ca283";
+    const adImage = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg8IaIn1bSr89u7ivoidazHe9xZAyMMg_aem_sazf0FouTga73AfTYX3UwGrjCsqAdrPIThtDRg2ktKSst1SpwbhZcVkV7tK-8M_ctdazY2qEnDadzP4S6dp1vZSH2q4AVx95Q_O1YpSVMEfllwdGDRvt8oVP4qHaIy_UgwldWtiaSmNhJMzkfg0ItqTHQ/s1600/Play%20Now.png";
+    const adVideo = "https://rr3---sn-p2a5oxu-0pvs.googlevideo.com/videoplayback?expire=1782283495&ei=Zww7aqGBCLeg2O8Pr7bkwAk&ip=45.236.105.81&id=42cc86f311ccf152&itag=18&source=blogger&requiressl=yes&xpc=Egho7Zf3LnoBAQ==&cps=0&met=1782254695,&mh=LA&mm=31&mn=sn-p2a5oxu-0pvs&ms=au&mv=m&mvi=3&pl=24&rms=au,au&susc=bl&svpuc=1&eaua=GrKwNU3Tdck&mime=video/mp4&vprv=1&rqh=1&dur=10.147&lmt=1782254664436359&mt=1782254281&txp=1311224&sparams=expire,ei,ip,id,itag,source,requiressl,xpc,susc,svpuc,eaua,mime,vprv,rqh,dur,lmt&sig=AHEqNM4wRQIhAMgg0aB8SpcvgBlVDO2zerF8VHozzeMgwhzQRcdh_1ToAiAi0f-Rs2Q2F0jQq8xNGvRV86AEwGA-IlKNYv6WW0I6KQ==&lsparams=cps,met,mh,mm,mn,ms,mv,mvi,pl,rms&lsig=APaTxxMwRQIhALZBwZCGDcEANC-OJ0hBeJYrIBesOTRMwkd3W7c5gBU8AiBPgjjKpLGmeEPBy04FtgJ_9iYXwkBRf_VAKU4w8Aot7w==&cpn=QjKvhvew4dD8y8-u&c=WEB_EMBEDDED_PLAYER&cver=1.20260621.00.00";
+
+    const adDiv = document.createElement('div');
+    adDiv.className = 'ad-overlay';
+    
+    // Renderizamos el video con la imagen como "poster" por si tarda en cargar
+    adDiv.innerHTML = `
+        <span class="ad-badge">Anuncio</span>
+        <a href="${adLink}" target="_blank" style="width:100%; height:100%; display:block;">
+            <video class="ad-video" src="${adVideo}" poster="${adImage}" autoplay muted loop playsinline></video>
+        </a>
+        <button class="skip-ad-btn" id="skipAdBtn" disabled>Saltar en 5s</button>
+    `;
+    
+    container.appendChild(adDiv);
+
+    // Lógica del contador para Saltar Anuncio
+    let timeLeft = 5;
+    const skipBtn = adDiv.querySelector('#skipAdBtn');
+    
+    const timer = setInterval(() => {
+        timeLeft--;
+        if(timeLeft > 0) {
+            skipBtn.innerText = `Saltar en ${timeLeft}s`;
+        } else {
+            clearInterval(timer);
+            skipBtn.innerText = 'Saltar Anuncio ⏭';
+            skipBtn.disabled = false;
+            skipBtn.onclick = (e) => {
+                e.preventDefault();   // Previene abrir el link si se clickea por error cerca del boton
+                e.stopPropagation();  // Detiene la propagación del click al enlace de fondo
+                adDiv.remove();       // Elimina el anuncio y deja ver el video original
+            };
+        }
+    }, 1000);
+}
+
 // FUNCIÓN PARA CAMBIAR DE SERVIDOR
 function setServer(url, btnElement) {
     document.querySelectorAll('.server-btn').forEach(btn => btn.classList.remove('active'));
