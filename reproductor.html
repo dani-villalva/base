@@ -212,19 +212,26 @@ async function loadData() {
 function renderMedia(url) {
     const c = document.getElementById('mediaContainer');
     
-    // DETECCIÓN DE PÁGINAS EXTERNAS / DEPORTES
+    // === TRUCO MAESTRO: AUTO-MODIFICAR URL (BASE64) ===
+    // Si detectamos que es un enlace que suele rechazar conexión (golazohd, tvtvhd)
+    // lo convertimos automáticamente usando el desbloqueador de rojadirectatv.
+    if ((url.includes('golazohd.com') || url.includes('tvtvhd.com')) && !url.includes('rojadirectatv.net')) {
+        let urlCodificada = btoa(url); // btoa() convierte el texto normal a Base64
+        url = `https://rojadirectatv.net/embed/eventos.html?r=${urlCodificada}`;
+    }
+    // ==================================================
+
+    // 1. DETECCIÓN DE PÁGINAS EXTERNAS (Ahora con la URL ya modificada)
     if(url.includes('dailymotion.com') || url.includes('iframe') || url.includes('youtube.com') || 
-       url.includes('golazohd.com') || url.includes('rojadirectatv.net') || url.includes('tvtvhd.com')) {
+       url.includes('rojadirectatv.net')) {
         
-        // TRUCO: referrerpolicy="no-referrer" oculta de dónde viene la petición.
-        // Se quitó el "sandbox" estricto porque reproductores como GolazoHD prefieren "morir" (rechazar conexión) antes que reproducir sin poder abrir sus popups.
         c.innerHTML = `<iframe src="${url}" 
             referrerpolicy="no-referrer"
             allowfullscreen scrolling="no" frameborder="0" 
             allow="encrypted-media; autoplay; fullscreen" 
             style="width:100%;height:100%;"></iframe>`;
     
-    // REPRODUCCIÓN NATIVA DE HLS (.m3u8) SIN ANUNCIOS - ¡LA MEJOR OPCIÓN!
+    // 2. REPRODUCCIÓN NATIVA DE HLS (.m3u8) 
     } else if (url.includes('.m3u8')) {
         c.innerHTML = `<video id="hlsVideoPlayer" controls autoplay style="width:100%;height:100%;"></video>`;
         const videoElement = document.getElementById('hlsVideoPlayer');
@@ -241,7 +248,7 @@ function renderMedia(url) {
             videoElement.play();
         }
     
-    // REPRODUCCIÓN MP4 NORMAL
+    // 3. REPRODUCCIÓN MP4 NORMAL
     } else {
         c.innerHTML = `<video src="${url}" controls autoplay style="width:100%;height:100%;"></video>`;
     }
