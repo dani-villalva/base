@@ -6,12 +6,42 @@
 <title>Reproductor | Minihi Tv</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<!-- Librería necesaria para reproducir canales en vivo .m3u8 -->
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <style>
 :root {
   --bg-base: #0b0e14; --bg-card: #1a1f26; --accent: #00c853;
   --accent-dim: #0d251a; --text-main: #ffffff; --text-sec: #a0a0a0;
   --border: #2d343e; --btn-bg: #242a32;
 }
+
+/* =========================================================
+   TEMÁTICA DEPORTIVA (MUNDIAL / EN VIVO)
+   Se activa automáticamente cuando la categoría es "vivo"
+========================================================== */
+body.sports-theme {
+  --bg-base: #07070e; 
+  --bg-card: #141420; 
+  --accent: #FF3366; /* Rosa del mundial */
+  --accent-dim: #2a0b16;
+  --border: rgba(255, 51, 102, 0.2);
+}
+body.sports-theme .series-eyebrow {
+  animation: pulseLive 2s infinite;
+  display: inline-block;
+}
+@keyframes pulseLive { 
+  0% { opacity: 1; } 
+  50% { opacity: 0.4; } 
+  100% { opacity: 1; } 
+}
+/* Ocultar elementos de "episodios" si es TV en vivo */
+body.sports-theme .ep-nav-top,
+body.sports-theme .episode-grid {
+  display: none !important; 
+}
+/* ========================================================= */
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html { scroll-behavior: smooth; }
 body { background: var(--bg-base); color: var(--text-main); font-family: 'Inter', sans-serif; display: flex; justify-content: center; transition: background 0.3s; }
@@ -19,7 +49,7 @@ body.cine-mode { background: #000; }
 body.cine-mode .scroll-content, body.cine-mode .app-top-bar { opacity: 0.05; pointer-events: none; }
 .player-page-container { width: 100%; max-width: 480px; background: inherit; min-height: 100vh; padding-bottom: 50px; }
 .app-top-bar { display: flex; align-items: center; justify-content: space-between; padding: 15px; }
-.back-link { font-weight: 700; font-size: 14px; display: flex; gap: 8px; align-items: center; color: #fff; }
+.back-link { font-weight: 700; font-size: 14px; display: flex; gap: 8px; align-items: center; color: #fff; text-decoration: none; }
 .sticky-player-wrapper { position: sticky; top: 0; z-index: 1000; background: var(--bg-base); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
 .video-wrapper { position: relative; padding-bottom: 56.25%; background: #000 center/cover; }
 .video-wrapper iframe, .video-wrapper video { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
@@ -28,11 +58,11 @@ body.cine-mode .scroll-content, body.cine-mode .app-top-bar { opacity: 0.05; poi
 .server-bar { display: flex; gap: 8px; padding: 12px 15px 0; align-items: center; overflow-x: auto; scrollbar-width: none; }
 .server-bar::-webkit-scrollbar { display: none; }
 .server-label { font-size: 11px; font-weight: 700; color: var(--text-sec); letter-spacing: 1px; }
-.server-btn { background: var(--bg-card); border: 1px solid var(--border); color: #fff; padding: 6px 14px; border-radius: 6px; font-size: 11px; font-weight: bold; white-space: nowrap; transition: 0.2s; }
+.server-btn { background: var(--bg-card); border: 1px solid var(--border); color: #fff; padding: 6px 14px; border-radius: 6px; font-size: 11px; font-weight: bold; white-space: nowrap; transition: 0.2s; cursor: pointer; }
 .server-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
 
 .player-toolbar { display: flex; gap: 8px; padding: 10px 15px; }
-.tool-btn { flex: 1; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-sec); padding: 8px 5px; border-radius: 6px; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 5px; text-transform: uppercase; }
+.tool-btn { flex: 1; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-sec); padding: 8px 5px; border-radius: 6px; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 5px; text-transform: uppercase; cursor: pointer; }
 .tool-btn.active { color: var(--accent); border-color: var(--accent); }
 .scroll-content { padding-top: 10px; }
 .main-info-padding { padding: 0 15px; }
@@ -43,19 +73,19 @@ body.cine-mode .scroll-content, body.cine-mode .app-top-bar { opacity: 0.05; poi
 .badge-rating { color: #ffca28; }
 .reactions-bar { padding: 5px 15px 20px; }
 .emoji-row { display: flex; justify-content: space-between; margin-top: 10px; }
-.reaction-btn { background: var(--bg-card); width: 45px; height: 45px; border-radius: 50%; font-size: 20px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); transition: 0.2s; }
+.reaction-btn { background: var(--bg-card); width: 45px; height: 45px; border-radius: 50%; font-size: 20px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); transition: 0.2s; cursor: pointer; }
 .synopsis-wrap { padding: 0 15px; margin-bottom: 25px; font-size: 13px; color: #bbb; line-height: 1.6; }
 .ep-nav-top { display: flex; gap: 10px; padding: 0 15px 25px; }
-.nav-btn { flex: 1; background: var(--bg-card); border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.nav-btn { flex: 1; background: var(--bg-card); border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
 .episode-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 0 15px 30px; }
-.ep-btn { background: var(--bg-card); aspect-ratio: 1; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--text-sec); border: 1px solid transparent; }
+.ep-btn { background: var(--bg-card); aspect-ratio: 1; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--text-sec); border: 1px solid transparent; cursor: pointer; }
 .ep-btn.active { background: #0d1a14; border-color: var(--accent); color: var(--accent); }
 /* Comentarios */
 .comments-section { padding: 30px 15px; border-top: 1px solid var(--border); }
 .comment-form { background: var(--bg-card); border-radius: 12px; padding: 15px; border: 1px solid var(--border); margin-bottom: 20px;}
 .comment-avatar-preview { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-dim); color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: bold; }
 .comment-form input, .comment-form textarea { background: var(--bg-base); border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-family: inherit; }
-.submit-btn { background: var(--accent); color: #000; padding: 10px 20px; border-radius: 8px; font-weight: bold; width: 100%; }
+.submit-btn { background: var(--accent); color: #000; padding: 10px 20px; border-radius: 8px; font-weight: bold; width: 100%; border: none; cursor: pointer;}
 
 .geo-alert { font-size: 11px; color: #ff5252; text-align: center; margin-top: 5px; padding: 0 15px; display: none; }
 </style>
@@ -63,8 +93,8 @@ body.cine-mode .scroll-content, body.cine-mode .app-top-bar { opacity: 0.05; poi
 <body>
 <div class="player-page-container">
   <div class="app-top-bar">
-    <a href="buscar.html" class="back-link"><i class="fas fa-chevron-left"></i> Volver</a>
-    <i class="fas fa-share-alt" style="cursor:pointer; color:var(--text-sec);" onclick="window.location.href='http://action_share'"></i>
+    <a href="index.html" class="back-link"><i class="fas fa-chevron-left"></i> Volver</a>
+    <i class="fas fa-share-alt" style="cursor:pointer; color:var(--text-sec);" onclick="navigator.share({title: SERIES_TITLE, url: window.location.href})"></i>
   </div>
 
   <div class="sticky-player-wrapper">
@@ -153,9 +183,17 @@ async function loadData() {
             EPISODES = serie.episodes || [];
             document.getElementById('displayTitle').textContent = serie.title;
             document.getElementById('displaySynopsis').textContent = serie.description || "";
-            document.getElementById('displayCategory').textContent = serie.category || "DRAMA";
             document.getElementById('displayYear').textContent = serie.year || "";
             document.getElementById('displayRate').textContent = serie.rate || "7.5";
+
+            // Lógica de Temática Deportiva
+            if (serie.category === 'vivo' || (serie.genre && serie.genre.toLowerCase() === 'deportes')) {
+                document.body.classList.add('sports-theme');
+                document.getElementById('displayCategory').innerHTML = "🔴 EN VIVO - MUNDIAL";
+                document.getElementById('displayCategory').style.color = "var(--accent)";
+            } else {
+                document.getElementById('displayCategory').textContent = serie.category || "DRAMA";
+            }
             
             if(serie.backdrop || serie.img) {
                 document.querySelector('.video-wrapper').style.backgroundImage = "url('" + (serie.backdrop || serie.img) + "')";
@@ -167,22 +205,44 @@ async function loadData() {
     } catch (e) { console.error("Error cargando serie", e); }
 }
 
+// LOGICA MODIFICADA PARA SOPORTAR I-FRAMES DE DEPORTES Y HLS
 function renderMedia(url) {
     const c = document.getElementById('mediaContainer');
-    if(url.includes('dailymotion.com') || url.includes('iframe') || url.includes('youtube.com')) {
-        c.innerHTML = `<iframe src="${url}" allowfullscreen allow="autoplay; fullscreen" style="width:100%;height:100%;"></iframe>`;
+    
+    // 1. Detectar si es un iFrame normal, YouTube, Dailymotion o páginas de deportes
+    if(url.includes('dailymotion.com') || url.includes('iframe') || url.includes('youtube.com') || 
+       url.includes('golazohd.com') || url.includes('rojadirectatv.net') || url.includes('tvtvhd.com')) {
+        
+        c.innerHTML = `<iframe src="${url}" allowfullscreen scrolling="no" frameborder="0" allow="encrypted-media; autoplay; fullscreen" style="width:100%;height:100%;"></iframe>`;
+    
+    // 2. Detectar si es un enlace directo HLS (Canales de TV en formato .m3u8)
+    } else if (url.includes('.m3u8')) {
+        c.innerHTML = `<video id="hlsVideoPlayer" controls autoplay style="width:100%;height:100%;"></video>`;
+        const videoElement = document.getElementById('hlsVideoPlayer');
+        
+        if (Hls.isSupported()) {
+            const hls = new Hls();
+            hls.loadSource(url);
+            hls.attachMedia(videoElement);
+            hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                videoElement.play();
+            });
+        } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+            // Soporte nativo para Safari (iOS)
+            videoElement.src = url;
+            videoElement.play();
+        }
+    
+    // 3. Fallback: Video normal MP4
     } else {
         c.innerHTML = `<video src="${url}" controls autoplay style="width:100%;height:100%;"></video>`;
     }
 }
 
-// NUEVA FUNCIÓN PARA CAMBIAR DE SERVIDOR
+// FUNCIÓN PARA CAMBIAR DE SERVIDOR
 function setServer(url, btnElement) {
-    // Quitar activo a todos los botones
     document.querySelectorAll('.server-btn').forEach(btn => btn.classList.remove('active'));
-    // Poner activo al que se dio clic
     if(btnElement) btnElement.classList.add('active');
-    
     renderMedia(url);
 }
 
@@ -191,33 +251,26 @@ function changeVideo(index) {
     currentIndex = index;
     const ep = EPISODES[index];
     
-    // CREAR BOTONES DE SERVIDOR
     const serverBar = document.getElementById('serverBar');
     let btnsHtml = '<span class="server-label">OPCIÓN:</span>';
     
-    // Si tiene el servidor principal (video o src)
     let mainVideo = ep.video || ep.src;
     if(mainVideo) {
         btnsHtml += `<button class="server-btn active" onclick="setServer('${mainVideo}', this)">1</button>`;
     }
-    // Si en el JSON le pones "video2": "..."
     if(ep.video2) {
         btnsHtml += `<button class="server-btn" onclick="setServer('${ep.video2}', this)">2</button>`;
     }
-    // Si en el JSON le pones "video3": "..."
     if(ep.video3) {
         btnsHtml += `<button class="server-btn" onclick="setServer('${ep.video3}', this)">3</button>`;
     }
     
     serverBar.innerHTML = btnsHtml;
     
-    // Mostrar alerta si hay más de una opción (significa que pusiste resplado)
     document.getElementById('geoAlert').style.display = 'block';
 
-    // Reproducir el servidor 1 por defecto
     renderMedia(mainVideo);
     
-    // Marcar episodio activo
     const grid = document.getElementById('episodeGrid');
     grid.innerHTML = EPISODES.map((e, i) => `
         <button class="ep-btn ${i===currentIndex?'active':''}" onclick="changeVideo(${i})">
@@ -241,11 +294,12 @@ function loadComments() {
     const list = document.getElementById('commentsList');
     const comments = JSON.parse(localStorage.getItem(getCommentKey())) || [];
     list.innerHTML = comments.reverse().map(c => `
-        <div style="background:#1a1f26; padding:10px; border-radius:8px; margin-bottom:10px; border:1px solid #2d343e;">
+        <div style="background:var(--bg-card); padding:10px; border-radius:8px; margin-bottom:10px; border:1px solid var(--border);">
             <strong style="font-size:12px; color:var(--accent);">${esc(c.user)}</strong>
             <p style="font-size:13px; margin-top:5px;">${esc(c.text)}</p>
         </div>`).join('');
 }
+function updateAvatar(val) {} // Función de apoyo vacío o a implementar luego
 function sendComment() {
     const user = document.getElementById('commentUser').value || "Anónimo";
     const text = document.getElementById('commentText').value;
