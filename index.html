@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Minihi Tv - Doramas</title>
+    <title>Minihi Tv - Doramas & TV</title>
     
     <!-- OPTIMIZACIÓN: Pre-conectar a dominios clave -->
     <link rel="preconnect" href="https://image.tmdb.org">
@@ -95,6 +95,28 @@
         .top-card { flex:0 0 155px; height:200px; display:flex; align-items:flex-end; position:relative; cursor:pointer; transition:transform 0.3s; }
         .top-number { font-size:118px; font-weight:900; color:var(--bg-base); -webkit-text-stroke:2.5px #2A2A3A; position:absolute; left:-18px; bottom:-22px; z-index:1; }
         .top-card .poster { width:120px; height:180px; margin-left:auto; z-index:2; }
+
+        /* ── MUNDIAL 2026 - TV EN VIVO ── */
+        .live-tv-scroller { display:flex; gap:16px; overflow-x:auto; padding:4px 4% 24px; scrollbar-width:none; }
+        .live-tv-scroller::-webkit-scrollbar { display:none; }
+        .live-card {
+            flex:0 0 260px; height:140px; border-radius:14px; position:relative; cursor:pointer;
+            overflow:hidden; background:var(--bg-card); box-shadow:0 8px 24px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255, 51, 102, 0.2); transition: transform var(--transition);
+        }
+        .live-card:hover { transform:translateY(-5px); border-color: var(--pink); }
+        .live-card img.bg { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; opacity:0.4; }
+        .live-fade { position:absolute; inset:0; background:linear-gradient(0deg, rgba(7,7,14,0.9) 0%, rgba(7,7,14,0.2) 100%); }
+        .live-badge {
+            position:absolute; top:10px; left:10px; background:var(--pink); color:#fff;
+            font-size:0.65rem; font-weight:900; padding:4px 8px; border-radius:6px;
+            animation: pulseLive 2s infinite; display:flex; align-items:center; gap:5px; z-index:3;
+        }
+        @keyframes pulseLive { 0% { box-shadow: 0 0 0 0 rgba(255,51,102, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(255,51,102, 0); } 100% { box-shadow: 0 0 0 0 rgba(255,51,102, 0); } }
+        .live-info { position:absolute; bottom:0; left:0; width:100%; padding:12px; z-index:4; display: flex; align-items: center; gap: 10px; }
+        .live-icon { width: 40px; height: 40px; border-radius: 50%; background: #fff; padding: 2px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .live-text h4 { font-size:0.95rem; font-weight:800; color: #fff; margin-bottom: 2px; }
+        .live-text span { font-size:0.7rem; color: var(--gold); font-weight: 700; }
 
         /* ── TARJETA DESTACADA (Capítulos Agregados) ── */
         .featured-scroller { display:flex; gap:16px; overflow-x:auto; padding:4px 4% 24px; scrollbar-width:none; }
@@ -209,6 +231,7 @@
             .collection-card { flex:0 0 420px; height:180px; }
             .cast-card { flex:0 0 100px; }
             .cast-img { width:100px; height:100px; }
+            .live-card { flex:0 0 320px; height: 160px; }
         }
     </style>
 </head>
@@ -220,13 +243,14 @@
         <div class="hero-indicators" id="heroDots"></div>
     </section>
 
-    <!-- FILTROS (Se quedan pegados arriba al scrollear) -->
+    <!-- FILTROS -->
     <div class="filter-bar">
         <div class="filter-track">
             <button class="filter-chip active" onclick="filter('all', this)">Tendencias</button>
             <button class="filter-chip" onclick="filter('kdrama', this)">K-Dramas</button>
             <button class="filter-chip" onclick="filter('cdrama', this)">C-Dramas</button>
             <button class="filter-chip" onclick="filter('movie', this)">Películas</button>
+            <button class="filter-chip" onclick="filter('vivo', this)" style="border-color:var(--pink); color:var(--pink);"><i class="fa fa-circle" style="font-size:0.6rem;"></i> En Vivo</button>
         </div>
     </div>
 
@@ -247,6 +271,15 @@
                 <i class="fa fa-star" style="color:#ffca28; font-size:1.1rem;"></i> Recomendado para ti
             </h2>
             <div class="scroller" id="recommendGrid"></div>
+        </section>
+
+        <!-- NUEVA SECCIÓN: MUNDIAL FIFA 2026 - EN VIVO -->
+        <section class="content-shelf" id="liveTvSection">
+            <h2 class="shelf-title">
+                <i class="fa fa-futbol" style="color:var(--pink); font-size:1.2rem;"></i> Mundial FIFA 2026 
+                <span style="color:var(--pink); font-size:0.75rem; border:1px solid var(--pink); padding:2px 6px; border-radius:4px; margin-left:8px; animation: pulseLive 2s infinite;">EN VIVO</span>
+            </h2>
+            <div class="live-tv-scroller" id="liveTvGrid"></div>
         </section>
 
         <!-- SECCIÓN: NUEVOS CAPÍTULOS AGREGADOS -->
@@ -337,7 +370,6 @@
         let allSeries = [];
         const URL_JSON = 'data.json';
         
-        // Tu API Key de TMDB: se usa para buscar fotos REALES y al elenco de las series subidas
         const TMDB_API_KEY = "251f6108a11e361dfd8985e3ad3077cc"; 
 
         async function cargarBaseDeDatos() {
@@ -353,7 +385,6 @@
             }
         }
 
-        // OPTIMIZACIÓN EXTREMA: Fuerza cualquier URL de TMDB al tamaño justo solicitado
         function optimizeImg(url, size = 'w342') {
             if (!url) return '';
             if (url.includes('tmdb.org')) {
@@ -433,6 +464,26 @@
             </div>`;
         }
 
+        /* ── CREAR TARJETA DE CANAL EN VIVO ── */
+        function createLiveCard(item) {
+            // Asume que las emisiones en vivo tendrán un logo o imagen
+            const img = item.backdrop || item.img || 'https://images.unsplash.com/photo-1518605368461-1e1252220a77?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60';
+            const icon = item.img || 'https://cdn-icons-png.flaticon.com/512/10780/10780128.png';
+            return `
+            <div class="live-card skeleton" onclick="verContenido('${item.title.replace(/'/g, "\\'")}')">
+                <div class="live-badge"><i class="fa fa-circle"></i> LIVE</div>
+                <img class="bg lazy" data-src="${img}" alt="${item.title}">
+                <div class="live-fade"></div>
+                <div class="live-info">
+                    <img class="live-icon lazy" data-src="${icon}">
+                    <div class="live-text">
+                        <h4>${item.title}</h4>
+                        <span>${item.genre || 'Mundial FIFA 2026'}</span>
+                    </div>
+                </div>
+            </div>`;
+        }
+
         function renderColecciones() {
             const coleccionesData = [
                 { id: 'romance', titulo: 'Romance Inolvidable', icono: '💘', desc: 'Las historias de amor más dulces y emotivas.' },
@@ -457,9 +508,6 @@
             document.getElementById('collectionsGrid').innerHTML = html;
         }
 
-        // ==========================================
-        // RENDERIZAR ELENCO DESTACADO (Dinámico desde Series de DB a TMDB)
-        // ==========================================
         let castPhotoCache = JSON.parse(localStorage.getItem('castPhotoCache') || '{}');
         function guardarCastCache() {
             try { localStorage.setItem('castPhotoCache', JSON.stringify(castPhotoCache)); } catch(e) {}
@@ -470,13 +518,11 @@
             try { localStorage.setItem('seriesCastCache', JSON.stringify(seriesCastCache)); } catch(e) {}
         }
 
-        // Función auxiliar para obtener el cast de una serie en específico buscando su título en TMDB
         async function fetchCastFromTMDB(item) {
             try {
                 let type = esPelicula(item) ? 'movie' : 'tv';
-                let id = item.tmdb_id || item.id_tmdb; // Soporta si ya lo tienes en tu JSON
+                let id = item.tmdb_id || item.id_tmdb; 
                 
-                // Si no hay ID, buscamos la serie por su título en TMDB
                 if (!id) {
                     let searchUrl = `https://api.themoviedb.org/3/search/${type}?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(item.title)}&language=es-MX`;
                     let searchRes = await fetch(searchUrl);
@@ -486,14 +532,14 @@
                     }
                 }
                 
-                // Si encontramos la serie, pedimos su elenco exacto
                 if (id) {
-                    let creditsUrl = `https://api.themoviedb.org/3/${type}/${id}/credits?api_key=${TMDB_API_KEY}&language=es-MX`;
+                    // CÓDIGO CORREGIDO PARA ESPAÑOL: language=en-US en los créditos
+                    // ESTO FUERZA A TMDB A DEVOLVER LOS NOMBRES CON NUESTRO ALFABETO Y NO EN COREANO/CHINO
+                    let creditsUrl = `https://api.themoviedb.org/3/${type}/${id}/credits?api_key=${TMDB_API_KEY}&language=en-US`;
                     let creditsRes = await fetch(creditsUrl);
                     let creditsData = await creditsRes.json();
                     
                     if (creditsData.cast) {
-                        // Retornamos solo los 5 actores principales de esa serie
                         return creditsData.cast.slice(0, 5).map(c => ({
                             name: c.name,
                             img: c.profile_path ? `https://image.tmdb.org/t/p/w185${c.profile_path}` : null
@@ -509,11 +555,9 @@
         async function renderCast() {
             let actoresMap = new Map();
 
-            // PASO 1: Intentar extraer del JSON (si es que algunos ya tienen el campo escrito manual)
             allSeries.forEach(item => {
                 let reparto = item.cast || item.actors || item.actores;
                 if (!reparto) return;
-
                 let arrayActores = Array.isArray(reparto) ? reparto : (typeof reparto === 'string' ? reparto.split(',').map(s => s.trim()) : []);
 
                 arrayActores.forEach(actor => {
@@ -529,14 +573,10 @@
                 });
             });
 
-            // PASO 2: Si el JSON no tiene actores, extraemos los de las series más recientes usando TMDB
             if (TMDB_API_KEY) {
-                // Tomamos los primeros 12 títulos que tengas subidos para mostrar a sus actores
-                let seriesToProcess = allSeries.slice(0, 12);
-
+                let seriesToProcess = allSeries.filter(s => s.category !== 'vivo').slice(0, 12);
                 for (let item of seriesToProcess) {
                     if (seriesCastCache[item.title]) {
-                        // Ya los habíamos buscado y guardado en caché antes (Carga instantánea)
                         let cachedCast = seriesCastCache[item.title];
                         cachedCast.forEach(actor => {
                             if (!actoresMap.has(actor.name)) {
@@ -548,11 +588,10 @@
                             if (!data.titles.includes(item.title)) data.titles.push(item.title);
                         });
                     } else {
-                        // Es la primera vez: Consultamos los actores de esta serie específica en TMDB
                         let cast = await fetchCastFromTMDB(item);
                         if (cast && cast.length > 0) {
                             seriesCastCache[item.title] = cast;
-                            guardarSeriesCastCache(); // Guardamos para la próxima vez
+                            guardarSeriesCastCache(); 
                             
                             cast.forEach(actor => {
                                 if (!actoresMap.has(actor.name)) {
@@ -568,7 +607,6 @@
                 }
             }
 
-            // Ordenamos a los actores por cantidad de series en las que salen y mostramos 15
             const actoresUnicos = Array.from(actoresMap.values()).sort((a, b) => b.count - a.count).slice(0, 15);
 
             if (actoresUnicos.length === 0) {
@@ -576,13 +614,10 @@
                 return;
             }
 
-            // Mostramos la sección!
             document.getElementById('castSection').style.display = 'block';
 
             let html = actoresUnicos.map((actor, index) => {
                 let fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(actor.name)}&background=141420&color=00DC5A&size=150&bold=true`;
-
-                // Usamos la imagen que nos dio TMDB Credits, el caché o el fallback
                 let cacheado = castPhotoCache[actor.name];
                 let finalImg = actor.img || cacheado || fallback;
                 if (finalImg.includes('tmdb.org')) {
@@ -604,11 +639,9 @@
             document.getElementById('castGrid').innerHTML = html;
             initLazy();
 
-            // PASO 3: (Fallback) Por si un actor vino de la BD manual sin foto, lo buscamos en TMDB Persons
             if (TMDB_API_KEY) {
                 actoresUnicos.forEach((actor, index) => {
                     if (actor.img || castPhotoCache[actor.name]) return; 
-
                     fetch(`https://api.themoviedb.org/3/search/person?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(actor.name)}`)
                         .then(res => res.json())
                         .then(data => {
@@ -625,8 +658,7 @@
                                     imgEl.onload = () => imgEl.closest('.skeleton')?.classList.remove('skeleton');
                                 }
                             }
-                        })
-                        .catch(e => console.log('TMDB person search error:', e));
+                        }).catch(e => console.log('TMDB person search error:', e));
                 });
             }
         }
@@ -650,7 +682,7 @@
                     }
 
                     let historyTitles = historyItems.map(i => i.title);
-                    let recommended = allSeries.filter(s => s.genre === topGenre && !historyTitles.includes(s.title)).slice(0, 15);
+                    let recommended = allSeries.filter(s => s.genre === topGenre && !historyTitles.includes(s.title) && s.category !== 'vivo').slice(0, 15);
 
                     if (recommended.length > 0) {
                         document.getElementById('recommendSection').style.display = 'block';
@@ -672,7 +704,7 @@
             let html = '';
 
             generos.forEach(genero => {
-                const items = allSeries.filter(i => (i.genre || '').toLowerCase() === genero);
+                const items = allSeries.filter(i => (i.genre || '').toLowerCase() === genero && i.category !== 'vivo');
                 if (items.length < 4) return;
 
                 const tieneAmbos = items.some(esPelicula) && items.some(i => !esPelicula(i));
@@ -692,7 +724,8 @@
         }
 
         function loadContent() {
-            $('#heroSlider').innerHTML = allSeries.slice(0, 5).map(item => `
+            // Hero filtra todo lo que NO sea vivo para no mostrar un canal ahí (opcional)
+            $('#heroSlider').innerHTML = allSeries.filter(i => i.category !== 'vivo').slice(0, 5).map(item => `
                 <div class="hero-slide" onclick="verContenido('${item.title.replace(/'/g, "\\'")}')">
                     <img src="${item.backdrop || item.img}" class="hero-bg">
                     <div class="hero-gradient-bottom"></div>
@@ -706,23 +739,35 @@
 
             renderPersonalizedRows();
 
-            $('#nuevosGrid').innerHTML = allSeries.slice().reverse().slice(0, 15).map(i => createFeaturedCard(i)).join('');
+            // Renderizar Canales/Partidos en Vivo
+            const liveItems = allSeries.filter(i => i.category === 'vivo');
+            if (liveItems.length > 0) {
+                $('#liveTvGrid').innerHTML = liveItems.map(i => createLiveCard(i)).join('');
+            } else {
+                // Tarjetas estáticas de muestra si aún no agregas nada al JSON
+                $('#liveTvGrid').innerHTML = `
+                    <div class="live-card skeleton">
+                        <div class="live-badge"><i class="fa fa-clock"></i> Próximamente</div>
+                        <img class="bg lazy" data-src="https://images.unsplash.com/photo-1518605368461-1e1252220a77?w=500" alt="Mundial">
+                        <div class="live-fade"></div>
+                        <div class="live-info">
+                            <div class="live-text"><h4>Señales del Mundial</h4><span>La acción comenzará pronto</span></div>
+                        </div>
+                    </div>`;
+            }
 
+            $('#nuevosGrid').innerHTML = allSeries.filter(i => i.category !== 'vivo').slice().reverse().slice(0, 15).map(i => createFeaturedCard(i)).join('');
             renderColecciones();
-
-            const peliculasDestacadas = allSeries.filter(esPelicula).slice(0, 15);
-            $('#moviesFeaturedGrid').innerHTML = peliculasDestacadas.map(i => createMovieCard(i)).join('');
-
-            $('#top10Grid').innerHTML = allSeries.slice(0, 10).map((i, idx) => createTopCard(i, idx)).join('');
+            $('#moviesFeaturedGrid').innerHTML = allSeries.filter(esPelicula).slice(0, 15).map(i => createMovieCard(i)).join('');
+            $('#top10Grid').innerHTML = allSeries.filter(i => i.category !== 'vivo').slice(0, 10).map((i, idx) => createTopCard(i, idx)).join('');
             
-            // Llama a procesar a los Actores automáticamente sin bloquear el resto de la página
             renderCast();
 
             $('#kdramaGrid').innerHTML = allSeries.filter(i => i.category === 'kdrama').slice(0, 15).map(i => createDoramaCard(i)).join('');
             $('#cdramaGrid').innerHTML = allSeries.filter(i => i.category === 'cdrama').slice(0, 15).map(i => createDoramaCard(i)).join('');
-            $('#romanceGrid').innerHTML = allSeries.filter(i => i.genre && i.genre.toLowerCase() === 'romance').slice(0, 15).map(i => createDoramaCard(i)).join('');
-            $('#comediaGrid').innerHTML = allSeries.filter(i => i.genre && i.genre.toLowerCase() === 'comedia').slice(0, 15).map(i => createDoramaCard(i)).join('');
-            $('#accionGrid').innerHTML = allSeries.filter(i => i.genre && (i.genre.toLowerCase() === 'accion' || i.genre.toLowerCase() === 'fantasia')).slice(0, 15).map(i => createDoramaCard(i)).join('');
+            $('#romanceGrid').innerHTML = allSeries.filter(i => i.genre && i.genre.toLowerCase() === 'romance' && i.category !== 'vivo').slice(0, 15).map(i => createDoramaCard(i)).join('');
+            $('#comediaGrid').innerHTML = allSeries.filter(i => i.genre && i.genre.toLowerCase() === 'comedia' && i.category !== 'vivo').slice(0, 15).map(i => createDoramaCard(i)).join('');
+            $('#accionGrid').innerHTML = allSeries.filter(i => i.genre && (i.genre.toLowerCase() === 'accion' || i.genre.toLowerCase() === 'fantasia') && i.category !== 'vivo').slice(0, 15).map(i => createDoramaCard(i)).join('');
             $('#moviesGrid').innerHTML = allSeries.filter(esPelicula).slice(0, 15).map(i => createDoramaCard(i)).join('');
 
             renderGenreCollections();
@@ -747,8 +792,16 @@
                 main.style.display = 'none';
                 filterSec.style.display = 'block';
                 document.getElementById('filter-title').innerText = "Explorando: " + type.toUpperCase();
-                const filtered = allSeries.filter(i => i.category === type || i.type === type || (i.genre && i.genre.toLowerCase() === type));
-                document.getElementById('filter-grid').innerHTML = filtered.map(i => createDoramaCard(i)).join('');
+                
+                let filtered = [];
+                if (type === 'vivo') {
+                    filtered = allSeries.filter(i => i.category === 'vivo');
+                    document.getElementById('filter-grid').innerHTML = filtered.map(i => createLiveCard(i)).join('');
+                } else {
+                    filtered = allSeries.filter(i => i.category === type || i.type === type || (i.genre && i.genre.toLowerCase() === type));
+                    document.getElementById('filter-grid').innerHTML = filtered.map(i => createDoramaCard(i)).join('');
+                }
+                
                 window.scrollTo(0,0);
             }
             initLazy();
