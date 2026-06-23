@@ -54,5 +54,43 @@
         { "number": 15, "video": "https://geo.dailymotion.com/player.html?video=x88id1c" },
         { "number": 16, "video": "https://geo.dailymotion.com/player.html?video=x88i9on" }
     ]
-}   
+},
+    {
+    "title": "Un amor tan hermoso",
+    "description": "Para una adolescente perdidamente enamorada de su vecino y amigo de la infancia, el amor es dulce y difícil a la vez. ¿Podrá su relación evolucionar a medida que crecen?",
+    "img": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/4EzrCBnBdeLAZENNQcYzYq933B.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/wVxcWC5j9e4i3SDq4MesjY5GAsn.jpg",
+    "rate": "8.3",
+    "year": "2020",
+    "genre": "romance",
+    "type": "series",
+    "category": "kdrama",
+    "tag": "LAT",
+    "episodes": [
+        { "number": 1, "video": "https://geo.dailymotion.com/player.html?video=x8ekmfk" },
+        { "number": 2, "video": "https://geo.dailymotion.com/player.html?video=x8ekmfj" },
+        { "number": 3, "video": "https://geo.dailymotion.com/player.html?video=x8ekmfg" },
+        { "number": 4, "video": "https://geo.dailymotion.com/player.html?video=x8ekmff" },
+        { "number": 5, "video": "https://geo.dailymotion.com/player.html?video=x8ekmfe" },
+        { "number": 6, "video": "https://geo.dailymotion.com/player.html?video=x8ekmfc" },
+        { "number": 7, "video": "https://geo.dailymotion.com/player.html?video=x8ej0rj" },
+        { "number": 8, "video": "https://geo.dailymotion.com/player.html?video=x8ej0ru" },
+        { "number": 9, "video": "https://geo.dailymotion.com/player.html?video=x8ej0rt" },
+        { "number": 10, "video": "https://geo.dailymotion.com/player.html?video=x8ej0rs" },
+        { "number": 11, "video": "https://geo.dailymotion.com/player.html?video=x8ej0rq" },
+        { "number": 12, "video": "https://geo.dailymotion.com/player.html?video=x8ej0ro" },
+        { "number": 13, "video": "https://geo.dailymotion.com/player.html?video=x8ej0rm" },
+        { "number": 14, "video": "https://geo.dailymotion.com/player.html?video=x8ej0rl" },
+        { "number": 15, "video": "https://geo.dailymotion.com/player.html?video=x8ef2tw" },
+        { "number": 16, "video": "https://geo.dailymotion.com/player.html?video=x8ef2tu" },
+        { "number": 17, "video": "https://geo.dailymotion.com/player.html?video=x8ef2tt" },
+        { "number": 18, "video": "https://geo.dailymotion.com/player.html?video=x8ef2tr" },
+        { "number": 19, "video": "https://geo.dailymotion.com/player.html?video=x8eel2w" },
+        { "number": 20, "video": "https://geo.dailymotion.com/player.html?video=x8eel2x" },
+        { "number": 21, "video": "https://geo.dailymotion.com/player.html?video=x8ee0zc" },
+        { "number": 22, "video": "https://geo.dailymotion.com/player.html?video=x8ee0zd" },
+        { "number": 23, "video": "https://geo.dailymotion.com/player.html?video=x8edzld" },
+        { "number": 24, "video": "https://geo.dailymotion.com/player.html?video=x8edz9n" }
+    ]
+}
 ]
