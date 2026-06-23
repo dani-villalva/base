@@ -337,7 +337,7 @@
         let allSeries = [];
         const URL_JSON = 'data.json';
         
-        // 🚀 Tu API Key de TMDB: se usa para buscar fotos REALES de los actores cuando faltan en data.json
+        // Tu API Key de TMDB: se usa para buscar fotos REALES y al elenco de las series subidas
         const TMDB_API_KEY = "251f6108a11e361dfd8985e3ad3077cc"; 
 
         async function cargarBaseDeDatos() {
@@ -353,7 +353,7 @@
             }
         }
 
-        // OPTIMIZACIÓN EXTREMA: Fuerza cualquier URL de TMDB al tamaño justo solicitado, bajando el peso un 80%
+        // OPTIMIZACIÓN EXTREMA: Fuerza cualquier URL de TMDB al tamaño justo solicitado
         function optimizeImg(url, size = 'w342') {
             if (!url) return '';
             if (url.includes('tmdb.org')) {
@@ -458,17 +458,58 @@
         }
 
         // ==========================================
-        // RENDERIZAR ELENCO DESTACADO (fotos reales vía API de TMDB)
+        // RENDERIZAR ELENCO DESTACADO (Dinámico desde Series de DB a TMDB)
         // ==========================================
         let castPhotoCache = JSON.parse(localStorage.getItem('castPhotoCache') || '{}');
-
         function guardarCastCache() {
             try { localStorage.setItem('castPhotoCache', JSON.stringify(castPhotoCache)); } catch(e) {}
         }
 
-        function renderCast() {
+        let seriesCastCache = JSON.parse(localStorage.getItem('seriesCastCache') || '{}');
+        function guardarSeriesCastCache() {
+            try { localStorage.setItem('seriesCastCache', JSON.stringify(seriesCastCache)); } catch(e) {}
+        }
+
+        // Función auxiliar para obtener el cast de una serie en específico buscando su título en TMDB
+        async function fetchCastFromTMDB(item) {
+            try {
+                let type = esPelicula(item) ? 'movie' : 'tv';
+                let id = item.tmdb_id || item.id_tmdb; // Soporta si ya lo tienes en tu JSON
+                
+                // Si no hay ID, buscamos la serie por su título en TMDB
+                if (!id) {
+                    let searchUrl = `https://api.themoviedb.org/3/search/${type}?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(item.title)}&language=es-MX`;
+                    let searchRes = await fetch(searchUrl);
+                    let searchData = await searchRes.json();
+                    if (searchData.results && searchData.results.length > 0) {
+                        id = searchData.results[0].id;
+                    }
+                }
+                
+                // Si encontramos la serie, pedimos su elenco exacto
+                if (id) {
+                    let creditsUrl = `https://api.themoviedb.org/3/${type}/${id}/credits?api_key=${TMDB_API_KEY}&language=es-MX`;
+                    let creditsRes = await fetch(creditsUrl);
+                    let creditsData = await creditsRes.json();
+                    
+                    if (creditsData.cast) {
+                        // Retornamos solo los 5 actores principales de esa serie
+                        return creditsData.cast.slice(0, 5).map(c => ({
+                            name: c.name,
+                            img: c.profile_path ? `https://image.tmdb.org/t/p/w185${c.profile_path}` : null
+                        }));
+                    }
+                }
+            } catch(e) {
+                console.log("Error TMDB cast fetch para:", item.title, e);
+            }
+            return [];
+        }
+
+        async function renderCast() {
             let actoresMap = new Map();
 
+            // PASO 1: Intentar extraer del JSON (si es que algunos ya tienen el campo escrito manual)
             allSeries.forEach(item => {
                 let reparto = item.cast || item.actors || item.actores;
                 if (!reparto) return;
@@ -488,16 +529,60 @@
                 });
             });
 
+            // PASO 2: Si el JSON no tiene actores, extraemos los de las series más recientes usando TMDB
+            if (TMDB_API_KEY) {
+                // Tomamos los primeros 12 títulos que tengas subidos para mostrar a sus actores
+                let seriesToProcess = allSeries.slice(0, 12);
+
+                for (let item of seriesToProcess) {
+                    if (seriesCastCache[item.title]) {
+                        // Ya los habíamos buscado y guardado en caché antes (Carga instantánea)
+                        let cachedCast = seriesCastCache[item.title];
+                        cachedCast.forEach(actor => {
+                            if (!actoresMap.has(actor.name)) {
+                                actoresMap.set(actor.name, { name: actor.name, img: actor.img, count: 0, titles: [] });
+                            }
+                            const data = actoresMap.get(actor.name);
+                            data.count += 1;
+                            if (actor.img && !data.img) data.img = actor.img;
+                            if (!data.titles.includes(item.title)) data.titles.push(item.title);
+                        });
+                    } else {
+                        // Es la primera vez: Consultamos los actores de esta serie específica en TMDB
+                        let cast = await fetchCastFromTMDB(item);
+                        if (cast && cast.length > 0) {
+                            seriesCastCache[item.title] = cast;
+                            guardarSeriesCastCache(); // Guardamos para la próxima vez
+                            
+                            cast.forEach(actor => {
+                                if (!actoresMap.has(actor.name)) {
+                                    actoresMap.set(actor.name, { name: actor.name, img: actor.img, count: 0, titles: [] });
+                                }
+                                const data = actoresMap.get(actor.name);
+                                data.count += 1;
+                                if (actor.img && !data.img) data.img = actor.img;
+                                if (!data.titles.includes(item.title)) data.titles.push(item.title);
+                            });
+                        }
+                    }
+                }
+            }
+
+            // Ordenamos a los actores por cantidad de series en las que salen y mostramos 15
             const actoresUnicos = Array.from(actoresMap.values()).sort((a, b) => b.count - a.count).slice(0, 15);
 
-            if (actoresUnicos.length === 0) return;
+            if (actoresUnicos.length === 0) {
+                document.getElementById('castSection').style.display = 'none';
+                return;
+            }
 
+            // Mostramos la sección!
             document.getElementById('castSection').style.display = 'block';
 
             let html = actoresUnicos.map((actor, index) => {
                 let fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(actor.name)}&background=141420&color=00DC5A&size=150&bold=true`;
 
-                // Prioridad: 1) img propia del JSON  2) foto cacheada de TMDB  3) avatar de letras (temporal mientras llega la API)
+                // Usamos la imagen que nos dio TMDB Credits, el caché o el fallback
                 let cacheado = castPhotoCache[actor.name];
                 let finalImg = actor.img || cacheado || fallback;
                 if (finalImg.includes('tmdb.org')) {
@@ -519,10 +604,10 @@
             document.getElementById('castGrid').innerHTML = html;
             initLazy();
 
-            // Busca en la API real de TMDB la foto de cada actor que aún no tenga una (ni propia ni en caché)
+            // PASO 3: (Fallback) Por si un actor vino de la BD manual sin foto, lo buscamos en TMDB Persons
             if (TMDB_API_KEY) {
                 actoresUnicos.forEach((actor, index) => {
-                    if (actor.img || castPhotoCache[actor.name]) return; // ya tiene foto real, no llama a la API
+                    if (actor.img || castPhotoCache[actor.name]) return; 
 
                     fetch(`https://api.themoviedb.org/3/search/person?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(actor.name)}`)
                         .then(res => res.json())
@@ -536,7 +621,7 @@
                                 const imgEl = document.getElementById('actor-img-' + index);
                                 if (imgEl) {
                                     imgEl.dataset.src = newImg;
-                                    imgEl.src = newImg; // ya está montada en pantalla, la actualizamos directo
+                                    imgEl.src = newImg; 
                                     imgEl.onload = () => imgEl.closest('.skeleton')?.classList.remove('skeleton');
                                 }
                             }
@@ -630,6 +715,7 @@
 
             $('#top10Grid').innerHTML = allSeries.slice(0, 10).map((i, idx) => createTopCard(i, idx)).join('');
             
+            // Llama a procesar a los Actores automáticamente sin bloquear el resto de la página
             renderCast();
 
             $('#kdramaGrid').innerHTML = allSeries.filter(i => i.category === 'kdrama').slice(0, 15).map(i => createDoramaCard(i)).join('');
@@ -640,7 +726,6 @@
             $('#moviesGrid').innerHTML = allSeries.filter(esPelicula).slice(0, 15).map(i => createDoramaCard(i)).join('');
 
             renderGenreCollections();
-            
             initLazy();
         }
 
@@ -682,7 +767,7 @@
                         observer.unobserve(img);
                     }
                 });
-            }, { rootMargin: '600px 0px' }); // Precarga gigante de 600px: Las imágenes se descargan MUCHO antes de que hagas scroll hacia ellas
+            }, { rootMargin: '600px 0px' });
             document.querySelectorAll('.lazy').forEach(img => observer.observe(img));
         }
 
