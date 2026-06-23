@@ -179,6 +179,24 @@
         .cast-img img { width:100%; height:100%; object-fit:cover; }
         .cast-name { font-size:0.75rem; font-weight:700; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; color:#fff; }
 
+
+        .cast-img {
+    width:85px; height:85px; border-radius:50%; overflow:hidden;
+    background: var(--bg-card); box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    position: relative; padding: 2px;
+    background-image: linear-gradient(135deg, var(--bg-card), var(--bg-card));
+    transition: background-image 0.3s, transform 0.3s;
+}
+.cast-card:hover .cast-img {
+    background-image: linear-gradient(135deg, var(--accent), var(--pink));
+    transform: scale(1.05);
+}
+.cast-img img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+.cast-sub {
+    font-size:0.62rem; color: var(--accent); font-weight:700;
+    text-align:center; opacity:0.85; margin-top:-2px;
+}
+
         /* ── BOTTOM NAV MÓVIL ── */
         .bottom-nav {
             position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); 
@@ -201,6 +219,7 @@
             .cast-card { flex:0 0 100px; }
             .cast-img { width:100px; height:100px; }
         }
+        
     </style>
 </head>
 <body>
@@ -442,72 +461,85 @@
         }
 
         // ==========================================
-        // RENDERIZAR ELENCO DESTACADO (CON API TMDB)
-        // ==========================================
-        function renderCast() {
-            let actoresMap = new Map();
+// RENDERIZAR ELENCO DESTACADO (prioriza actores reales del JSON)
+// ==========================================
+function renderCast() {
+    let actoresMap = new Map();
 
-            // Lista por defecto de la imagen para que siempre aparezcan
-            const defaultActors = [
-                { name: "Ahn Hyo-seop", img: "" },
-                { name: "Kim Se-jeong", img: "" },
-                { name: "Kim Ji-soo", img: "" },
-                { name: "Jung Chae-yeon", img: "" },
-                { name: "Wang Anyu", img: "" },
-                { name: "Wang Yuwen", img: "" },
-                { name: "Park Eun-bin", img: "" },
-                { name: "Kang Tae-oh", img: "" },
-                { name: "JOY", img: "" },
-                { name: "Choo Young-woo", img: "" },
-                { name: "Hwang Jung-eum", img: "" }
-            ];
+    // 1. Extrae actores reales desde las series/doramas subidos
+    allSeries.forEach(item => {
+        let reparto = item.cast || item.actors || item.actores;
+        if (!reparto) return;
 
-            defaultActors.forEach(actor => {
-                actoresMap.set(actor.name, { name: actor.name, img: actor.img });
-            });
+        let arrayActores = Array.isArray(reparto)
+            ? reparto
+            : (typeof reparto === 'string' ? reparto.split(',').map(s => s.trim()) : []);
 
-            // Extrae actores del JSON si existen en la base de datos local
-            allSeries.forEach(item => {
-                let reparto = item.cast || item.actors || item.actores;
-                if (reparto) {
-                    let arrayActores = [];
-                    if (Array.isArray(reparto)) {
-                        arrayActores = reparto;
-                    } else if (typeof reparto === 'string') {
-                        arrayActores = reparto.split(',').map(s => s.trim());
-                    }
+        arrayActores.forEach(actor => {
+            const name = typeof actor === 'string' ? actor : actor.name;
+            const img  = (typeof actor === 'object' && actor.img) ? actor.img : '';
+            if (!name) return;
 
-                    arrayActores.forEach(actor => {
-                        let name = typeof actor === 'string' ? actor : actor.name;
-                        let img = (typeof actor === 'object' && actor.img) ? actor.img : '';
-                        
-                        if (name && !actoresMap.has(name)) {
-                            actoresMap.set(name, { name, img });
-                        }
-                    });
-                }
-            });
+            if (!actoresMap.has(name)) {
+                actoresMap.set(name, { name, img, count: 0, titles: [] });
+            }
+            const data = actoresMap.get(name);
+            data.count += 1;
+            if (img && !data.img) data.img = img; // si encuentra foto en otra serie, la usa
+            if (item.title && !data.titles.includes(item.title)) data.titles.push(item.title);
+        });
+    });
 
-            const actoresUnicos = Array.from(actoresMap.values()).slice(0, 15);
+    // 2. Si no hay suficientes actores reales, rellena con la lista por defecto
+    const defaultActors = [
+        { name: "Ahn Hyo-seop", img: "https://image.tmdb.org/t/p/w235_and_h235_face/w7rO2rEVU7XmH5P1qWq61o1Fz2A.jpg" },
+        { name: "Kim Se-jeong", img: "https://image.tmdb.org/t/p/w235_and_h235_face/nNKZ2hJ7lQ5YmB7IOPa12Q2AEXJ.jpg" },
+        { name: "Kim Ji-soo", img: "https://image.tmdb.org/t/p/w235_and_h235_face/fihyXbHVKWehQfLidO51XNlBw49.jpg" },
+        { name: "Jung Chae-yeon", img: "https://image.tmdb.org/t/p/w235_and_h235_face/A8W0HOf0uB5d6U9d8f8XqH7V18P.jpg" },
+        { name: "Wang Anyu", img: "" },
+        { name: "Wang Yuwen", img: "" },
+        { name: "Park Eun-bin", img: "" },
+        { name: "Kang Tae-oh", img: "" },
+        { name: "JOY", img: "" },
+        { name: "Choo Young-woo", img: "" },
+        { name: "Hwang Jung-eum", img: "" }
+    ];
 
-            if (actoresUnicos.length > 0) {
-                document.getElementById('castSection').style.display = 'block';
-                
-                // 1. Renderiza el HTML con imágenes falsas temporales o las locales si las tiene
-                let html = actoresUnicos.map((actor, index) => {
-                    let fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(actor.name)}&background=141420&color=00DC5A&size=150`;
-                    let finalImg = actor.img ? actor.img : fallback;
-                    return `
-                        <div class="cast-card" onclick="document.getElementById('searchInput').value='${actor.name}'; window.location.href='buscar.html'">
-                            <div class="cast-img skeleton">
-                                <img id="actor-img-${index}" class="lazy" data-src="${finalImg}" alt="${actor.name}" onerror="this.onerror=null;this.src='${fallback}';">
-                            </div>
-                            <span class="cast-name">${actor.name}</span>
-                        </div>
-                    `;
-                }).join('');
-                
-                document.getElementById('castGrid').innerHTML = html;
+    if (actoresMap.size < 8) {
+        defaultActors.forEach(actor => {
+            if (!actoresMap.has(actor.name)) {
+                actoresMap.set(actor.name, { name: actor.name, img: actor.img, count: 0, titles: [] });
+            }
+        });
+    }
+
+    // 3. Ordena: primero quienes aparecen en más títulos subidos (relevancia real)
+    const actoresUnicos = Array.from(actoresMap.values())
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 15);
+
+    if (actoresUnicos.length > 0) {
+        document.getElementById('castSection').style.display = 'block';
+        let html = actoresUnicos.map(actor => {
+            let fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(actor.name)}&background=141420&color=00DC5A&size=150&bold=true`;
+            let finalImg = actor.img || fallback;
+            let subt = actor.count > 0
+                ? `${actor.count} título${actor.count > 1 ? 's' : ''}`
+                : '';
+            return `
+                <div class="cast-card" onclick="window.location.href='buscar.html'" title="${actor.titles.join(', ')}">
+                    <div class="cast-img skeleton">
+                        <img class="lazy" loading="lazy" decoding="async" data-src="${finalImg}" alt="${actor.name}" onerror="this.onerror=null;this.src='${fallback}';">
+                    </div>
+                    <span class="cast-name">${actor.name}</span>
+                    ${subt ? `<span class="cast-sub">${subt}</span>` : ''}
+                </div>
+            `;
+        }).join('');
+        document.getElementById('castGrid').innerHTML = html;
+        initLazy(); // re-observa las nuevas imágenes inyectadas
+    }
+}
 
                 // 2. BUSCA EN TMDB ASINCRÓNICAMENTE Y COMPLETA
                 const TMDB_API_KEY = "251f6108a11e361dfd8985e3ad3077cc";
@@ -662,18 +694,20 @@
 
         const $ = (s) => document.querySelector(s);
         function initLazy() {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img = entry.target;
-                        img.src = img.dataset.src;
-                        img.onload = () => img.closest('.skeleton').classList.remove('skeleton');
-                        observer.unobserve(img);
-                    }
-                });
-            });
-            document.querySelectorAll('.lazy').forEach(img => observer.observe(img));
-        }
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                if (img.dataset.src && img.src !== img.dataset.src) {
+                    img.src = img.dataset.src;
+                    img.onload = () => img.closest('.skeleton')?.classList.remove('skeleton');
+                }
+                observer.unobserve(img);
+            }
+        });
+    }, { rootMargin: '200px 0px' }); // precarga 200px antes de entrar a pantalla
+    document.querySelectorAll('.lazy').forEach(img => observer.observe(img));
+}
 
         document.addEventListener('DOMContentLoaded', cargarBaseDeDatos);
     </script>
