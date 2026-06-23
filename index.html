@@ -337,7 +337,7 @@
         let allSeries = [];
         const URL_JSON = 'data.json';
         
-        // 🚀 OPCIONAL: Si pones aquí tu API de TMDB, buscará fotos de actores automáticamente de forma ultra rápida
+        // 🚀 Tu API Key de TMDB: se usa para buscar fotos REALES de los actores cuando faltan en data.json
         const TMDB_API_KEY = "251f6108a11e361dfd8985e3ad3077cc"; 
 
         async function cargarBaseDeDatos() {
@@ -458,26 +458,16 @@
         }
 
         // ==========================================
-        // RENDERIZAR ELENCO DESTACADO (SÚPER RÁPIDO Y OPTIMIZADO)
+        // RENDERIZAR ELENCO DESTACADO (fotos reales vía API de TMDB)
         // ==========================================
+        let castPhotoCache = JSON.parse(localStorage.getItem('castPhotoCache') || '{}');
+
+        function guardarCastCache() {
+            try { localStorage.setItem('castPhotoCache', JSON.stringify(castPhotoCache)); } catch(e) {}
+        }
+
         function renderCast() {
             let actoresMap = new Map();
-
-            // Usamos formato w150_and_h150_face, es 70% más rápido de descargar que el tamaño anterior
-            const fotosConocidas = {
-                "Ahn Hyo-seop": "https://image.tmdb.org/t/p/w150_and_h150_face/w7rO2rEVU7XmH5P1qWq61o1Fz2A.jpg",
-                "Kim Se-jeong": "https://image.tmdb.org/t/p/w150_and_h150_face/nNKZ2hJ7lQ5YmB7IOPa12Q2AEXJ.jpg",
-                "Kim Ji-soo": "https://image.tmdb.org/t/p/w150_and_h150_face/fihyXbHVKWehQfLidO51XNlBw49.jpg",
-                "Jung Chae-yeon": "https://image.tmdb.org/t/p/w150_and_h150_face/A8W0HOf0uB5d6U9d8f8XqH7V18P.jpg",
-                "Lee Min-ho": "https://image.tmdb.org/t/p/w150_and_h150_face/7HlDIsEreA6Q82r0Z6oFntV10eE.jpg",
-                "Park Eun-bin": "https://image.tmdb.org/t/p/w150_and_h150_face/x1R9a6gJ9oF0A5O9uA2oZ4I6s1M.jpg",
-                "Song Kang": "https://image.tmdb.org/t/p/w150_and_h150_face/1b4j0Z3K2Y9n5Q9r9B7n9V3H8w6.jpg",
-                "Cha Eun-woo": "https://image.tmdb.org/t/p/w150_and_h150_face/5P6j9U3K8Y7n2Q5r7B7n9V3H8w6.jpg",
-                "Bae Suzy": "https://image.tmdb.org/t/p/w150_and_h150_face/x7T3W1rG5T6J7G8rF9D3J1F5T9.jpg",
-                "Wang Anyu": "https://image.tmdb.org/t/p/w150_and_h150_face/3je20qJ4hH7n9L8yWbXpG9L8yWb.jpg", 
-                "Wang Yuwen": "https://image.tmdb.org/t/p/w150_and_h150_face/x5w4iI3eK3g0s8P9j7wR6Yq8H2n.jpg",
-                "Kang Tae-oh": "https://image.tmdb.org/t/p/w150_and_h150_face/3J1k6v8L5k1U9r1O2p5N7b4M9q.jpg"
-            };
 
             allSeries.forEach(item => {
                 let reparto = item.cast || item.actors || item.actores;
@@ -490,70 +480,69 @@
                     let img = (typeof actor === 'object' && actor.img) ? actor.img : '';
                     if (!name) return;
 
-                    if (!img && fotosConocidas[name]) { img = fotosConocidas[name]; }
-
                     if (!actoresMap.has(name)) { actoresMap.set(name, { name, img, count: 0, titles: [] }); }
                     const data = actoresMap.get(name);
                     data.count += 1;
-                    if (img && !data.img) data.img = img; 
+                    if (img && !data.img) data.img = img;
                     if (item.title && !data.titles.includes(item.title)) data.titles.push(item.title);
                 });
             });
 
-            const defaultActors = Object.keys(fotosConocidas).map(name => ({ name: name, img: fotosConocidas[name] }));
-            if (actoresMap.size < 8) {
-                defaultActors.forEach(actor => {
-                    if (!actoresMap.has(actor.name)) { actoresMap.set(actor.name, { name: actor.name, img: actor.img, count: 0, titles: [] }); }
-                });
-            }
-
             const actoresUnicos = Array.from(actoresMap.values()).sort((a, b) => b.count - a.count).slice(0, 15);
 
-            if (actoresUnicos.length > 0) {
-                document.getElementById('castSection').style.display = 'block';
-                let html = actoresUnicos.map((actor, index) => {
-                    let fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(actor.name)}&background=141420&color=00DC5A&size=150&bold=true`;
-                    let finalImg = actor.img || fallback;
-                    
-                    // Aseguramos que si es de TMDB cargue en el tamaño más ligero y rápido posible para avatares
-                    if (finalImg.includes('tmdb.org')) {
-                        finalImg = finalImg.replace(/\/t\/p\/[^\/]+\//, '/t/p/w150_and_h150_face/');
-                    }
+            if (actoresUnicos.length === 0) return;
 
-                    let subt = actor.count > 0 ? `${actor.count} título${actor.count > 1 ? 's' : ''}` : '';
-                    return `
-                        <div class="cast-card" onclick="window.location.href='buscar.html'" title="${actor.titles.join(', ')}">
-                            <div class="cast-img skeleton">
-                                <img id="actor-img-${index}" class="lazy" loading="lazy" decoding="async" data-src="${finalImg}" alt="${actor.name}" onerror="this.onerror=null;this.src='${fallback}';">
-                            </div>
-                            <span class="cast-name">${actor.name}</span>
-                            ${subt ? `<span class="cast-sub">${subt}</span>` : ''}
-                        </div>
-                    `;
-                }).join('');
-                
-                document.getElementById('castGrid').innerHTML = html;
-                initLazy(); 
+            document.getElementById('castSection').style.display = 'block';
 
-                // Si pones tu TMDB_API_KEY arriba, esto buscará en 2do plano las fotos faltantes súper rápido
-                if (TMDB_API_KEY) {
-                    actoresUnicos.forEach((actor, index) => {
-                        if (!actor.img && !fotosConocidas[actor.name]) { 
-                            fetch(`https://api.themoviedb.org/3/search/person?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(actor.name)}`)
-                            .then(res => res.json())
-                            .then(data => {
-                                if (data.results && data.results.length > 0 && data.results[0].profile_path) {
-                                    const newImg = `https://image.tmdb.org/t/p/w150_and_h150_face${data.results[0].profile_path}`;
-                                    const imgEl = document.getElementById('actor-img-' + index);
-                                    if (imgEl) {
-                                        imgEl.dataset.src = newImg;
-                                        if (imgEl.src !== "") { imgEl.src = newImg; }
-                                    }
-                                }
-                            }).catch(e => console.log(e));
-                        }
-                    });
+            let html = actoresUnicos.map((actor, index) => {
+                let fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(actor.name)}&background=141420&color=00DC5A&size=150&bold=true`;
+
+                // Prioridad: 1) img propia del JSON  2) foto cacheada de TMDB  3) avatar de letras (temporal mientras llega la API)
+                let cacheado = castPhotoCache[actor.name];
+                let finalImg = actor.img || cacheado || fallback;
+                if (finalImg.includes('tmdb.org')) {
+                    finalImg = finalImg.replace(/\/t\/p\/[^\/]+\//, '/t/p/w185/');
                 }
+
+                let subt = actor.count > 0 ? `${actor.count} título${actor.count > 1 ? 's' : ''}` : '';
+                return `
+                    <div class="cast-card" onclick="window.location.href='buscar.html'" title="${actor.titles.join(', ')}">
+                        <div class="cast-img skeleton">
+                            <img id="actor-img-${index}" class="lazy" loading="lazy" decoding="async" data-src="${finalImg}" alt="${actor.name}" onerror="this.onerror=null;this.src='${fallback}';">
+                        </div>
+                        <span class="cast-name">${actor.name}</span>
+                        ${subt ? `<span class="cast-sub">${subt}</span>` : ''}
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('castGrid').innerHTML = html;
+            initLazy();
+
+            // Busca en la API real de TMDB la foto de cada actor que aún no tenga una (ni propia ni en caché)
+            if (TMDB_API_KEY) {
+                actoresUnicos.forEach((actor, index) => {
+                    if (actor.img || castPhotoCache[actor.name]) return; // ya tiene foto real, no llama a la API
+
+                    fetch(`https://api.themoviedb.org/3/search/person?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(actor.name)}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            const persona = data.results && data.results[0];
+                            if (persona && persona.profile_path) {
+                                const newImg = `https://image.tmdb.org/t/p/w185${persona.profile_path}`;
+                                castPhotoCache[actor.name] = newImg;
+                                guardarCastCache();
+
+                                const imgEl = document.getElementById('actor-img-' + index);
+                                if (imgEl) {
+                                    imgEl.dataset.src = newImg;
+                                    imgEl.src = newImg; // ya está montada en pantalla, la actualizamos directo
+                                    imgEl.onload = () => imgEl.closest('.skeleton')?.classList.remove('skeleton');
+                                }
+                            }
+                        })
+                        .catch(e => console.log('TMDB person search error:', e));
+                });
             }
         }
 
