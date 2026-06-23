@@ -212,22 +212,17 @@ async function loadData() {
 function renderMedia(url) {
     const c = document.getElementById('mediaContainer');
     
-    // === TRUCO MAESTRO: AUTO-MODIFICAR URL (BASE64) ===
-    if ((url.includes('golazohd.com') || url.includes('tvtvhd.com')) && !url.includes('rojadirectatv.net')) {
-        let urlCodificada = btoa(url); 
-        url = `https://rojadirectatv.net/embed/eventos.html?r=${urlCodificada}`;
-    }
-    // ==================================================
-
-    // 1. DETECCIÓN DE PÁGINAS EXTERNAS (Añadimos .php a la validación)
-    if(url.includes('dailymotion.com') || url.includes('iframe') || url.includes('youtube.com') || 
-       url.includes('rojadirectatv.net') || url.includes('.php')) {
+    // 1. DETECCIÓN DE PÁGINAS DE TV EN VIVO Y ENLACES EXTERNOS
+    // Aquí detectamos si es tvtvhd, golazohd, .php o páginas similares
+    if(url.includes('dailymotion.com') || url.includes('youtube.com') || 
+       url.includes('.php') || url.includes('.html') || 
+       url.includes('tvtvhd.com') || url.includes('golazohd.com')) {
         
-        // SOLUCIÓN APLICADA AQUÍ:
-        // 1. Se eliminó 'referrerpolicy="no-referrer"' porque las webs de deportes bloquean el video si no envías referer.
-        // 2. Se añadió un 'sandbox' que PERMITE scripts pero BLOQUEA descargas ('allow-downloads' no está incluido).
+        // REPRODUCTOR PROTEGIDO CON ADBLOCK NATIVO:
+        // 'sandbox="allow-scripts allow-same-origin"' permite reproducir el video,
+        // pero BLOQUEA que la página descargue archivos o abra ventanas emergentes (anuncios).
         c.innerHTML = `<iframe src="${url}" 
-            sandbox="allow-scripts allow-same-origin allow-presentation allow-forms allow-popups"
+            sandbox="allow-scripts allow-same-origin"
             allowfullscreen scrolling="no" frameborder="0" 
             allow="encrypted-media; autoplay; fullscreen" 
             style="width:100%;height:100%;"></iframe>`;
