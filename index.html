@@ -170,32 +170,23 @@
         .cast-scroller::-webkit-scrollbar { display:none; }
         .cast-card { flex:0 0 85px; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; transition: transform var(--transition); }
         .cast-card:hover { transform: translateY(-5px); }
-        .cast-img { 
-            width:85px; height:85px; border-radius:50%; overflow:hidden; 
-            border:2px solid transparent; transition: border-color 0.3s; 
-            background: var(--bg-card); box-shadow: 0 4px 15px rgba(0,0,0,0.5); 
-        }
-        .cast-card:hover .cast-img { border-color: var(--accent); }
-        .cast-img img { width:100%; height:100%; object-fit:cover; }
-        .cast-name { font-size:0.75rem; font-weight:700; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; color:#fff; }
-
-
         .cast-img {
-    width:85px; height:85px; border-radius:50%; overflow:hidden;
-    background: var(--bg-card); box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    position: relative; padding: 2px;
-    background-image: linear-gradient(135deg, var(--bg-card), var(--bg-card));
-    transition: background-image 0.3s, transform 0.3s;
-}
-.cast-card:hover .cast-img {
-    background-image: linear-gradient(135deg, var(--accent), var(--pink));
-    transform: scale(1.05);
-}
-.cast-img img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
-.cast-sub {
-    font-size:0.62rem; color: var(--accent); font-weight:700;
-    text-align:center; opacity:0.85; margin-top:-2px;
-}
+            width:85px; height:85px; border-radius:50%; overflow:hidden;
+            background: var(--bg-card); box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            position: relative; padding: 2px;
+            background-image: linear-gradient(135deg, var(--bg-card), var(--bg-card));
+            transition: background-image 0.3s, transform 0.3s;
+        }
+        .cast-card:hover .cast-img {
+            background-image: linear-gradient(135deg, var(--accent), var(--pink));
+            transform: scale(1.05);
+        }
+        .cast-img img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+        .cast-name { font-size:0.75rem; font-weight:700; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; color:#fff; }
+        .cast-sub {
+            font-size:0.62rem; color: var(--accent); font-weight:700;
+            text-align:center; opacity:0.85; margin-top:-2px;
+        }
 
         /* ── BOTTOM NAV MÓVIL ── */
         .bottom-nav {
@@ -219,7 +210,6 @@
             .cast-card { flex:0 0 100px; }
             .cast-img { width:100px; height:100px; }
         }
-        
     </style>
 </head>
 <body>
@@ -283,7 +273,7 @@
             <div class="scroller" id="top10Grid"></div>
         </section>
 
-        <!-- ELENCO DESTACADO (TMDB API) -->
+        <!-- ELENCO DESTACADO (Siempre visible con lista de la imagen) -->
         <section class="content-shelf" id="castSection" style="display:none;">
             <h2 class="shelf-title">Elenco Destacado <span style="color:var(--gold);">⭐</span></h2>
             <div class="cast-scroller" id="castGrid"></div>
@@ -461,111 +451,83 @@
         }
 
         // ==========================================
-// RENDERIZAR ELENCO DESTACADO (prioriza actores reales del JSON)
-// ==========================================
-function renderCast() {
-    let actoresMap = new Map();
+        // RENDERIZAR ELENCO DESTACADO (prioriza actores reales del JSON)
+        // ==========================================
+        function renderCast() {
+            let actoresMap = new Map();
 
-    // 1. Extrae actores reales desde las series/doramas subidos
-    allSeries.forEach(item => {
-        let reparto = item.cast || item.actors || item.actores;
-        if (!reparto) return;
+            // 1. Extrae actores reales desde las series/doramas subidos
+            allSeries.forEach(item => {
+                let reparto = item.cast || item.actors || item.actores;
+                if (!reparto) return;
 
-        let arrayActores = Array.isArray(reparto)
-            ? reparto
-            : (typeof reparto === 'string' ? reparto.split(',').map(s => s.trim()) : []);
+                let arrayActores = Array.isArray(reparto)
+                    ? reparto
+                    : (typeof reparto === 'string' ? reparto.split(',').map(s => s.trim()) : []);
 
-        arrayActores.forEach(actor => {
-            const name = typeof actor === 'string' ? actor : actor.name;
-            const img  = (typeof actor === 'object' && actor.img) ? actor.img : '';
-            if (!name) return;
+                arrayActores.forEach(actor => {
+                    const name = typeof actor === 'string' ? actor : actor.name;
+                    const img  = (typeof actor === 'object' && actor.img) ? actor.img : '';
+                    if (!name) return;
 
-            if (!actoresMap.has(name)) {
-                actoresMap.set(name, { name, img, count: 0, titles: [] });
-            }
-            const data = actoresMap.get(name);
-            data.count += 1;
-            if (img && !data.img) data.img = img; // si encuentra foto en otra serie, la usa
-            if (item.title && !data.titles.includes(item.title)) data.titles.push(item.title);
-        });
-    });
+                    if (!actoresMap.has(name)) {
+                        actoresMap.set(name, { name, img, count: 0, titles: [] });
+                    }
+                    const data = actoresMap.get(name);
+                    data.count += 1;
+                    if (img && !data.img) data.img = img; // si encuentra foto en otra serie, la usa
+                    if (item.title && !data.titles.includes(item.title)) data.titles.push(item.title);
+                });
+            });
 
-    // 2. Si no hay suficientes actores reales, rellena con la lista por defecto
-    const defaultActors = [
-        { name: "Ahn Hyo-seop", img: "https://image.tmdb.org/t/p/w235_and_h235_face/w7rO2rEVU7XmH5P1qWq61o1Fz2A.jpg" },
-        { name: "Kim Se-jeong", img: "https://image.tmdb.org/t/p/w235_and_h235_face/nNKZ2hJ7lQ5YmB7IOPa12Q2AEXJ.jpg" },
-        { name: "Kim Ji-soo", img: "https://image.tmdb.org/t/p/w235_and_h235_face/fihyXbHVKWehQfLidO51XNlBw49.jpg" },
-        { name: "Jung Chae-yeon", img: "https://image.tmdb.org/t/p/w235_and_h235_face/A8W0HOf0uB5d6U9d8f8XqH7V18P.jpg" },
-        { name: "Wang Anyu", img: "" },
-        { name: "Wang Yuwen", img: "" },
-        { name: "Park Eun-bin", img: "" },
-        { name: "Kang Tae-oh", img: "" },
-        { name: "JOY", img: "" },
-        { name: "Choo Young-woo", img: "" },
-        { name: "Hwang Jung-eum", img: "" }
-    ];
+            // 2. Si no hay suficientes actores reales, rellena con la lista por defecto
+            const defaultActors = [
+                { name: "Ahn Hyo-seop", img: "https://image.tmdb.org/t/p/w235_and_h235_face/w7rO2rEVU7XmH5P1qWq61o1Fz2A.jpg" },
+                { name: "Kim Se-jeong", img: "https://image.tmdb.org/t/p/w235_and_h235_face/nNKZ2hJ7lQ5YmB7IOPa12Q2AEXJ.jpg" },
+                { name: "Kim Ji-soo", img: "https://image.tmdb.org/t/p/w235_and_h235_face/fihyXbHVKWehQfLidO51XNlBw49.jpg" },
+                { name: "Jung Chae-yeon", img: "https://image.tmdb.org/t/p/w235_and_h235_face/A8W0HOf0uB5d6U9d8f8XqH7V18P.jpg" },
+                { name: "Wang Anyu", img: "" },
+                { name: "Wang Yuwen", img: "" },
+                { name: "Park Eun-bin", img: "" },
+                { name: "Kang Tae-oh", img: "" },
+                { name: "JOY", img: "" },
+                { name: "Choo Young-woo", img: "" },
+                { name: "Hwang Jung-eum", img: "" }
+            ];
 
-    if (actoresMap.size < 8) {
-        defaultActors.forEach(actor => {
-            if (!actoresMap.has(actor.name)) {
-                actoresMap.set(actor.name, { name: actor.name, img: actor.img, count: 0, titles: [] });
-            }
-        });
-    }
-
-    // 3. Ordena: primero quienes aparecen en más títulos subidos (relevancia real)
-    const actoresUnicos = Array.from(actoresMap.values())
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 15);
-
-    if (actoresUnicos.length > 0) {
-        document.getElementById('castSection').style.display = 'block';
-        let html = actoresUnicos.map(actor => {
-            let fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(actor.name)}&background=141420&color=00DC5A&size=150&bold=true`;
-            let finalImg = actor.img || fallback;
-            let subt = actor.count > 0
-                ? `${actor.count} título${actor.count > 1 ? 's' : ''}`
-                : '';
-            return `
-                <div class="cast-card" onclick="window.location.href='buscar.html'" title="${actor.titles.join(', ')}">
-                    <div class="cast-img skeleton">
-                        <img class="lazy" loading="lazy" decoding="async" data-src="${finalImg}" alt="${actor.name}" onerror="this.onerror=null;this.src='${fallback}';">
-                    </div>
-                    <span class="cast-name">${actor.name}</span>
-                    ${subt ? `<span class="cast-sub">${subt}</span>` : ''}
-                </div>
-            `;
-        }).join('');
-        document.getElementById('castGrid').innerHTML = html;
-        initLazy(); // re-observa las nuevas imágenes inyectadas
-    }
-}
-
-                // 2. BUSCA EN TMDB ASINCRÓNICAMENTE Y COMPLETA
-                const TMDB_API_KEY = "251f6108a11e361dfd8985e3ad3077cc";
-                
-                actoresUnicos.forEach(async (actor, index) => {
-                    if (!actor.img) {
-                        try {
-                            const url = `https://api.themoviedb.org/3/search/person?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(actor.name)}`;
-                            const res = await fetch(url);
-                            const data = await res.json();
-                            
-                            // Si encuentra el actor y tiene foto de perfil
-                            if(data.results && data.results.length > 0 && data.results[0].profile_path) {
-                                const newImg = `https://image.tmdb.org/t/p/w235_and_h235_face${data.results[0].profile_path}`;
-                                const imgEl = document.getElementById(`actor-img-${index}`);
-                                
-                                if(imgEl) {
-                                    imgEl.dataset.src = newImg;
-                                    imgEl.src = newImg; // Forzar el cambio inmediato
-                                }
-                            }
-                        } catch(e) {
-                            console.error("TMDB Api Error para el actor:", actor.name);
-                        }
+            if (actoresMap.size < 8) {
+                defaultActors.forEach(actor => {
+                    if (!actoresMap.has(actor.name)) {
+                        actoresMap.set(actor.name, { name: actor.name, img: actor.img, count: 0, titles: [] });
                     }
                 });
+            }
+
+            // 3. Ordena: primero quienes aparecen en más títulos subidos (relevancia real)
+            const actoresUnicos = Array.from(actoresMap.values())
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 15);
+
+            if (actoresUnicos.length > 0) {
+                document.getElementById('castSection').style.display = 'block';
+                let html = actoresUnicos.map(actor => {
+                    let fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(actor.name)}&background=141420&color=00DC5A&size=150&bold=true`;
+                    let finalImg = actor.img || fallback;
+                    let subt = actor.count > 0
+                        ? `${actor.count} título${actor.count > 1 ? 's' : ''}`
+                        : '';
+                    return `
+                        <div class="cast-card" onclick="window.location.href='buscar.html'" title="${actor.titles.join(', ')}">
+                            <div class="cast-img skeleton">
+                                <img class="lazy" loading="lazy" decoding="async" data-src="${finalImg}" alt="${actor.name}" onerror="this.onerror=null;this.src='${fallback}';">
+                            </div>
+                            <span class="cast-name">${actor.name}</span>
+                            ${subt ? `<span class="cast-sub">${subt}</span>` : ''}
+                        </div>
+                    `;
+                }).join('');
+                document.getElementById('castGrid').innerHTML = html;
+                initLazy(); // re-observa las nuevas imágenes inyectadas
             }
         }
 
@@ -694,20 +656,20 @@ function renderCast() {
 
         const $ = (s) => document.querySelector(s);
         function initLazy() {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const img = entry.target;
-                if (img.dataset.src && img.src !== img.dataset.src) {
-                    img.src = img.dataset.src;
-                    img.onload = () => img.closest('.skeleton')?.classList.remove('skeleton');
-                }
-                observer.unobserve(img);
-            }
-        });
-    }, { rootMargin: '200px 0px' }); // precarga 200px antes de entrar a pantalla
-    document.querySelectorAll('.lazy').forEach(img => observer.observe(img));
-}
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        if (img.dataset.src && img.src !== img.dataset.src) {
+                            img.src = img.dataset.src;
+                            img.onload = () => img.closest('.skeleton')?.classList.remove('skeleton');
+                        }
+                        observer.unobserve(img);
+                    }
+                });
+            }, { rootMargin: '200px 0px' }); // precarga 200px antes de entrar a pantalla
+            document.querySelectorAll('.lazy').forEach(img => observer.observe(img));
+        }
 
         document.addEventListener('DOMContentLoaded', cargarBaseDeDatos);
     </script>
