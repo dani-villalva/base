@@ -24,5 +24,83 @@
             { "number": 11, "video": "https://geo.dailymotion.com/player.html?video=x8dx86s" },
             { "number": 12, "video": "https://geo.dailymotion.com/player.html?video=x8dwnsy" }
         ]
-    }
+    },
+    {
+    "title": "Mi Primer Amor de Verdad",
+    "description": "Por el azar y las circunstancias, Yun Tae-o le abre las puertas de su casa a un grupo de amigos. Y las puertas de su corazón a los enredos del amor y la amistad.",
+    "img": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/dHKjOEnAWiMzngxNzuC9NiXqMfB.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/3sEwJrB9zHAAS9J8oZ3ohjse0k4.jpg",
+    "rate": "8.2",
+    "year": "2019",
+    "genre": "romance",
+    "type": "series",
+    "category": "kdrama",
+    "tag": "LAT",
+    "episodes": [
+        {
+            "number": 1,
+            "video": "https://geo.dailymotion.com/player.html?video=x8e2a8q"
+        },
+        {
+            "number": 2,
+            "video": "https://geo.dailymotion.com/player.html?video=x8e2a8r"
+        },
+        {
+            "number": 3,
+            "video": "https://geo.dailymotion.com/player.html?video=x8e29ro"
+        },
+        {
+            "number": 4,
+            "video": "https://geo.dailymotion.com/player.html?video=x8e29rm"
+        },
+        {
+            "number": 5,
+            "video": "https://geo.dailymotion.com/player.html?video=x8e2906"
+        },
+        {
+            "number": 6,
+            "video": "https://geo.dailymotion.com/player.html?video=x8e2907"
+        },
+        {
+            "number": 7,
+            "video": "https://geo.dailymotion.com/player.html?video=x8e28om"
+        },
+        {
+            "number": 8,
+            "video": "https://geo.dailymotion.com/player.html?video=x8e28oo"
+        },
+        {
+            "number": 9,
+            "video": "https://geo.dailymotion.com/player.html?video=x8dyum6"
+        },
+        {
+            "number": 10,
+            "video": "https://geo.dailymotion.com/player.html?video=x8dyum7"
+        },
+        {
+            "number": 11,
+            "video": "https://geo.dailymotion.com/player.html?video=x8dyu5k"
+        },
+        {
+            "number": 12,
+            "video": "https://geo.dailymotion.com/player.html?video=x8dyu5l"
+        },
+        {
+            "number": 13,
+            "video": "https://geo.dailymotion.com/player.html?video=x8dxcnk"
+        },
+        {
+            "number": 14,
+            "video": "https://geo.dailymotion.com/player.html?video=x8dwnko"
+        },
+        {
+            "number": 15,
+            "video": "https://geo.dailymotion.com/player.html?video=x88id1c"
+        },
+        {
+            "number": 16,
+            "video": "https://geo.dailymotion.com/player.html?video=x88i9on"
+        }
+    ]
+},
 ]
