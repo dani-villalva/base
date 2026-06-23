@@ -6,7 +6,7 @@
 <title>Reproductor | Minihi Tv</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-<!-- Librería necesaria para reproducir canales en vivo .m3u8 -->
+<!-- LIBRERÍA PARA REPRODUCIR TV EN VIVO -->
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <style>
 :root {
@@ -17,7 +17,6 @@
 
 /* =========================================================
    TEMÁTICA DEPORTIVA (MUNDIAL / EN VIVO)
-   Se activa automáticamente cuando la categoría es "vivo"
 ========================================================== */
 body.sports-theme {
   --bg-base: #07070e; 
@@ -35,10 +34,9 @@ body.sports-theme .series-eyebrow {
   50% { opacity: 0.4; } 
   100% { opacity: 1; } 
 }
-/* Ocultar elementos de "episodios" si es TV en vivo */
 body.sports-theme .ep-nav-top,
 body.sports-theme .episode-grid {
-  display: none !important; 
+  display: none !important; /* Oculta los episodios en la TV */
 }
 /* ========================================================= */
 
@@ -49,7 +47,7 @@ body.cine-mode { background: #000; }
 body.cine-mode .scroll-content, body.cine-mode .app-top-bar { opacity: 0.05; pointer-events: none; }
 .player-page-container { width: 100%; max-width: 480px; background: inherit; min-height: 100vh; padding-bottom: 50px; }
 .app-top-bar { display: flex; align-items: center; justify-content: space-between; padding: 15px; }
-.back-link { font-weight: 700; font-size: 14px; display: flex; gap: 8px; align-items: center; color: #fff; text-decoration: none; }
+.back-link { font-weight: 700; font-size: 14px; display: flex; gap: 8px; align-items: center; color: #fff; text-decoration: none;}
 .sticky-player-wrapper { position: sticky; top: 0; z-index: 1000; background: var(--bg-base); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
 .video-wrapper { position: relative; padding-bottom: 56.25%; background: #000 center/cover; }
 .video-wrapper iframe, .video-wrapper video { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
@@ -58,11 +56,11 @@ body.cine-mode .scroll-content, body.cine-mode .app-top-bar { opacity: 0.05; poi
 .server-bar { display: flex; gap: 8px; padding: 12px 15px 0; align-items: center; overflow-x: auto; scrollbar-width: none; }
 .server-bar::-webkit-scrollbar { display: none; }
 .server-label { font-size: 11px; font-weight: 700; color: var(--text-sec); letter-spacing: 1px; }
-.server-btn { background: var(--bg-card); border: 1px solid var(--border); color: #fff; padding: 6px 14px; border-radius: 6px; font-size: 11px; font-weight: bold; white-space: nowrap; transition: 0.2s; cursor: pointer; }
+.server-btn { background: var(--bg-card); border: 1px solid var(--border); color: #fff; padding: 6px 14px; border-radius: 6px; font-size: 11px; font-weight: bold; white-space: nowrap; transition: 0.2s; cursor:pointer;}
 .server-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
 
 .player-toolbar { display: flex; gap: 8px; padding: 10px 15px; }
-.tool-btn { flex: 1; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-sec); padding: 8px 5px; border-radius: 6px; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 5px; text-transform: uppercase; cursor: pointer; }
+.tool-btn { flex: 1; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-sec); padding: 8px 5px; border-radius: 6px; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 5px; text-transform: uppercase; cursor:pointer;}
 .tool-btn.active { color: var(--accent); border-color: var(--accent); }
 .scroll-content { padding-top: 10px; }
 .main-info-padding { padding: 0 15px; }
@@ -73,21 +71,22 @@ body.cine-mode .scroll-content, body.cine-mode .app-top-bar { opacity: 0.05; poi
 .badge-rating { color: #ffca28; }
 .reactions-bar { padding: 5px 15px 20px; }
 .emoji-row { display: flex; justify-content: space-between; margin-top: 10px; }
-.reaction-btn { background: var(--bg-card); width: 45px; height: 45px; border-radius: 50%; font-size: 20px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); transition: 0.2s; cursor: pointer; }
+.reaction-btn { background: var(--bg-card); width: 45px; height: 45px; border-radius: 50%; font-size: 20px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); transition: 0.2s; cursor:pointer;}
 .synopsis-wrap { padding: 0 15px; margin-bottom: 25px; font-size: 13px; color: #bbb; line-height: 1.6; }
 .ep-nav-top { display: flex; gap: 10px; padding: 0 15px 25px; }
-.nav-btn { flex: 1; background: var(--bg-card); border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
+.nav-btn { flex: 1; background: var(--bg-card); border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor:pointer;}
 .episode-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 0 15px 30px; }
-.ep-btn { background: var(--bg-card); aspect-ratio: 1; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--text-sec); border: 1px solid transparent; cursor: pointer; }
+.ep-btn { background: var(--bg-card); aspect-ratio: 1; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--text-sec); border: 1px solid transparent; cursor:pointer;}
 .ep-btn.active { background: #0d1a14; border-color: var(--accent); color: var(--accent); }
 /* Comentarios */
 .comments-section { padding: 30px 15px; border-top: 1px solid var(--border); }
 .comment-form { background: var(--bg-card); border-radius: 12px; padding: 15px; border: 1px solid var(--border); margin-bottom: 20px;}
 .comment-avatar-preview { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-dim); color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: bold; }
 .comment-form input, .comment-form textarea { background: var(--bg-base); border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-family: inherit; }
-.submit-btn { background: var(--accent); color: #000; padding: 10px 20px; border-radius: 8px; font-weight: bold; width: 100%; border: none; cursor: pointer;}
+.submit-btn { background: var(--accent); color: #000; padding: 10px 20px; border-radius: 8px; font-weight: bold; width: 100%; border:none; cursor:pointer;}
 
 .geo-alert { font-size: 11px; color: #ff5252; text-align: center; margin-top: 5px; padding: 0 15px; display: none; }
+.ad-block-alert { font-size: 11px; color: var(--accent); text-align: center; margin-top: 5px; padding: 0 15px; display: none; }
 </style>
 </head>
 <body>
@@ -104,9 +103,13 @@ body.cine-mode .scroll-content, body.cine-mode .app-top-bar { opacity: 0.05; poi
     <div class="server-bar" id="serverBar">
       <span class="server-label">SERVIDOR:</span>
     </div>
-    <!-- ALERTA DE BLOQUEO -->
+    
+    <!-- ALERTAS -->
     <div class="geo-alert" id="geoAlert">
-      <i class="fas fa-exclamation-triangle"></i> Si el video no carga, intenta con otra Opción o usa una app VPN.
+      <i class="fas fa-exclamation-triangle"></i> Si el video no carga, intenta con otra Opción.
+    </div>
+    <div class="ad-block-alert" id="adBlockAlert">
+      <i class="fas fa-shield-alt"></i> Anti-Popups Activado. Cierra anuncios del video con la 'X'.
     </div>
 
     <div class="player-toolbar">
@@ -186,11 +189,12 @@ async function loadData() {
             document.getElementById('displayYear').textContent = serie.year || "";
             document.getElementById('displayRate').textContent = serie.rate || "7.5";
 
-            // Lógica de Temática Deportiva
+            // Lógica Temática Deportiva
             if (serie.category === 'vivo' || (serie.genre && serie.genre.toLowerCase() === 'deportes')) {
                 document.body.classList.add('sports-theme');
                 document.getElementById('displayCategory').innerHTML = "🔴 EN VIVO - MUNDIAL";
                 document.getElementById('displayCategory').style.color = "var(--accent)";
+                document.getElementById('adBlockAlert').style.display = 'block'; // Aviso de Anti-Popups
             } else {
                 document.getElementById('displayCategory').textContent = serie.category || "DRAMA";
             }
@@ -205,17 +209,18 @@ async function loadData() {
     } catch (e) { console.error("Error cargando serie", e); }
 }
 
-// LOGICA MODIFICADA PARA SOPORTAR I-FRAMES DE DEPORTES Y HLS
 function renderMedia(url) {
     const c = document.getElementById('mediaContainer');
     
-    // 1. Detectar si es un iFrame normal, YouTube, Dailymotion o páginas de deportes
+    // DETECCIÓN Y BLOQUEO DE POP-UPS PARA PÁGINAS DE DEPORTES
     if(url.includes('dailymotion.com') || url.includes('iframe') || url.includes('youtube.com') || 
        url.includes('golazohd.com') || url.includes('rojadirectatv.net') || url.includes('tvtvhd.com')) {
         
-        c.innerHTML = `<iframe src="${url}" allowfullscreen scrolling="no" frameborder="0" allow="encrypted-media; autoplay; fullscreen" style="width:100%;height:100%;"></iframe>`;
+        // EL SECRETO: sandbox="allow-scripts allow-same-origin allow-presentation"
+        // Este atributo prohíbe explícitamente que el iFrame abra "ventanas emergentes" (no tiene allow-popups).
+        c.innerHTML = `<iframe src="${url}" sandbox="allow-scripts allow-same-origin allow-presentation" allowfullscreen scrolling="no" frameborder="0" allow="encrypted-media; autoplay; fullscreen" style="width:100%;height:100%;"></iframe>`;
     
-    // 2. Detectar si es un enlace directo HLS (Canales de TV en formato .m3u8)
+    // REPRODUCCIÓN NATIVA DE HLS (.m3u8) SIN ANUNCIOS
     } else if (url.includes('.m3u8')) {
         c.innerHTML = `<video id="hlsVideoPlayer" controls autoplay style="width:100%;height:100%;"></video>`;
         const videoElement = document.getElementById('hlsVideoPlayer');
@@ -228,12 +233,11 @@ function renderMedia(url) {
                 videoElement.play();
             });
         } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
-            // Soporte nativo para Safari (iOS)
             videoElement.src = url;
             videoElement.play();
         }
     
-    // 3. Fallback: Video normal MP4
+    // REPRODUCCIÓN MP4 NORMAL
     } else {
         c.innerHTML = `<video src="${url}" controls autoplay style="width:100%;height:100%;"></video>`;
     }
@@ -267,7 +271,11 @@ function changeVideo(index) {
     
     serverBar.innerHTML = btnsHtml;
     
-    document.getElementById('geoAlert').style.display = 'block';
+    if(ep.video2 || ep.video3) {
+        document.getElementById('geoAlert').style.display = 'block';
+    } else {
+        document.getElementById('geoAlert').style.display = 'none';
+    }
 
     renderMedia(mainVideo);
     
@@ -299,7 +307,7 @@ function loadComments() {
             <p style="font-size:13px; margin-top:5px;">${esc(c.text)}</p>
         </div>`).join('');
 }
-function updateAvatar(val) {} // Función de apoyo vacío o a implementar luego
+function updateAvatar(val) {} 
 function sendComment() {
     const user = document.getElementById('commentUser').value || "Anónimo";
     const text = document.getElementById('commentText').value;
