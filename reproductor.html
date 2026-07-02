@@ -56,17 +56,19 @@ body.cine-mode .scroll-content, body.cine-mode .app-top-bar { opacity: 0.05; poi
 }
 .ad-placeholder {
     width: 100%;
-    min-height: 250px; /* Tamaño recomendado para banners cuadrados */
+    min-height: 250px;
     background: #1a1f26;
     border: 1px dashed #3a424e;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
     color: #555;
     font-size: 12px;
     font-weight: bold;
     border-radius: 8px;
     text-align: center;
+    overflow: hidden; /* Evita que el anuncio rompa el diseño */
 }
 
 /* Comentarios */
@@ -112,11 +114,11 @@ body.cine-mode .scroll-content, body.cine-mode .app-top-bar { opacity: 0.05; poi
     
     <div class="main-info-padding">
       <p class="series-eyebrow" id="displayCategory">SERIE</p>
-      <h1 class="main-title" id="displayTitle">Nombre de la Serie</h1>
+      <h1 class="main-title" id="displayTitle">Cargando...</h1>
       <div class="meta-tags-row">
         <span class="badge">HD</span>
-        <span class="badge-rating"><i class="fas fa-star"></i> <span id="displayRate">8.5</span></span>
-        <span class="meta-text" id="displayYear">2024</span>
+        <span class="badge-rating"><i class="fas fa-star"></i> <span id="displayRate">--</span></span>
+        <span class="meta-text" id="displayYear">----</span>
       </div>
     </div>
 
@@ -131,17 +133,16 @@ body.cine-mode .scroll-content, body.cine-mode .app-top-bar { opacity: 0.05; poi
     </div>
 
     <div class="synopsis-wrap" id="displaySynopsis">
-      Aquí va la descripción de la serie. Ahora el reproductor de arriba maneja todas las temporadas y capítulos, por lo que tienes más espacio limpio aquí abajo.
+      Cargando sinopsis...
     </div>
 
     <!-- ============================================== -->
     <!-- ESPACIO PARA TU ANUNCIO (DEBAJO DE LA SINOPSIS) -->
     <!-- ============================================== -->
     <div class="ad-banner-container">
-      <div class="ad-placeholder">
-        <!-- PEGA AQUÍ EL SCRIPT O CÓDIGO DE TU ANUNCIO -->
-        ESPACIO PARA ANUNCIO PUBLICITARIO<br>
-        (Recomendado: 300x250 o código de Banner)
+      <div class="ad-placeholder" id="adContainer">
+        <!-- El anuncio del JSON aparecerá aquí dinámicamente -->
+        ESPACIO PARA ANUNCIO PUBLICITARIO
       </div>
     </div>
 
@@ -203,7 +204,7 @@ function animEmoji(btn) {
     setTimeout(() => btn.style.transform = "scale(1)", 200);
 }
 
-// Opcional: Si quieres seguir cargando el título y descripción desde tu data.json
+// Función principal que lee el data.json
 async function loadData() {
     const params = new URLSearchParams(window.location.search);
     const titleParam = params.get('title');
@@ -225,11 +226,35 @@ async function loadData() {
             document.getElementById('displaySynopsis').textContent = serie.description || "";
             document.getElementById('displayYear').textContent = serie.year || "";
             document.getElementById('displayRate').textContent = serie.rate || "8.5";
+            document.getElementById('displayCategory').textContent = serie.category || "SERIE";
             
-            // Si quieres que el iframe cambie dinámicamente desde el JSON, 
-            // asegúrate de tener "iframe_url": "link de vimeus" en tu data.json
+            // 1. Cargar la URL del iframe de Vimeus
             if(serie.iframe_url) {
                 document.getElementById('mainIframe').src = serie.iframe_url;
+            }
+
+            // 2. INYECTAR Y EJECUTAR EL CÓDIGO DE ANUNCIOS
+            if(serie.ad_code && serie.ad_code.trim() !== "") {
+                const adContainer = document.getElementById('adContainer');
+                
+                // Limpiamos el texto de placeholder y los estilos de la caja punteada
+                adContainer.innerHTML = serie.ad_code;
+                adContainer.style.border = 'none';
+                adContainer.style.background = 'transparent';
+                
+                // MAGIA: Leer las etiquetas <script> insertadas y obligar al navegador a ejecutarlas
+                const scripts = adContainer.querySelectorAll('script');
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    // Copia atributos (ej: src="https://...")
+                    Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                    // Copia el texto interno (ej: atOptions = {...})
+                    if(oldScript.innerHTML) {
+                        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                    }
+                    // Reemplaza el script inactivo por el nuevo que sí se ejecutará
+                    oldScript.parentNode.replaceChild(newScript, oldScript);
+                });
             }
         }
     } catch (e) { console.error("Error cargando serie", e); }
