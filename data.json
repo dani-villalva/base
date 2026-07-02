@@ -1,3 +1,16 @@
 [
-    
+    {
+    "title": "Cashman",
+    "description": "Un hombre común hereda una fuerza increíble y descubre que entes malignos pretenden arrebatársela. Para colmo, cada vez que usa su superpoder, queda menos dinero en su billetera.",
+    "img": "https://image.tmdb.org/t/p/w600_and_h900_bestv2/h73FVzJZlgo0ZrHNqLl0swAzwHm.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/lr0h0OBj7QOEvkaX5g3JWoaKZsI.jpg",
+    "rate": "7.3",
+    "year": "2025",
+    "genre": "romance",
+    "type": "series",
+    "category": "kdrama",
+    "tag": "LAT",
+    "iframe_url": "https://vimeus.com/e/serie?tmdb=238458&view_key=eS5EDn5qS4vnxiPczgCVam7Lx8fetwfVBAOc_EF9ns0&title=MinihiTv&loader=v3&font=v3&overlay=v4&selector=v3&epanel=v2&splash=v2",
+    "ad_code": "<script>\n  atOptions = {\n    'key' : '031235eeef034ca1e580ebc63d695ef2',\n    'format' : 'iframe',\n    'height' : 50,\n    'width' : 320,\n    'params' : {}\n  };\n</script>\n<script src=\"https://www.highperformanceformat.com/031235eeef034ca1e580ebc63d695ef2/invoke.js\"></script>"
+}
 ]
