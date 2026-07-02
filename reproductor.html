@@ -6,59 +6,32 @@
 <title>Reproductor | Minihi Tv</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-<!-- LIBRERÍA PARA REPRODUCIR TV EN VIVO -->
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <style>
 :root {
   --bg-base: #0b0e14; --bg-card: #1a1f26; --accent: #00c853;
   --accent-dim: #0d251a; --text-main: #ffffff; --text-sec: #a0a0a0;
   --border: #2d343e; --btn-bg: #242a32;
 }
-/* =========================================================
-TEMÁTICA DEPORTIVA (MUNDIAL / EN VIVO)
-========================================================== */
-body.sports-theme {
---bg-base: #07070e;
---bg-card: #141420;
---accent: #FF3366; /* Rosa del mundial */
---accent-dim: #2a0b16;
---border: rgba(255, 51, 102, 0.2);
-}
-body.sports-theme .series-eyebrow {
-animation: pulseLive 2s infinite;
-display: inline-block;
-}
-@keyframes pulseLive {
-0% { opacity: 1; }
-50% { opacity: 0.4; }
-100% { opacity: 1; }
-}
-body.sports-theme .ep-nav-top,
-body.sports-theme .episode-grid {
-display: none !important; /* Oculta los episodios en la TV */
-}
-/* ========================================================= */
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html { scroll-behavior: smooth; }
 body { background: var(--bg-base); color: var(--text-main); font-family: 'Inter', sans-serif; display: flex; justify-content: center; transition: background 0.3s; }
 body.cine-mode { background: #000; }
 body.cine-mode .scroll-content, body.cine-mode .app-top-bar { opacity: 0.05; pointer-events: none; }
+
 .player-page-container { width: 100%; max-width: 480px; background: inherit; min-height: 100vh; padding-bottom: 50px; }
 .app-top-bar { display: flex; align-items: center; justify-content: space-between; padding: 15px; }
 .back-link { font-weight: 700; font-size: 14px; display: flex; gap: 8px; align-items: center; color: #fff; text-decoration: none;}
+
+/* REPRODUCTOR FLOTANTE (STICKY) */
 .sticky-player-wrapper { position: sticky; top: 0; z-index: 1000; background: var(--bg-base); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
 .video-wrapper { position: relative; padding-bottom: 56.25%; background: #000 center/cover; }
-.video-wrapper iframe, .video-wrapper video { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+.video-wrapper iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
 
-/* BARRA DE SERVIDORES NUEVA */
-.server-bar { display: flex; gap: 8px; padding: 12px 15px 0; align-items: center; overflow-x: auto; scrollbar-width: none; }
-.server-bar::-webkit-scrollbar { display: none; }
-.server-label { font-size: 11px; font-weight: 700; color: var(--text-sec); letter-spacing: 1px; }
-.server-btn { background: var(--bg-card); border: 1px solid var(--border); color: #fff; padding: 6px 14px; border-radius: 6px; font-size: 11px; font-weight: bold; white-space: nowrap; transition: 0.2s; cursor:pointer;}
-.server-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
 .player-toolbar { display: flex; gap: 8px; padding: 10px 15px; }
 .tool-btn { flex: 1; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-sec); padding: 8px 5px; border-radius: 6px; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 5px; text-transform: uppercase; cursor:pointer;}
 .tool-btn.active { color: var(--accent); border-color: var(--accent); }
+
 .scroll-content { padding-top: 10px; }
 .main-info-padding { padding: 0 15px; }
 .series-eyebrow { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; margin-bottom: 5px; }
@@ -66,87 +39,84 @@ body.cine-mode .scroll-content, body.cine-mode .app-top-bar { opacity: 0.05; poi
 .meta-tags-row { display: flex; align-items: center; gap: 8px; font-size: 12px; margin-bottom: 15px; }
 .badge { padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; background: #2d343e; }
 .badge-rating { color: #ffca28; }
+
 .reactions-bar { padding: 5px 15px 20px; }
 .emoji-row { display: flex; justify-content: space-between; margin-top: 10px; }
 .reaction-btn { background: var(--bg-card); width: 45px; height: 45px; border-radius: 50%; font-size: 20px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); transition: 0.2s; cursor:pointer;}
-.synopsis-wrap { padding: 0 15px; margin-bottom: 25px; font-size: 13px; color: #bbb; line-height: 1.6; }
-.ep-nav-top { display: flex; gap: 10px; padding: 0 15px 25px; }
-.nav-btn { flex: 1; background: var(--bg-card); border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor:pointer;}
-.episode-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 0 15px 30px; }
-.ep-btn { background: var(--bg-card); aspect-ratio: 1; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--text-sec); border: 1px solid transparent; cursor:pointer;}
-.ep-btn.active { background: #0d1a14; border-color: var(--accent); color: var(--accent); }
+
+.synopsis-wrap { padding: 0 15px; margin-bottom: 20px; font-size: 13px; color: #bbb; line-height: 1.6; }
+
+/* ESPACIO PARA ANUNCIOS */
+.ad-banner-container {
+    padding: 0 15px;
+    margin-bottom: 25px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.ad-placeholder {
+    width: 100%;
+    min-height: 250px; /* Tamaño recomendado para banners cuadrados */
+    background: #1a1f26;
+    border: 1px dashed #3a424e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 8px;
+    text-align: center;
+}
+
 /* Comentarios */
 .comments-section { padding: 30px 15px; border-top: 1px solid var(--border); }
 .comment-form { background: var(--bg-card); border-radius: 12px; padding: 15px; border: 1px solid var(--border); margin-bottom: 20px;}
-.comment-avatar-preview { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-dim); color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: bold; }
 .comment-form input, .comment-form textarea { background: var(--bg-base); border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-family: inherit; }
 .submit-btn { background: var(--accent); color: #000; padding: 10px 20px; border-radius: 8px; font-weight: bold; width: 100%; border:none; cursor:pointer;}
-.geo-alert { font-size: 11px; color: #ff5252; text-align: center; margin-top: 5px; padding: 0 15px; display: none; }
-.ad-block-alert { font-size: 11px; color: var(--accent); text-align: center; margin-top: 5px; padding: 0 15px; display: none; }
-
-/* =========================================================
-ESTILOS DEL ANUNCIO PRE-ROLL (NUEVO)
-========================================================== */
-.ad-overlay {
-  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-  background: #000; z-index: 9999; display: flex; flex-direction: column;
-  justify-content: center; align-items: center; overflow: hidden;
-}
-.ad-video {
-  width: 100%; height: 100%; object-fit: cover; cursor: pointer;
-}
-.skip-ad-btn {
-  position: absolute; bottom: 15px; right: 15px;
-  background: rgba(0, 0, 0, 0.8); color: #fff;
-  border: 1px solid var(--accent); padding: 8px 15px;
-  border-radius: 4px; font-weight: bold; cursor: pointer;
-  font-size: 12px; z-index: 10000; transition: 0.3s;
-}
-.skip-ad-btn:disabled { border-color: #555; color: #aaa; cursor: not-allowed; }
-.ad-badge {
-  position: absolute; top: 10px; left: 10px;
-  background: #ffcc00; color: #000; padding: 2px 6px;
-  font-size: 10px; font-weight: bold; border-radius: 3px; z-index: 10000;
-  pointer-events: none;
-}
 </style>
 </head>
 <body>
 <div class="player-page-container">
+  
   <div class="app-top-bar">
     <a href="index.html" class="back-link"><i class="fas fa-chevron-left"></i> Volver</a>
-    <i class="fas fa-share-alt" style="cursor:pointer; color:var(--text-sec);" onclick="navigator.share({title: SERIES_TITLE, url: window.location.href})"></i>
+    <i class="fas fa-share-alt" style="cursor:pointer; color:var(--text-sec);" onclick="navigator.share({title: document.title, url: window.location.href})"></i>
   </div>
+
+  <!-- CONTENEDOR STICKY (Se mantiene arriba al bajar) -->
   <div class="sticky-player-wrapper">
     
-    <div class="video-wrapper" id="mediaContainer"></div>
-
-    <!-- CONTENEDOR DE SERVIDORES -->
-    <div class="server-bar" id="serverBar">
-      <span class="server-label">SERVIDOR:</span>
+    <div class="video-wrapper">
+      <!-- TU IFRAME CON TODOS LOS CAPÍTULOS INCLUIDOS -->
+      <iframe 
+        id="mainIframe"
+        src="https://vimeus.com/e/serie?tmdb=238458&view_key=eS5EDn5qS4vnxiPczgCVam7Lx8fetwfVBAOc_EF9ns0&title=MinihiTv&loader=v3&font=v3&overlay=v4&selector=v3&epanel=v2&splash=v2" 
+        width="100%" 
+        height="100%" 
+        frameborder="0" 
+        allowfullscreen 
+        referrerpolicy="origin">
+      </iframe>
     </div>
 
-    <!-- ALERTAS -->
-    <div class="geo-alert" id="geoAlert">
-      <i class="fas fa-exclamation-triangle"></i> Si el video no carga, intenta con otra Opción.
-    </div>
-    <div class="ad-block-alert" id="adBlockAlert">
-      <i class="fas fa-shield-alt"></i> Anti-Popups Activado. Cierra anuncios del video con la 'X'.
-    </div>
-
+    <!-- BOTONES DE CINE Y FULLSCREEN -->
     <div class="player-toolbar">
       <button class="tool-btn" onclick="toggleCine()"><i class="fas fa-moon"></i> Cine</button>
       <button class="tool-btn" onclick="toggleFullScreen()"><i class="fas fa-expand"></i> Full</button>
     </div>
+
   </div>
+
   <div class="scroll-content">
+    
     <div class="main-info-padding">
-      <p class="series-eyebrow" id="displayCategory">CARGANDO...</p>
-      <h1 class="main-title" id="displayTitle">Buscando...</h1>
+      <p class="series-eyebrow" id="displayCategory">SERIE</p>
+      <h1 class="main-title" id="displayTitle">Nombre de la Serie</h1>
       <div class="meta-tags-row">
         <span class="badge">HD</span>
-        <span class="badge-rating"><i class="fas fa-star"></i> <span id="displayRate">--</span></span>
-        <span class="meta-text" id="displayYear">----</span>
+        <span class="badge-rating"><i class="fas fa-star"></i> <span id="displayRate">8.5</span></span>
+        <span class="meta-text" id="displayYear">2024</span>
       </div>
     </div>
 
@@ -160,211 +130,53 @@ ESTILOS DEL ANUNCIO PRE-ROLL (NUEVO)
       </div>
     </div>
 
-    <div class="synopsis-wrap" id="displaySynopsis">Cargando sinopsis...</div>
-
-    <div class="ep-nav-top">
-      <button class="nav-btn" onclick="navigateEpisode(-1)"><i class="fas fa-arrow-left"></i> Ant.</button>
-      <button class="nav-btn" onclick="navigateEpisode(1)">Sig. <i class="fas fa-arrow-right"></i></button>
+    <div class="synopsis-wrap" id="displaySynopsis">
+      Aquí va la descripción de la serie. Ahora el reproductor de arriba maneja todas las temporadas y capítulos, por lo que tienes más espacio limpio aquí abajo.
     </div>
 
-    <div class="episode-grid" id="episodeGrid"></div>
+    <!-- ============================================== -->
+    <!-- ESPACIO PARA TU ANUNCIO (DEBAJO DE LA SINOPSIS) -->
+    <!-- ============================================== -->
+    <div class="ad-banner-container">
+      <div class="ad-placeholder">
+        <!-- PEGA AQUÍ EL SCRIPT O CÓDIGO DE TU ANUNCIO -->
+        ESPACIO PARA ANUNCIO PUBLICITARIO<br>
+        (Recomendado: 300x250 o código de Banner)
+      </div>
+    </div>
 
+    <!-- SECCIÓN DE COMENTARIOS -->
     <section class="comments-section">
       <div class="comment-form">
-        <input type="text" id="commentUser" placeholder="Tu nombre" oninput="updateAvatar(this.value)">
+        <input type="text" id="commentUser" placeholder="Tu nombre">
         <textarea id="commentText" placeholder="Escribe un comentario..."></textarea>
         <button class="submit-btn" onclick="sendComment()">Publicar</button>
       </div>
       <div id="commentsList"></div>
     </section>
+
   </div>
 </div>
+
 <script>
-let EPISODES = [];
-let SERIES_TITLE = "";
-let currentIndex = 0;
+let SERIES_TITLE = "Mi_Serie"; // Usado para guardar los comentarios
+
+// Funciones de la barra de herramientas del reproductor
+function toggleCine() { document.body.classList.toggle('cine-mode'); }
+function toggleFullScreen() {
+    const el = document.querySelector('.video-wrapper'); // Ponemos en full screen el contenedor del iframe
+    if (el.requestFullscreen) el.requestFullscreen();
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+}
+
+// Lógica de Comentarios
+function getCommentKey() { return 'comm_' + SERIES_TITLE.replace(/\s/g, '_'); }
 
 function esc(str) {
     if (!str) return '';
     return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
 
-async function loadData() {
-    const params = new URLSearchParams(window.location.search);
-    const titleParam = params.get('title');
-    if (!titleParam) return;
-
-    try {
-        const res = await fetch('data.json?v=' + Date.now());
-        let data = await res.json();
-        if (!Array.isArray(data)) data = [data];
-
-        const serie = data.find(s => s.title.trim().toLowerCase() === titleParam.trim().toLowerCase());
-        
-        if (serie) {
-            SERIES_TITLE = serie.title;
-            EPISODES = serie.episodes || [];
-            document.getElementById('displayTitle').textContent = serie.title;
-            document.getElementById('displaySynopsis').textContent = serie.description || "";
-            document.getElementById('displayYear').textContent = serie.year || "";
-            document.getElementById('displayRate').textContent = serie.rate || "7.5";
-
-            // Lógica Temática Deportiva
-            if (serie.category === 'vivo' || (serie.genre && serie.genre.toLowerCase() === 'deportes')) {
-                document.body.classList.add('sports-theme');
-                document.getElementById('displayCategory').innerHTML = "🔴 EN VIVO - MUNDIAL";
-                document.getElementById('displayCategory').style.color = "var(--accent)";
-                document.getElementById('adBlockAlert').style.display = 'block'; 
-            } else {
-                document.getElementById('displayCategory').textContent = serie.category || "DRAMA";
-            }
-            
-            if(serie.backdrop || serie.img) {
-                document.querySelector('.video-wrapper').style.backgroundImage = "url('" + (serie.backdrop || serie.img) + "')";
-            }
-
-            if(EPISODES.length > 0) changeVideo(0);
-            loadComments();
-        }
-    } catch (e) { console.error("Error cargando serie", e); }
-}
-
-function renderMedia(url) {
-    const c = document.getElementById('mediaContainer');
-    
-    // 1. DETECCIÓN DE PÁGINAS DE TV EN VIVO Y ENLACES EXTERNOS
-    if(url.includes('dailymotion.com') || url.includes('youtube.com') || 
-       url.includes('.php') || url.includes('.html') || 
-       url.includes('tvtvhd.com') || url.includes('golazohd.com')) {
-        
-        c.innerHTML = `<iframe src="${url}" 
-            sandbox="allow-scripts allow-same-origin"
-            allowfullscreen scrolling="no" frameborder="0" 
-            allow="encrypted-media; autoplay; fullscreen" 
-            style="width:100%;height:100%;"></iframe>`;
-    
-    // 2. REPRODUCCIÓN NATIVA DE HLS (.m3u8) 
-    } else if (url.includes('.m3u8')) {
-        c.innerHTML = `<video id="hlsVideoPlayer" controls autoplay style="width:100%;height:100%;"></video>`;
-        const videoElement = document.getElementById('hlsVideoPlayer');
-        
-        if (Hls.isSupported()) {
-            const hls = new Hls();
-            hls.loadSource(url);
-            hls.attachMedia(videoElement);
-            hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                videoElement.play();
-            });
-        } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
-            videoElement.src = url;
-            videoElement.play();
-        }
-    
-    // 3. REPRODUCCIÓN MP4 NORMAL
-    } else {
-        c.innerHTML = `<video src="${url}" controls autoplay style="width:100%;height:100%;"></video>`;
-    }
-
-    // ========== EJECUCIÓN DEL ANUNCIO PRE-ROLL ==========
-    showAdOverlay(c);
-}
-
-// FUNCIÓN DEL ANUNCIO (NUEVA)
-function showAdOverlay(container) {
-    const adLink = "https://www.effectivecpmnetwork.com/h2z9bj3qss?key=0c57a3998f9b0fd69d2acdbe6f2ca283";
-    const adImage = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg8IaIn1bSr89u7ivoidazHe9xZAyMMg_aem_sazf0FouTga73AfTYX3UwGrjCsqAdrPIThtDRg2ktKSst1SpwbhZcVkV7tK-8M_ctdazY2qEnDadzP4S6dp1vZSH2q4AVx95Q_O1YpSVMEfllwdGDRvt8oVP4qHaIy_UgwldWtiaSmNhJMzkfg0ItqTHQ/s1600/Play%20Now.png";
-    const adVideo = "https://rr3---sn-p2a5oxu-0pvs.googlevideo.com/videoplayback?expire=1782283495&ei=Zww7aqGBCLeg2O8Pr7bkwAk&ip=45.236.105.81&id=42cc86f311ccf152&itag=18&source=blogger&requiressl=yes&xpc=Egho7Zf3LnoBAQ==&cps=0&met=1782254695,&mh=LA&mm=31&mn=sn-p2a5oxu-0pvs&ms=au&mv=m&mvi=3&pl=24&rms=au,au&susc=bl&svpuc=1&eaua=GrKwNU3Tdck&mime=video/mp4&vprv=1&rqh=1&dur=10.147&lmt=1782254664436359&mt=1782254281&txp=1311224&sparams=expire,ei,ip,id,itag,source,requiressl,xpc,susc,svpuc,eaua,mime,vprv,rqh,dur,lmt&sig=AHEqNM4wRQIhAMgg0aB8SpcvgBlVDO2zerF8VHozzeMgwhzQRcdh_1ToAiAi0f-Rs2Q2F0jQq8xNGvRV86AEwGA-IlKNYv6WW0I6KQ==&lsparams=cps,met,mh,mm,mn,ms,mv,mvi,pl,rms&lsig=APaTxxMwRQIhALZBwZCGDcEANC-OJ0hBeJYrIBesOTRMwkd3W7c5gBU8AiBPgjjKpLGmeEPBy04FtgJ_9iYXwkBRf_VAKU4w8Aot7w==&cpn=QjKvhvew4dD8y8-u&c=WEB_EMBEDDED_PLAYER&cver=1.20260621.00.00";
-
-    const adDiv = document.createElement('div');
-    adDiv.className = 'ad-overlay';
-    
-    // Renderizamos el video con la imagen como "poster" por si tarda en cargar
-    adDiv.innerHTML = `
-        <span class="ad-badge">Anuncio</span>
-        <a href="${adLink}" target="_blank" style="width:100%; height:100%; display:block;">
-            <video class="ad-video" src="${adVideo}" poster="${adImage}" autoplay muted loop playsinline></video>
-        </a>
-        <button class="skip-ad-btn" id="skipAdBtn" disabled>Saltar en 5s</button>
-    `;
-    
-    container.appendChild(adDiv);
-
-    // Lógica del contador para Saltar Anuncio
-    let timeLeft = 5;
-    const skipBtn = adDiv.querySelector('#skipAdBtn');
-    
-    const timer = setInterval(() => {
-        timeLeft--;
-        if(timeLeft > 0) {
-            skipBtn.innerText = `Saltar en ${timeLeft}s`;
-        } else {
-            clearInterval(timer);
-            skipBtn.innerText = 'Saltar Anuncio ⏭';
-            skipBtn.disabled = false;
-            skipBtn.onclick = (e) => {
-                e.preventDefault();   // Previene abrir el link si se clickea por error cerca del boton
-                e.stopPropagation();  // Detiene la propagación del click al enlace de fondo
-                adDiv.remove();       // Elimina el anuncio y deja ver el video original
-            };
-        }
-    }, 1000);
-}
-
-// FUNCIÓN PARA CAMBIAR DE SERVIDOR
-function setServer(url, btnElement) {
-    document.querySelectorAll('.server-btn').forEach(btn => btn.classList.remove('active'));
-    if(btnElement) btnElement.classList.add('active');
-    renderMedia(url);
-}
-
-function changeVideo(index) {
-    if(index < 0 || index >= EPISODES.length) return;
-    currentIndex = index;
-    const ep = EPISODES[index];
-    
-    const serverBar = document.getElementById('serverBar');
-    let btnsHtml = '<span class="server-label">OPCIÓN:</span>';
-    
-    let mainVideo = ep.video || ep.src;
-    if(mainVideo) {
-        btnsHtml += `<button class="server-btn active" onclick="setServer('${mainVideo}', this)">1</button>`;
-    }
-    if(ep.video2) {
-        btnsHtml += `<button class="server-btn" onclick="setServer('${ep.video2}', this)">2</button>`;
-    }
-    if(ep.video3) {
-        btnsHtml += `<button class="server-btn" onclick="setServer('${ep.video3}', this)">3</button>`;
-    }
-    
-    serverBar.innerHTML = btnsHtml;
-    
-    if(ep.video2 || ep.video3) {
-        document.getElementById('geoAlert').style.display = 'block';
-    } else {
-        document.getElementById('geoAlert').style.display = 'none';
-    }
-
-    renderMedia(mainVideo);
-    
-    const grid = document.getElementById('episodeGrid');
-    grid.innerHTML = EPISODES.map((e, i) => `
-        <button class="ep-btn ${i===currentIndex?'active':''}" onclick="changeVideo(${i})">
-            ${e.number || (i+1)}
-        </button>`).join('');
-        
-    window.scrollTo({top: 0, behavior: 'smooth'});
-}
-
-function navigateEpisode(dir) { changeVideo(currentIndex + dir); }
-function toggleCine() { document.body.classList.toggle('cine-mode'); }
-function toggleFullScreen() {
-    const el = document.getElementById('mediaContainer');
-    if (el.requestFullscreen) el.requestFullscreen();
-    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-}
-
-// Comentarios
-function getCommentKey() { return 'comm_' + SERIES_TITLE.replace(/\s/g, '_'); }
 function loadComments() {
     const list = document.getElementById('commentsList');
     const comments = JSON.parse(localStorage.getItem(getCommentKey())) || [];
@@ -374,7 +186,7 @@ function loadComments() {
             <p style="font-size:13px; margin-top:5px;">${esc(c.text)}</p>
         </div>`).join('');
 }
-function updateAvatar(val) {} 
+
 function sendComment() {
     const user = document.getElementById('commentUser').value || "Anónimo";
     const text = document.getElementById('commentText').value;
@@ -385,9 +197,44 @@ function sendComment() {
     document.getElementById('commentText').value = "";
     loadComments();
 }
+
 function animEmoji(btn) {
     btn.style.transform = "scale(1.4)";
     setTimeout(() => btn.style.transform = "scale(1)", 200);
+}
+
+// Opcional: Si quieres seguir cargando el título y descripción desde tu data.json
+async function loadData() {
+    const params = new URLSearchParams(window.location.search);
+    const titleParam = params.get('title');
+    if (!titleParam) {
+        loadComments();
+        return;
+    }
+
+    try {
+        const res = await fetch('data.json?v=' + Date.now());
+        let data = await res.json();
+        if (!Array.isArray(data)) data = [data];
+
+        const serie = data.find(s => s.title.trim().toLowerCase() === titleParam.trim().toLowerCase());
+        
+        if (serie) {
+            SERIES_TITLE = serie.title;
+            document.getElementById('displayTitle').textContent = serie.title;
+            document.getElementById('displaySynopsis').textContent = serie.description || "";
+            document.getElementById('displayYear').textContent = serie.year || "";
+            document.getElementById('displayRate').textContent = serie.rate || "8.5";
+            
+            // Si quieres que el iframe cambie dinámicamente desde el JSON, 
+            // asegúrate de tener "iframe_url": "link de vimeus" en tu data.json
+            if(serie.iframe_url) {
+                document.getElementById('mainIframe').src = serie.iframe_url;
+            }
+        }
+    } catch (e) { console.error("Error cargando serie", e); }
+    
+    loadComments();
 }
 
 loadData();
